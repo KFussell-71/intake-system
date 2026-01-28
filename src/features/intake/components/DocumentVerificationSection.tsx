@@ -1,6 +1,6 @@
 import React from 'react';
 import { FileCheck, Calendar, Upload, CheckCircle2 } from 'lucide-react';
-import { ElegantInput } from '@/components/ui/ElegantInput';
+import { ElegantInput, ElegantTextarea } from '@/components/ui/ElegantInput';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { IntakeFormData } from '../types/intake';
 import { ActionButton } from '@/components/ui/ActionButton';
@@ -18,6 +18,7 @@ export const DocumentVerificationSection: React.FC<Props> = ({ formData, onChang
     const renderVerificationItem = (
         title: string,
         dateField: keyof IntakeFormData,
+        notesField: keyof IntakeFormData,
         hasDoc: boolean = false
     ) => {
         const isReviewed = !!formData[dateField];
@@ -42,6 +43,15 @@ export const DocumentVerificationSection: React.FC<Props> = ({ formData, onChang
                         type="date"
                         icon={<Calendar className="w-4 h-4" />}
                         className="text-sm"
+                    />
+
+                    <ElegantTextarea
+                        label="Notes / Observations"
+                        name={notesField}
+                        value={formData[notesField] as string}
+                        onChange={onChange}
+                        placeholder="Add details..."
+                        className="text-sm min-h-[80px]"
                     />
 
                     <div className="flex gap-2">
@@ -77,9 +87,9 @@ export const DocumentVerificationSection: React.FC<Props> = ({ formData, onChang
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {renderVerificationItem('Referral Form', 'referralReviewDate')}
-                {renderVerificationItem('Authorization', 'authReviewDate')}
-                {renderVerificationItem('Work History', 'workHistoryReviewDate')}
+                {renderVerificationItem('Referral Form', 'referralReviewDate', 'referralNotes')}
+                {renderVerificationItem('Authorization', 'authReviewDate', 'authNotes')}
+                {renderVerificationItem('Work History', 'workHistoryReviewDate', 'workHistoryNotes')}
             </div>
         </div>
     );

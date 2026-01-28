@@ -41,8 +41,11 @@ const initialFormData: IntakeFormData = {
     transportationType: '',
     commuteTime: '',
     referralReviewDate: '',
+    referralNotes: '',
     authReviewDate: '',
+    authNotes: '',
     workHistoryReviewDate: '',
+    workHistoryNotes: '',
 };
 
 export function useIntakeForm() {

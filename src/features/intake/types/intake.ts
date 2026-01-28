@@ -40,8 +40,11 @@ export interface IntakeFormData {
 
     // Document Review & Verification
     referralReviewDate: string;
+    referralNotes: string;
     authReviewDate: string;
+    authNotes: string;
     workHistoryReviewDate: string;
+    workHistoryNotes: string;
 }
 
 export type IntakeStep = 'Identity' | 'Evaluation' | 'Goals' | 'Prep' | 'Placement' | 'Review';

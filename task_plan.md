@@ -44,5 +44,6 @@
 - [ ] Add "Document Review & Verification" to Identity Page
   - [ ] UI: Checkboxes/Status for Referral, Auth, Work History
   - [ ] UI: Date Reviewed fields
+  - [ ] UI: Notes/Comments textarea for each item
   - [ ] UI: Upload/View integration
   - [ ] DB: Update `intakes` schema (JSONB)
