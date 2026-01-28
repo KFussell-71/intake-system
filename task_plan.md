@@ -32,7 +32,9 @@
 ## Phase 10: One-Click Setup Utility
 
 - [x] Brainstorm the most 'noob-friendly' way to set up a Next.js/Supabase app
-- [x] Implement `setup.js` (cross-platform Node script)
-- [x] Update `package.json` with a convenient `setup` script
+- [x] Create `setup.js` script
+- [x] Update `package.json` with setup command
+- [x] Document usage in README
+- [/] Deployment Debugging: Fix TypeScript build errors for Netlify
 - [x] Update `README.md` with the new one-step process
 - [x] Final manual verification of the setup flow
