@@ -35,6 +35,14 @@
 - [x] Create `setup.js` script
 - [x] Update `package.json` with setup command
 - [x] Document usage in README
-- [/] Deployment Debugging: Fix TypeScript build errors for Netlify
+- [x] Deployment Debugging: Fix TypeScript build and Missing Dependencies (Round 7)
 - [x] Update `README.md` with the new one-step process
 - [x] Final manual verification of the setup flow
+
+## Phase 12: Application Enhancements
+
+- [ ] Add "Document Review & Verification" to Identity Page
+  - [ ] UI: Checkboxes/Status for Referral, Auth, Work History
+  - [ ] UI: Date Reviewed fields
+  - [ ] UI: Upload/View integration
+  - [ ] DB: Update `intakes` schema (JSONB)

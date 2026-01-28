@@ -2,6 +2,7 @@ import React from 'react';
 import { User as UserIcon } from 'lucide-react';
 import { ElegantInput } from '@/components/ui/ElegantInput';
 import { IntakeFormData } from '../types/intake';
+import { DocumentVerificationSection } from './DocumentVerificationSection';
 
 interface Props {
     formData: IntakeFormData;
@@ -66,6 +67,10 @@ export const IntakeStepIdentity: React.FC<Props> = ({ formData, onChange }) => {
                     type="date"
                 />
             </div>
+
+            <hr className="border-slate-100 dark:border-white/5" />
+
+            <DocumentVerificationSection formData={formData} onChange={onChange} />
         </div>
     );
 };

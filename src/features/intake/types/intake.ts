@@ -37,6 +37,11 @@ export interface IntakeFormData {
     benefits: string;
     transportationType: 'bus' | 'car' | 'other' | '';
     commuteTime: string;
+
+    // Document Review & Verification
+    referralReviewDate: string;
+    authReviewDate: string;
+    workHistoryReviewDate: string;
 }
 
 export type IntakeStep = 'Identity' | 'Evaluation' | 'Goals' | 'Prep' | 'Placement' | 'Review';

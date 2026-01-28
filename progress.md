@@ -11,7 +11,14 @@
 - **Round 2 (21:40)**: Build failure due to `autoprefixer`.
   - **Cause**: `NODE_ENV=production` skips devDependencies.
   - **Fix**: Moved CSS tools to `dependencies`.
-  - **Blocker**: **Git Push Failed** because of new screenshots/files. Retrying now.
+  - **Blocker**: **Git Push Failed** because of new screenshots/files. Fixed in Round 4.
+- **Round 5 (21:55)**: `Module not found: Can't resolve 'zod'`.
+  - **Cause**: `zod` was implicitly used from devDependencies.
+  - **Fix**: Installed `zod` as production dependency.
+  - **Status**: Deployed.
+- **Round 7 (22:15)**: `typescript` missing during build.
+  - **Cause**: `NODE_ENV=production` pruning devDeps.
+  - **Fix**: Moving TS deps to `dependencies`.
 - Confirmed assignment-based multi-tenancy model.
 - Updated `schema.sql` with `assigned_to` and granular RLS.
 - Implemented GIN index for `intakes.data`.

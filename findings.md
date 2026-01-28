@@ -18,7 +18,24 @@
   - **Cause**: `netlify.toml` sets `NODE_ENV=production`, causing `npm install` to skip `devDependencies`. `autoprefixer` is needed for the build.
   - **Fix**: Move `autoprefixer`, `postcss`, and `tailwindcss` to `dependencies`.
 - **Round 4 Errors**: User sees same error because **Round 3 Push Failed** locally due to unstaged files.
-  - **Action**: Must `git add .` to include changes + new screenshots, then commit and push.
+- **Round 4 Errors (Detailed Log)**: User provided a detailed breakdown confirming `autoprefixer` module not found.
+  - **Current State**: My previous commit (`568ae157`) *should* have fixed this by moving deps.
+  - **Verification**: Need to verify `package.json` actually has `autoprefixer` in `dependencies`.
+- **Round 5 Errors (New Log)**: Auto-fix worked! CSS error gone. New error: `Module not found: Can't resolve 'zod'`.
+  - **Cause**: `zod` is likely missing from `package.json` or in `devDependencies`.
+  - **Fix**: Install `zod` as a production dependency.
+- **Round 6 Feedback**: User flagged non-compliance with skill protocols and CI rules.
+  - **Action**: Formal re-alignment with `planning-with-files` steps.
+  - **Status**: `zod` fix is deployed (`main -> a2c0e780`). Pending Netlify build result.
+- **Round 7 Errors (New Log)**: Build failed during `Running TypeScript ...`.
+  - **Error**: `It looks like you're trying to use TypeScript but do not have the required package(s) installed.`
+  - **Cause**: Same as Round 3. `NODE_ENV=production` prevents installation of `typescript` and `@types/*` which are in `devDependencies`.
+  - **Fix**: Move `typescript`, `@types/react`, `@types/react-dom`, `@types/node` to `dependencies`.
+- **Final Checks**: acting on "Netlify Deployment Goggles" feedback.
+  - **Action**: Enforce `engines.node`, verify `setup.js` ESM, check `netlify.toml`.
+- **Implementation Error**: strict type check failed in `useIntakeForm.ts`.
+  - **Cause**: New fields added to interface but not to initial state constant.
+  - **Fix**: Initialize verification fields to empty strings.
 - **Feedback**: Use emojis and clear colors (via terminal) to guide the user.
 
 ## Proposed Setup Flow
