@@ -11,6 +11,9 @@
     "test": "vitest run",
     "setup": "node setup.js"
   },
+  "engines": {
+    "node": "20"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
