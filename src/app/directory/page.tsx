@@ -1,3 +1,5 @@
+'use client';
+
 import { ActionButton } from "@/components/ui/ActionButton";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { supabase } from "@/lib/supabase";
@@ -79,7 +81,7 @@ export default function DirectoryPage() {
                             </div>
                             <div className="flex items-center gap-4">
                                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${client.status === 'completed' ? 'bg-green-100 text-green-700' :
-                                        client.status === 'in_progress' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'
+                                    client.status === 'in_progress' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'
                                     }`}>
                                     {client.status?.replace('_', ' ') || 'New'}
                                 </span>
