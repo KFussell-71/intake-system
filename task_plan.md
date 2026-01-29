@@ -47,3 +47,8 @@
 - [x] UI: Add Strengths/Motivation fields to `PreparationReadinessSection` <!-- status: complete -->
 - [x] Agent: Update Prompt context <!-- status: complete -->
 - [x] Deployment: Push to GitHub <!-- status: complete -->
+
+## Phase 9: Refactor - Move Strengths to Goals
+
+- [x] Refactor: Move Strengths/Motivation UI to Goals Page <!-- status: complete -->
+- [ ] Deployment: Push to GitHub <!-- status: todo -->
