@@ -4,6 +4,7 @@ import { ElegantInput } from '@/components/ui/ElegantInput';
 import { FormCheckbox } from './FormCheckbox';
 import { IntakeFormData } from '../types/intake';
 import { PreparationReadinessSection } from './PreparationReadinessSection';
+import { WeeklyCheckInSection } from './WeeklyCheckInSection';
 
 interface Props {
     formData: IntakeFormData;
@@ -17,6 +18,10 @@ export const IntakeStepPrep: React.FC<Props> = ({ formData, onChange }) => {
                 <GraduationCap className="w-6 h-6 text-primary" />
                 Employment Preparation Services
             </h2>
+
+            <WeeklyCheckInSection formData={formData} onChange={onChange} />
+            <hr className="border-slate-100 dark:border-white/5" />
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <ElegantInput
                     label="Class 1: Fair Chance Hiring"

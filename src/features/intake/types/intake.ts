@@ -53,6 +53,11 @@ export interface IntakeFormData {
     mockInterviewNotes: string;
     networkingDate: string;
     networkingNotes: string;
+
+    // Weekly Progress Check-Ins
+    checkInDay: string;
+    checkInTime: string;
+    checkInNotes: string;
 }
 
 export type IntakeStep = 'Identity' | 'Evaluation' | 'Goals' | 'Prep' | 'Placement' | 'Review';

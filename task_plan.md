@@ -50,7 +50,12 @@
 
 ## Phase 13: Prep Page Enhancements
 
-- [ ] Add "Preparation & Readiness Tracking" to Prep Page
-  - [ ] DB/Types: Add Resume, Mock Interview, and Networking date+notes fields
-  - [ ] UI: Create `PreparationReadinessSection` component (matching Doc Review style)
-  - [ ] UI: Integrate into `IntakeStepPrep`
+- [x] Add "Preparation & Readiness Tracking" to Prep Page
+  - [x] DB/Types: Add Resume, Mock Interview, and Networking date+notes fields
+  - [x] UI: Create `PreparationReadinessSection` component (matching Doc Review style)
+  - [x] UI: Integrate into `IntakeStepPrep`
+
+## Phase 14: Weekly Check-Ins Feature
+
+- [ ] Add "Weekly Progress Check-Ins" to Prep Page (Top)
+  - [ ] DB/Types: Add `checkInDay`, `checkInTime`, `checkInNotes`

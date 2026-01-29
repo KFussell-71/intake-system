@@ -52,6 +52,9 @@ const initialFormData: IntakeFormData = {
     mockInterviewNotes: '',
     networkingDate: '',
     networkingNotes: '',
+    checkInDay: '',
+    checkInTime: '',
+    checkInNotes: '',
 };
 
 export function useIntakeForm() {
