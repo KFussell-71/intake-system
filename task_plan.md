@@ -41,3 +41,9 @@
 - [x] UI: Update `PreparationReadinessSection.tsx` <!-- status: complete -->
 - [x] Agent: Update `get_client_intake_bundle` RPC <!-- status: complete -->
 - [x] Deployment: Push to GitHub <!-- status: complete -->
+
+## Phase 8: Strengths & Motivation
+
+- [x] UI: Add Strengths/Motivation fields to `PreparationReadinessSection` <!-- status: complete -->
+- [x] Agent: Update Prompt context <!-- status: complete -->
+- [x] Deployment: Push to GitHub <!-- status: complete -->

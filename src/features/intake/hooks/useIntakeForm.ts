@@ -61,6 +61,11 @@ const initialFormData: IntakeFormData = {
     barriersOther: '',
     supportServices: [],
     supportServicesOther: '',
+
+    // Strengths & Motivation
+    keyStrengths: '',
+    motivationFactors: '',
+    readinessScale: null,
 };
 
 export function useIntakeForm() {

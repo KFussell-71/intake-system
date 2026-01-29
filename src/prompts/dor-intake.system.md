@@ -21,6 +21,8 @@ The AI will receive a JSON bundle containing:
 - Client Demographics & Intake Data
 - **Barriers to Employment** (List of barriers identified)
 - **Support Services Needed** (List of services requested)
+- **Participant Strengths** (Key strengths and motivation factors)
+- **Readiness Scale** (1-10 self-rating)
 - Employment History
 - ISP Goals
 - Document Review Status

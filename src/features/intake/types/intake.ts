@@ -64,6 +64,11 @@ export interface IntakeFormData {
     barriersOther: string;
     supportServices: string[];
     supportServicesOther: string;
+
+    // Strengths & Motivation
+    keyStrengths: string;
+    motivationFactors: string;
+    readinessScale: number | null; // 1-10
 }
 
 export type IntakeStep = 'Identity' | 'Evaluation' | 'Goals' | 'Prep' | 'Placement' | 'Review';
