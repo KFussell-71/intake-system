@@ -30,3 +30,7 @@
 - [x] Refactor `dorAgent.ts` to use Gemini API <!-- status: complete -->
 - [x] Configure Environment Variables <!-- status: complete -->
 - [x] Verify Report Generation with Gemini <!-- status: complete -->
+
+## Phase 6: Deployment
+
+- [x] Push to GitHub <!-- status: complete -->
