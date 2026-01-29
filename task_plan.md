@@ -1,75 +1,32 @@
-# Task Plan - Production Ready Product
+# Task Plan - DOR System Upgrade
 
-## Phase 1: Research & Assessment
+## Phase 1: Database Architecture (Supabase)
 
-- [x] Analyze project structure and dependencies
-- [x] Identify available and missing skills
-- [x] Review core application logic in `src/app` and `src/lib`
-- [x] Review database schema in `schema.sql` and `migrations`
+- [x] Modify `schema.sql` with new tables and RPC <!-- status: complete -->
+- [x] Apply migrations (manual run or script) <!-- status: complete -->
+- [x] Verify `get_client_intake_bundle` returns correct shape <!-- status: complete -->
 
-## Phase 2: Core Infrastructure & Backend
+## Phase 2: Core Logic & Agent
 
-- [x] Centralized configuration (`unifiedConfig.ts`)
-- [x] Refactor `supabase.ts` to use `unifiedConfig`
-- [x] Implement Repository layer (`ClientRepository`, `DashboardRepository`)
-- [x] Implement Service layer (`IntakeService`, `DashboardService`, `AuthService`)
-- [x] Implement Controller layer (`IntakeController`, `DashboardController`, `AuthController`)
-- [x] Generate database types (`src/types/supabase.ts`)
+- [x] Implement `dorAgent.ts` <!-- status: complete -->
+- [x] Implement `generatePDF.ts` <!-- status: complete -->
+- [x] Implement `validateIntakeData.ts` <!-- status: complete -->
+- [x] Create API Route `/api/generate-report` <!-- status: complete -->
 
-## Phase 3: Frontend & UI/UX Modularization
+## Phase 3: UI Implementation
 
-- [x] Move intake logic to `src/features/intake/`
-- [x] Modularize `NewIntakePage` into sub-components
-- [x] Refactor Dashboard and Login pages to use controllers
-- [x] Enhance UI components (`GlassCard`, `ActionButton`)
+- [x] Create `IntakeReportEditor` <!-- status: complete -->
+- [x] Create `SupervisorDashboard` <!-- status: complete -->
+- [x] Create `ComplianceDashboard` <!-- status: complete -->
 
-## Phase 4: Verification & Sign-off
+## Phase 4: Integration
 
-- [x] Setup Vitest and write unit tests
-- [x] Manual verification and Security audit
-- [x] Final CI Pass Report
+- [x] Connect UI to API <!-- status: complete -->
+- [x] End-to-end Test <!-- status: complete -->
 
-## Phase 10: One-Click Setup Utility
+## Phase 5: Switch to Google Gemini
 
-- [x] Brainstorm the most 'noob-friendly' way to set up a Next.js/Supabase app
-- [x] Create `setup.js` script
-- [x] Update `package.json` with setup command
-- [x] Document usage in README
-- [x] Deployment Debugging: Fix TypeScript build and Missing Dependencies (Round 7)
-- [x] Update `README.md` with the new one-step process
-- [x] Final manual verification of the setup flow
-
-## Phase 12: Application Enhancements
-
-- [x] Add "Document Review & Verification" to Identity Page
-  - [x] UI: Checkboxes/Status for Referral, Auth, Work History
-  - [x] UI: Date Reviewed fields
-  - [x] UI: Notes/Comments textarea for each item
-  - [x] UI: Upload/View integration
-  - [x] DB: Update `intakes` schema (JSONB)
-
-## Phase 13: Prep Page Enhancements
-
-- [x] Add "Preparation & Readiness Tracking" to Prep Page
-  - [x] DB/Types: Add Resume, Mock Interview, and Networking date+notes fields
-  - [x] UI: Create `PreparationReadinessSection` component (matching Doc Review style)
-  - [x] UI: Integrate into `IntakeStepPrep`
-
-## Phase 14: Weekly Check-Ins Feature
-
-- [x] Add "Weekly Progress Check-Ins" to Prep Page (Top)
-  - [x] DB/Types: Add `checkInDay`, `checkInTime`, `checkInNotes`
-  - [x] UI: Create `WeeklyCheckInSection` component
-  - [x] UI: Add recurrence controls (Day of Week + Time)
-  - [x] UI: Insert at top of `IntakeStepPrep`
-
-## Phase 15: Missing Platform Pages
-
-- [x] Directory / Search Page (`/directory`)
-  - [x] UI: Search bar, Filters, Client List
-- [x] Follow Ups Page (`/follow-ups`)
-  - [x] UI: List of clients needing attention
-- [x] Service Reports Page (`/reports`)
-  - [x] UI: Charts/Graphs of intake data
-- [x] Platform Settings Page (`/settings`)
-  - [x] UI: User preferences, App config
+- [x] Install `@google/generative-ai` <!-- status: complete -->
+- [x] Refactor `dorAgent.ts` to use Gemini API <!-- status: complete -->
+- [x] Configure Environment Variables <!-- status: complete -->
+- [x] Verify Report Generation with Gemini <!-- status: complete -->
