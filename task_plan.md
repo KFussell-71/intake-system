@@ -57,5 +57,19 @@
 
 ## Phase 14: Weekly Check-Ins Feature
 
-- [ ] Add "Weekly Progress Check-Ins" to Prep Page (Top)
-  - [ ] DB/Types: Add `checkInDay`, `checkInTime`, `checkInNotes`
+- [x] Add "Weekly Progress Check-Ins" to Prep Page (Top)
+  - [x] DB/Types: Add `checkInDay`, `checkInTime`, `checkInNotes`
+  - [x] UI: Create `WeeklyCheckInSection` component
+  - [x] UI: Add recurrence controls (Day of Week + Time)
+  - [x] UI: Insert at top of `IntakeStepPrep`
+
+## Phase 15: Missing Platform Pages
+
+- [x] Directory / Search Page (`/directory`)
+  - [x] UI: Search bar, Filters, Client List
+- [x] Follow Ups Page (`/follow-ups`)
+  - [x] UI: List of clients needing attention
+- [x] Service Reports Page (`/reports`)
+  - [x] UI: Charts/Graphs of intake data
+- [x] Platform Settings Page (`/settings`)
+  - [x] UI: User preferences, App config
