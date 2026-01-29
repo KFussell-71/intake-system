@@ -69,6 +69,12 @@ export interface IntakeFormData {
     keyStrengths: string;
     motivationFactors: string;
     readinessScale: number | null; // 1-10
+
+    // Industry & Job Targets
+    industryPreferences: string[];
+    industryOther: string;
+    targetPay: string;
+    employmentType: string[];
 }
 
 export type IntakeStep = 'Identity' | 'Evaluation' | 'Goals' | 'Prep' | 'Placement' | 'Review';

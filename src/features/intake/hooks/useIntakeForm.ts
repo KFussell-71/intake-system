@@ -66,6 +66,12 @@ const initialFormData: IntakeFormData = {
     keyStrengths: '',
     motivationFactors: '',
     readinessScale: null,
+
+    // Industry & Job Targets
+    industryPreferences: [],
+    industryOther: '',
+    targetPay: '',
+    employmentType: [],
 };
 
 export function useIntakeForm() {

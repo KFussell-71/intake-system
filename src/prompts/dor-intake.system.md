@@ -23,6 +23,7 @@ The AI will receive a JSON bundle containing:
 - **Support Services Needed** (List of services requested)
 - **Participant Strengths** (Key strengths and motivation factors)
 - **Readiness Scale** (1-10 self-rating)
+- **Industry Preferences** (Target industries, Pay range, Employment type)
 - Employment History
 - ISP Goals
 - Document Review Status

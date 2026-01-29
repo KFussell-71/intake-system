@@ -74,6 +74,100 @@ export const PreparationReadinessSection: React.FC<Props> = ({ formData, onChang
             </div>
 
             <GlassCard className="p-6 mt-6 border border-white/20">
+                <h4 className="font-semibold text-slate-800 dark:text-slate-100 mb-4">Industry Preference & Targets</h4>
+                <div className="space-y-6">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Industry Preference
+                        </label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                            {[
+                                'Construction / Trades', 'Warehouse / Logistics', 'Customer Service',
+                                'Food Service', 'Healthcare Support', 'Office / Clerical',
+                                'IT / Technical', 'Open to any'
+                            ].map((industry) => (
+                                <div key={industry} className="flex items-center space-x-2">
+                                    <input
+                                        type="checkbox"
+                                        id={`industry-${industry}`}
+                                        checked={(formData.industryPreferences || []).includes(industry)}
+                                        onChange={(e) => {
+                                            const current = formData.industryPreferences || [];
+                                            const updated = e.target.checked
+                                                ? [...current, industry]
+                                                : current.filter(i => i !== industry);
+                                            const event = {
+                                                target: {
+                                                    name: 'industryPreferences',
+                                                    value: updated
+                                                }
+                                            } as any;
+                                            onChange(event);
+                                        }}
+                                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                    />
+                                    <label htmlFor={`industry-${industry}`} className="text-sm text-slate-700 dark:text-slate-300">{industry}</label>
+                                </div>
+                            ))}
+                            <div className="col-span-1 md:col-span-2 lg:col-span-3 mt-2">
+                                <ElegantInput
+                                    name="industryOther"
+                                    label="Other Industry"
+                                    value={formData.industryOther}
+                                    onChange={onChange}
+                                    placeholder="Specify other industry..."
+                                    className="bg-white/50"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <ElegantInput
+                            name="targetPay"
+                            label="Target Pay Range"
+                            value={formData.targetPay}
+                            onChange={onChange}
+                            placeholder="e.g. $18 - $22 / hr"
+                            className="bg-white/50"
+                        />
+
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                Employment Type
+                            </label>
+                            <div className="flex gap-4 mt-2">
+                                {['Full-Time', 'Part-Time', 'Temporary'].map((type) => (
+                                    <div key={type} className="flex items-center space-x-2">
+                                        <input
+                                            type="checkbox"
+                                            id={`type-${type}`}
+                                            checked={(formData.employmentType || []).includes(type)}
+                                            onChange={(e) => {
+                                                const current = formData.employmentType || [];
+                                                const updated = e.target.checked
+                                                    ? [...current, type]
+                                                    : current.filter(t => t !== type);
+                                                const event = {
+                                                    target: {
+                                                        name: 'employmentType',
+                                                        value: updated
+                                                    }
+                                                } as any;
+                                                onChange(event);
+                                            }}
+                                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                        />
+                                        <label htmlFor={`type-${type}`} className="text-sm text-slate-700 dark:text-slate-300">{type}</label>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </GlassCard>
+
+            <GlassCard className="p-6 mt-6 border border-white/20">
                 <h4 className="font-semibold text-slate-800 dark:text-slate-100 mb-4">Barriers to Employment</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     {[
