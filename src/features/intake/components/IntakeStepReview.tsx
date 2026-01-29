@@ -38,6 +38,7 @@ export const IntakeStepReview: React.FC<Props> = ({ formData, onChange }) => {
                 onChange={onChange}
                 placeholder="Any other relevant details or next steps..."
                 rows={6}
+                enableDictation
             />
         </div>
     );

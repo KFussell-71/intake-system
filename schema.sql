@@ -420,4 +420,42 @@ BEGIN
 
   RETURN result;
 END;
+
+-- 8. Implement create_client_intake RPC (Transactional Insert)
+CREATE OR REPLACE FUNCTION create_client_intake(
+  p_name TEXT,
+  p_phone TEXT,
+  p_email TEXT,
+  p_address TEXT,
+  p_report_date DATE,
+  p_completion_date DATE,
+  p_intake_data JSONB
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  new_client_id UUID;
+  new_intake_id UUID;
+BEGIN
+  -- 1. Create Client
+  INSERT INTO clients (name, phone, email, address, created_by)
+  VALUES (p_name, p_phone, p_email, p_address, auth.uid())
+  RETURNING id INTO new_client_id;
+
+  -- 2. Create Intake
+  INSERT INTO intakes (client_id, report_date, completion_date, data, prepared_by, status)
+  VALUES (new_client_id, p_report_date, p_completion_date, p_intake_data, auth.uid(), 'draft')
+  RETURNING id INTO new_intake_id;
+
+  -- 3. Return result
+  RETURN jsonb_build_object(
+    'client_id', new_client_id,
+    'intake_id', new_intake_id,
+    'success', true
+  );
+EXCEPTION WHEN OTHERS THEN
+  RETURN jsonb_build_object('success', false, 'error', SQLERRM);
+END;
 $$;

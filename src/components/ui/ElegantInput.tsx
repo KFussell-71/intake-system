@@ -1,14 +1,26 @@
 'use client';
 
 import React from 'react';
+import { VoiceInput } from './VoiceInput';
 
 interface ElegantInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     label: string;
     error?: string;
     icon?: React.ReactNode;
+    enableDictation?: boolean;
 }
 
-export const ElegantInput = ({ label, error, icon, className = '', id, ...props }: ElegantInputProps) => {
+export const ElegantInput = ({ label, error, icon, className = '', id, enableDictation, ...props }: ElegantInputProps) => {
+    // Handler for voice input
+    const handleVoiceInput = (text: string) => {
+        const nativeInput = document.getElementById(id || props.name || 'input') as HTMLInputElement;
+        if (nativeInput) {
+            const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+            setter?.call(nativeInput, text);
+            nativeInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    };
+
     return (
         <div className="space-y-2">
             <label htmlFor={id} className="block text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">
@@ -30,10 +42,16 @@ export const ElegantInput = ({ label, error, icon, className = '', id, ...props 
                         transition-all duration-200
                         ${icon ? 'pl-11' : ''}
                         ${error ? 'border-red-500 focus:ring-red-500/30' : ''}
+                        ${enableDictation ? 'pr-12' : ''}
                         ${className}
                     `}
                     {...props}
                 />
+                {enableDictation && (
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                        <VoiceInput onTranscript={handleVoiceInput} />
+                    </div>
+                )}
             </div>
             {error && <p className="text-xs text-red-500 ml-1">{error}</p>}
         </div>
@@ -46,14 +64,7 @@ interface ElegantTextareaProps extends React.TextareaHTMLAttributes<HTMLTextArea
     enableDictation?: boolean;
 }
 
-import { VoiceInput } from './VoiceInput';
-
 export const ElegantTextarea = ({ label, error, className = '', id, enableDictation = false, ...props }: ElegantTextareaProps) => {
-    // We need to handle the value internally if we want to append to it via dictation,
-    // OR we assume the parent is controlling it via onChange.
-    // Ideally, we trigger the parent's onChange.
-
-    // To properly simulate an onChange event for React controlled inputs:
     const handleTranscript = (text: string) => {
         const textarea = document.getElementById(id as string) as HTMLTextAreaElement;
         if (textarea) {

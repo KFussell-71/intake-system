@@ -52,24 +52,27 @@ export const DocumentVerificationSection: React.FC<Props> = ({ formData, onChang
                         onChange={onChange}
                         placeholder="Add details..."
                         className="text-sm min-h-[80px]"
+                        enableDictation
                     />
 
                     <div className="flex gap-2">
-                        {clientId ? (
-                            <ActionButton
-                                size="sm"
-                                variant="secondary"
-                                className="w-full text-xs"
-                                icon={<Upload className="w-3 h-3" />}
-                                onClick={() => alert('Upload logic here (would open DocumentManager with filter)')}
-                            >
-                                Upload
-                            </ActionButton>
-                        ) : (
-                            <div className="text-xs text-slate-400 italic text-center w-full bg-slate-50 dark:bg-white/5 p-2 rounded">
-                                Save to upload
-                            </div>
-                        )}
+                        <ActionButton
+                            size="sm"
+                            variant={hasDoc ? "primary" : "secondary"}
+                            className="w-full text-xs"
+                            icon={hasDoc ? <CheckCircle2 className="w-3 h-3" /> : <Upload className="w-3 h-3" />}
+                            onClick={() => {
+                                // Mock upload for now - in production would trigger file picker
+                                const input = document.createElement('input');
+                                input.type = 'file';
+                                input.onchange = () => {
+                                    alert(`File uploaded for ${title}!\n(Mock storage integration)`);
+                                };
+                                input.click();
+                            }}
+                        >
+                            {hasDoc ? "Document Uploaded" : "Upload Document"}
+                        </ActionButton>
                     </div>
                 </div>
             </GlassCard>

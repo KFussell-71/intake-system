@@ -47,6 +47,7 @@ export const IntakeStepIdentity: React.FC<Props> = ({ formData, onChange }) => {
                     value={formData.address}
                     onChange={onChange}
                     placeholder="Street, City, Zip"
+                    enableDictation
                 />
             </div>
             <hr className="border-slate-100 dark:border-white/5" />
