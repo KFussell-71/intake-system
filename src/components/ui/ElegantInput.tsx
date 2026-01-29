@@ -43,14 +43,42 @@ export const ElegantInput = ({ label, error, icon, className = '', id, ...props 
 interface ElegantTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
     label: string;
     error?: string;
+    enableDictation?: boolean;
 }
 
-export const ElegantTextarea = ({ label, error, className = '', id, ...props }: ElegantTextareaProps) => {
+import { VoiceInput } from './VoiceInput';
+
+export const ElegantTextarea = ({ label, error, className = '', id, enableDictation = false, ...props }: ElegantTextareaProps) => {
+    // We need to handle the value internally if we want to append to it via dictation,
+    // OR we assume the parent is controlling it via onChange.
+    // Ideally, we trigger the parent's onChange.
+
+    // To properly simulate an onChange event for React controlled inputs:
+    const handleTranscript = (text: string) => {
+        const textarea = document.getElementById(id as string) as HTMLTextAreaElement;
+        if (textarea) {
+            const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value")?.set;
+
+            if (nativeInputValueSetter) {
+                const newValue = (textarea.value || '') + text;
+                nativeInputValueSetter.call(textarea, newValue);
+
+                const event = new Event('input', { bubbles: true });
+                textarea.dispatchEvent(event);
+            }
+        }
+    };
+
     return (
         <div className="space-y-2">
-            <label htmlFor={id} className="block text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">
-                {label} {props.required && <span className="text-red-500">*</span>}
-            </label>
+            <div className="flex justify-between items-center ml-1">
+                <label htmlFor={id} className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+                    {label} {props.required && <span className="text-red-500">*</span>}
+                </label>
+                {enableDictation && id && (
+                    <VoiceInput onTranscript={handleTranscript} />
+                )}
+            </div>
             <textarea
                 id={id}
                 className={`

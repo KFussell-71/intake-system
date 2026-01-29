@@ -22,6 +22,7 @@ export const IntakeStepGoals: React.FC<Props> = ({ formData, onChange }) => {
                 value={formData.employmentGoals}
                 onChange={onChange}
                 placeholder="What kind of work does the client want to pursue?"
+                enableDictation
             />
             <ElegantTextarea
                 label="Education & Training Goals"
@@ -29,6 +30,7 @@ export const IntakeStepGoals: React.FC<Props> = ({ formData, onChange }) => {
                 value={formData.educationGoals}
                 onChange={onChange}
                 placeholder="Degrees, certifications, or vocational training required?"
+                enableDictation
             />
             <ElegantTextarea
                 label="Housing Stability Needs"
@@ -36,6 +38,7 @@ export const IntakeStepGoals: React.FC<Props> = ({ formData, onChange }) => {
                 value={formData.housingNeeds}
                 onChange={onChange}
                 placeholder="Status of current housing and any immediate needs..."
+                enableDictation
             />
 
             <GlassCard className="p-6 mt-6 border border-white/20">
@@ -49,6 +52,7 @@ export const IntakeStepGoals: React.FC<Props> = ({ formData, onChange }) => {
                         onChange={onChange}
                         placeholder="What are the client's primary strengths?"
                         className="bg-white/50 min-h-[80px]"
+                        enableDictation
                     />
 
                     <ElegantTextarea
@@ -58,6 +62,7 @@ export const IntakeStepGoals: React.FC<Props> = ({ formData, onChange }) => {
                         onChange={onChange}
                         placeholder="Family, financial goals, independence..."
                         className="bg-white/50 min-h-[80px]"
+                        enableDictation
                     />
 
                     <div>

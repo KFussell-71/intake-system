@@ -57,4 +57,44 @@
 
 - [x] UI: Add Industry/Pay/Type fields to `PreparationReadinessSection` <!-- status: complete -->
 - [x] Agent: Update Prompt context <!-- status: complete -->
-- [ ] Deployment: Push to GitHub <!-- status: todo -->
+- [x] Deployment: Push to GitHub <!-- status: complete -->
+
+## Phase 11: Voice-to-Case-Note Dictation 🎙️
+
+- [x] UI: Create `VoiceInput` component <!-- status: complete -->
+- [x] UI: Integrate into `ElegantTextarea` <!-- status: complete -->
+- [ ] Deploy: Push to GitHub <!-- status: todo -->
+
+## Phase 12: Accessibility "Gov-Spec" Mode 👁️
+
+- [ ] UI: Create `AccessibilityToggle` component <!-- status: todo -->
+- [ ] UI: Implement High Contrast Theme in Tailwind <!-- status: todo -->
+- [ ] UI: Add `OpenDyslexic` font support <!-- status: todo -->
+- [ ] Deploy: Push to GitHub <!-- status: todo -->
+
+## Phase 13: Field-Ready Mobility (PWA) 📱
+
+- [ ] Config: Install `next-pwa` <!-- status: todo -->
+- [ ] Config: Generate Manifest and Icons <!-- status: todo -->
+- [ ] Deploy: Push to GitHub <!-- status: todo -->
+
+## Phase 14: Longitudinal Progress Visualization 📈
+
+- [ ] Config: Install `recharts` <!-- status: todo -->
+- [ ] UI: Create `ReadinessChart` component <!-- status: todo -->
+- [ ] UI: Create `BarriersChart` component <!-- status: todo -->
+- [ ] Deploy: Push to GitHub <!-- status: todo -->
+
+## Phase 15: AI "Pre-Flight" Compliance Check 🛡️
+
+- [ ] Agent: Create `complianceAgent.ts` (LogicValidator) <!-- status: todo -->
+- [ ] API: Create `/api/validate-intake` endpoint <!-- status: todo -->
+- [ ] UI: Add Validation Step to Review Page <!-- status: todo -->
+- [ ] Deploy: Push to GitHub <!-- status: todo -->
+
+## Phase 16: Client "Self-Service" Portal 🤝
+
+- [ ] DB: Create `portal_access_tokens` table <!-- status: todo -->
+- [ ] UI: Create Client Login / Magic Link Page <!-- status: todo -->
+- [ ] UI: Create Client Intake View (Limited) <!-- status: todo -->
+- [ ] Deploy: Push to GitHub <!-- status: todo -->
