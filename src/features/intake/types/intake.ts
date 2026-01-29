@@ -45,6 +45,14 @@ export interface IntakeFormData {
     authNotes: string;
     workHistoryReviewDate: string;
     workHistoryNotes: string;
+
+    // Preparation & Readiness Tracking
+    resumeUpdateDate: string;
+    resumeUpdateNotes: string;
+    mockInterviewDate: string;
+    mockInterviewNotes: string;
+    networkingDate: string;
+    networkingNotes: string;
 }
 
 export type IntakeStep = 'Identity' | 'Evaluation' | 'Goals' | 'Prep' | 'Placement' | 'Review';

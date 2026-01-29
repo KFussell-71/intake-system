@@ -41,9 +41,16 @@
 
 ## Phase 12: Application Enhancements
 
-- [ ] Add "Document Review & Verification" to Identity Page
-  - [ ] UI: Checkboxes/Status for Referral, Auth, Work History
-  - [ ] UI: Date Reviewed fields
-  - [ ] UI: Notes/Comments textarea for each item
-  - [ ] UI: Upload/View integration
-  - [ ] DB: Update `intakes` schema (JSONB)
+- [x] Add "Document Review & Verification" to Identity Page
+  - [x] UI: Checkboxes/Status for Referral, Auth, Work History
+  - [x] UI: Date Reviewed fields
+  - [x] UI: Notes/Comments textarea for each item
+  - [x] UI: Upload/View integration
+  - [x] DB: Update `intakes` schema (JSONB)
+
+## Phase 13: Prep Page Enhancements
+
+- [ ] Add "Preparation & Readiness Tracking" to Prep Page
+  - [ ] DB/Types: Add Resume, Mock Interview, and Networking date+notes fields
+  - [ ] UI: Create `PreparationReadinessSection` component (matching Doc Review style)
+  - [ ] UI: Integrate into `IntakeStepPrep`

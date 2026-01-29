@@ -3,6 +3,7 @@ import { GraduationCap } from 'lucide-react';
 import { ElegantInput } from '@/components/ui/ElegantInput';
 import { FormCheckbox } from './FormCheckbox';
 import { IntakeFormData } from '../types/intake';
+import { PreparationReadinessSection } from './PreparationReadinessSection';
 
 interface Props {
     formData: IntakeFormData;
@@ -60,6 +61,10 @@ export const IntakeStepPrep: React.FC<Props> = ({ formData, onChange }) => {
                     onChange={onChange}
                 />
             </div>
+
+            <hr className="border-slate-100 dark:border-white/5" />
+
+            <PreparationReadinessSection formData={formData} onChange={onChange} />
         </div>
     );
 };

@@ -46,6 +46,12 @@ const initialFormData: IntakeFormData = {
     authNotes: '',
     workHistoryReviewDate: '',
     workHistoryNotes: '',
+    resumeUpdateDate: '',
+    resumeUpdateNotes: '',
+    mockInterviewDate: '',
+    mockInterviewNotes: '',
+    networkingDate: '',
+    networkingNotes: '',
 };
 
 export function useIntakeForm() {
