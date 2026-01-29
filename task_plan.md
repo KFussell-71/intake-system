@@ -63,7 +63,7 @@
 
 - [x] UI: Create `VoiceInput` component <!-- status: complete -->
 - [x] UI: Integrate into `ElegantTextarea` <!-- status: complete -->
-- [ ] Deploy: Push to GitHub <!-- status: todo -->
+- [x] Deploy: Push to GitHub <!-- status: complete -->
 
 ## Phase 12: Accessibility "Gov-Spec" Mode 👁️
 

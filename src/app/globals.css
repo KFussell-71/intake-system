@@ -27,6 +27,41 @@
     /* Typography */
     --font-heading: 'Figtree', system-ui, sans-serif;
     --font-body: 'Noto Sans', system-ui, sans-serif;
+
+    --font-dyslexic: 'OpenDyslexic', sans-serif;
+}
+
+@layer base {
+
+    /* High Contrast Theme */
+    [data-theme='high-contrast'] {
+        --color-primary: #000000;
+        --color-accent: #0000FF;
+        --color-surface: #FFFFFF;
+        --color-surface-dark: #000000;
+        background-color: #ffffff;
+        color: #000000;
+    }
+
+    [data-theme='high-contrast'] .glass {
+        background: white;
+        border: 2px solid black;
+        backdrop-filter: none;
+    }
+}
+
+.font-dyslexic {
+    font-family: 'OpenDyslexic', sans-serif !important;
+    letter-spacing: 0.05em;
+    line-height: 1.6;
+}
+
+/* Fallback if font not loaded locally, usually requires @font-face */
+@font-face {
+    font-family: 'OpenDyslexic';
+    src: url('https://cdn.jsdelivr.net/npm/opendyslexic@2.1.0-beta1/char-base/OpenDyslexic-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
 }
 
 /* Base level styles */

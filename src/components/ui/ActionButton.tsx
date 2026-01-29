@@ -7,6 +7,7 @@ interface ActionButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement
     size?: 'sm' | 'md' | 'lg';
     isLoading?: boolean;
     icon?: React.ReactNode;
+    fullWidth?: boolean;
 }
 
 export const ActionButton = ({
@@ -17,6 +18,7 @@ export const ActionButton = ({
     icon,
     className = '',
     disabled,
+    fullWidth = false,
     ...props
 }: ActionButtonProps) => {
     const baseClasses = 'inline-flex items-center justify-center font-semibold transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:active:scale-100 cursor-pointer gap-2';
@@ -36,7 +38,13 @@ export const ActionButton = ({
 
     return (
         <button
-            className={`${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
+            className={`
+                ${baseClasses} 
+                ${sizeClasses[size]} 
+                ${variantClasses[variant]} 
+                ${fullWidth ? 'w-full' : ''} 
+                ${className}
+            `}
             disabled={disabled || isLoading}
             {...props}
         >

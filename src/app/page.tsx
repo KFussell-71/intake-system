@@ -1,6 +1,7 @@
 'use client';
 
 import { ActionButton } from '@/components/ui/ActionButton';
+import { AccessibilityToggle } from '@/components/ui/AccessibilityToggle';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ArrowRight, Shield, Zap, Heart } from 'lucide-react';
@@ -13,6 +14,10 @@ export default function Home() {
             {/* Background elements */}
             <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] -translate-y-1/2 -translate-x-1/2" />
             <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[100px] translate-y-1/2 translate-x-1/2" />
+
+            <div className="absolute top-6 right-6 z-50">
+                <AccessibilityToggle />
+            </div>
 
             <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}

@@ -3,7 +3,10 @@
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, XCircle, Clock } from 'lucide-react';
+import { CheckCircle, XCircle } from 'lucide-react';
+
+import { ReadinessTrendChart } from '@/features/reports/components/ReadinessTrendChart';
+import { BarriersRemovalChart } from '@/features/reports/components/BarriersRemovalChart';
 
 export const SupervisorDashboard: React.FC = () => {
     // Mock data for demonstration - in real app, fetch from Supabase 'report_reviews' table
@@ -15,11 +18,15 @@ export const SupervisorDashboard: React.FC = () => {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold tracking-tight">Supervisor Review Queue</h2>
+                <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Supervisor Review Queue</h2>
                 <div className="flex space-x-2">
                     <Button variant="outline" size="sm">Filter by Specialist</Button>
-                    <Button variant="outline" size="sm">Date Range</Button>
                 </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <ReadinessTrendChart />
+                <BarriersRemovalChart />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -67,7 +74,7 @@ export const SupervisorDashboard: React.FC = () => {
                     </thead>
                     <tbody className="divide-y divide-gray-100">
                         {reviews.map((r) => (
-                            <tr key={r.id} className="hover:bg-gray-50">
+                            <tr key={r.id} className="hover:bg-gray-50 text-slate-800">
                                 <td className="px-6 py-4 font-medium">{r.client}</td>
                                 <td className="px-6 py-4">{r.type}</td>
                                 <td className="px-6 py-4">{r.specialist}</td>

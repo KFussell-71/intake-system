@@ -19,6 +19,8 @@ export const metadata: Metadata = {
     description: "Nonprofit social services client intake and tracking system",
 };
 
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
+
 export default function RootLayout({
     children,
 }: Readonly<{
@@ -27,7 +29,14 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <body className={`${figtree.variable} ${notoSafe.variable} antialiased`} suppressHydrationWarning>
-                {children}
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
+                >
+                    {children}
+                </ThemeProvider>
             </body>
         </html>
     );
