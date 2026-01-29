@@ -15,6 +15,16 @@ MANDATORY RULES:
 - Ensure all dates, timelines, and goals are explicit and clearly stated
 - List reviewed documents clearly and accurately
 
+INPUT DATA CONTEXT:
+The AI will receive a JSON bundle containing:
+
+- Client Demographics & Intake Data
+- **Barriers to Employment** (List of barriers identified)
+- **Support Services Needed** (List of services requested)
+- Employment History
+- ISP Goals
+- Document Review Status
+
 REQUIRED SECTIONS (IN ORDER):
 
 1. Report Header

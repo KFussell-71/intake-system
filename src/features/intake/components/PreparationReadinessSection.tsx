@@ -72,6 +72,108 @@ export const PreparationReadinessSection: React.FC<Props> = ({ formData, onChang
                 {renderItem('Mock Interview', 'Interview scheduled on:', 'mockInterviewDate', 'mockInterviewNotes')}
                 {renderItem('Networking', 'Activity on:', 'networkingDate', 'networkingNotes')}
             </div>
+
+            <GlassCard className="p-6 mt-6 border border-white/20">
+                <h4 className="font-semibold text-slate-800 dark:text-slate-100 mb-4">Barriers to Employment</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {[
+                        'Transportation', 'Housing Instability', 'Criminal Background',
+                        'Limited Work History', 'Gaps in Employment', 'Lack of Certifications',
+                        'Childcare', 'Health/Mental Health', 'Substance Recovery',
+                        'Identification/Documents', 'None Identified'
+                    ].map((barrier) => (
+                        <div key={barrier} className="flex items-center space-x-2">
+                            <input
+                                type="checkbox"
+                                id={`barrier-${barrier}`}
+                                // This is a simplified direct mutation for the demo. In prod, use a proper CheckboxGroup handler.
+                                // onChange logic would need to be added to the parent's onChange payload handler to tolerate arrays.
+                                // For now, we assume the parent handles basic input. We'll use a hacky connection to standard inputs if needed, 
+                                // but ideally we update the onChange prop signature.
+                                // Since Props.onChange is basic Event, we will implement a custom handler inside this component if we could, 
+                                // but we are stateless.
+                                // Let's try to simulate standard event for array support or assume the parent is capable.
+                                // Actually, standard HTML input checkbox works with standard onChange if client logic parses it.
+                                // But generic onChange usually expects value string.
+                                // Let's render as standard inputs and handle array logic in a wrapper or just use JSON.stringify for quick storage if backend expects json.
+                                // Wait, simple solution: Use standard inputs.
+                                checked={(formData.barriers || []).includes(barrier)}
+                                onChange={(e) => {
+                                    const current = formData.barriers || [];
+                                    const updated = e.target.checked
+                                        ? [...current, barrier]
+                                        : current.filter(b => b !== barrier);
+
+                                    // Construct synthetic event
+                                    const event = {
+                                        target: {
+                                            name: 'barriers',
+                                            value: updated
+                                        }
+                                    } as any;
+                                    onChange(event);
+                                }}
+                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                            />
+                            <label htmlFor={`barrier-${barrier}`} className="text-sm text-slate-700 dark:text-slate-300">{barrier}</label>
+                        </div>
+                    ))}
+                    <div className="col-span-1 md:col-span-2 lg:col-span-3 mt-2">
+                        <ElegantInput
+                            name="barriersOther"
+                            label="Other Barriers"
+                            value={formData.barriersOther}
+                            onChange={onChange}
+                            placeholder="Specify other barriers..."
+                            className="bg-white/50"
+                        />
+                    </div>
+                </div>
+            </GlassCard>
+
+            <GlassCard className="p-6 mt-6 border border-white/20">
+                <h4 className="font-semibold text-slate-800 dark:text-slate-100 mb-4">Support Services Needed (Next 30 Days)</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {[
+                        'Resume Development or Update', 'Job Applications Assistance', 'Interview Preparation',
+                        'Job Leads/Employer Referrals', 'Work Clothing/PPE', 'Transportation Assistance',
+                        'Training or Certification Referral', 'Background-Friendly Employer Referrals', 'Case Management Check-Ins'
+                    ].map((service) => (
+                        <div key={service} className="flex items-center space-x-2">
+                            <input
+                                type="checkbox"
+                                id={`service-${service}`}
+                                checked={(formData.supportServices || []).includes(service)}
+                                onChange={(e) => {
+                                    const current = formData.supportServices || [];
+                                    const updated = e.target.checked
+                                        ? [...current, service]
+                                        : current.filter(s => s !== service);
+                                    const event = {
+                                        target: {
+                                            name: 'supportServices',
+                                            value: updated
+                                        }
+                                    } as any;
+                                    onChange(event);
+                                }}
+                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                            />
+                            <label htmlFor={`service-${service}`} className="text-sm text-slate-700 dark:text-slate-300">{service}</label>
+                        </div>
+                    ))}
+                    <div className="col-span-1 md:col-span-2 lg:col-span-3 mt-2">
+                        <ElegantInput
+                            name="supportServicesOther"
+                            label="Other Services"
+                            value={formData.supportServicesOther}
+                            onChange={onChange}
+                            placeholder="Specify other services..."
+                            className="bg-white/50"
+                        />
+                    </div>
+                </div>
+            </GlassCard>
         </div>
     );
 };

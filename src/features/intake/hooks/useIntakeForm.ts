@@ -55,6 +55,12 @@ const initialFormData: IntakeFormData = {
     checkInDay: '',
     checkInTime: '',
     checkInNotes: '',
+
+    // Barriers & Support Services
+    barriers: [],
+    barriersOther: '',
+    supportServices: [],
+    supportServicesOther: '',
 };
 
 export function useIntakeForm() {

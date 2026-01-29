@@ -58,6 +58,12 @@ export interface IntakeFormData {
     checkInDay: string;
     checkInTime: string;
     checkInNotes: string;
+
+    // Barriers & Support Services
+    barriers: string[];
+    barriersOther: string;
+    supportServices: string[];
+    supportServicesOther: string;
 }
 
 export type IntakeStep = 'Identity' | 'Evaluation' | 'Goals' | 'Prep' | 'Placement' | 'Review';

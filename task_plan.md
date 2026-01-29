@@ -34,3 +34,10 @@
 ## Phase 6: Deployment
 
 - [x] Push to GitHub <!-- status: complete -->
+
+## Phase 7: Preparation & Readiness Enhancements
+
+- [x] DB: Migration for `barriers` and `support_services` <!-- status: complete -->
+- [x] UI: Update `PreparationReadinessSection.tsx` <!-- status: complete -->
+- [x] Agent: Update `get_client_intake_bundle` RPC <!-- status: complete -->
+- [x] Deployment: Push to GitHub <!-- status: complete -->
