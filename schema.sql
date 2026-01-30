@@ -58,7 +58,32 @@ CREATE TABLE job_placements (
 );
 
 -- Create follow_ups table
-CREATE TABLE follow_ups (
+CREATE TABLE IF NOT EXISTS follow_ups (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+  contact_date DATE NOT NULL,
+  method TEXT CHECK (method IN ('phone', 'in-person')),
+  performance TEXT,
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  created_by UUID REFERENCES profiles(id)
+);
+
+-- Trigger to create profile on signup
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS trigger AS $$
+BEGIN
+  INSERT INTO public.profiles (id, username, role)
+  VALUES (new.id, new.email, 'staff');
+  RETURN new;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- Create follow_ups table (duplicate removed by IF NOT EXISTS)
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
   contact_date DATE NOT NULL,

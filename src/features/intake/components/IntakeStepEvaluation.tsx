@@ -37,6 +37,7 @@ export const IntakeStepEvaluation: React.FC<Props> = ({ formData, onChange }) =>
                 onChange={onChange}
                 placeholder="Briefly state any medical or psychological barriers identified..."
                 rows={4}
+                enableDictation
             />
             <div className="p-6 bg-accent/5 border border-accent/20 rounded-3xl">
                 <FormCheckbox

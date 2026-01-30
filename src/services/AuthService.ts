@@ -5,6 +5,20 @@ export class AuthService {
         return await supabase.auth.signInWithPassword({ email, password });
     }
 
+    async signUp(email: string, password: string) {
+        try {
+            const { data, error } = await supabase.auth.signUp({ email, password });
+            if (error) throw error;
+            return { success: true, user: data.user };
+        } catch (error) {
+            console.error('Signup error:', error);
+            return {
+                success: false,
+                error: error instanceof Error ? error.message : 'Signup failed'
+            };
+        }
+    }
+
     async signOut() {
         return await supabase.auth.signOut();
     }

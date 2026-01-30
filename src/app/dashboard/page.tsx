@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ActionButton } from '@/components/ui/ActionButton';
+import { AccessibilityToggle } from '@/components/ui/AccessibilityToggle';
 import { motion } from 'framer-motion';
 import { dashboardController } from '@/controllers/DashboardController';
 import { authController } from '@/controllers/AuthController';
@@ -100,6 +101,7 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="flex items-center gap-6">
+                        <AccessibilityToggle />
                         <div className="hidden md:block text-right">
                             <p className="text-sm font-semibold">{user?.email?.split('@')[0]}</p>
                             <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Staff Member</p>
@@ -190,7 +192,7 @@ export default function DashboardPage() {
                     <motion.div variants={itemVariants} className="md:col-span-2 lg:col-span-3">
                         <GlassCard
                             hoverable
-                            onClick={() => router.push('/clients')}
+                            onClick={() => router.push('/directory')}
                             className="h-full flex flex-col justify-between"
                         >
                             <div className="w-12 h-12 bg-slate-100 dark:bg-white/5 rounded-2xl flex items-center justify-center mb-6">

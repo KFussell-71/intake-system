@@ -3,17 +3,43 @@
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { ActionButton } from '@/components/ui/ActionButton';
+import { supabase } from '@/lib/supabase';
+import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 
 import { ReadinessTrendChart } from '@/features/reports/components/ReadinessTrendChart';
 import { BarriersRemovalChart } from '@/features/reports/components/BarriersRemovalChart';
 
 export const SupervisorDashboard: React.FC = () => {
-    // Mock data for demonstration - in real app, fetch from Supabase 'report_reviews' table
-    const reviews = [
-        { id: '1', client: 'John Doe', type: 'Intake Report', date: '2026-01-29', specialist: 'Alice Worker' },
-        { id: '2', client: 'Jane Smith', type: 'ISP Update', date: '2026-01-28', specialist: 'Bob Staff' },
-    ];
+    const [reviews, setReviews] = React.useState<any[]>([]);
+    const [loading, setLoading] = React.useState(true);
+
+    React.useEffect(() => {
+        const fetchReviews = async () => {
+            const { data, error } = await supabase
+                .from('report_reviews')
+                .select(`
+                    id,
+                    status,
+                    created_at,
+                    clients ( name ),
+                    profiles!report_reviews_created_by_fkey ( username )
+                `)
+                .eq('status', 'pending');
+
+            if (data) {
+                setReviews((data as any[]).map(r => ({
+                    id: r.id,
+                    client: r.clients?.name || 'Unknown',
+                    type: 'Intake Report',
+                    date: new Date(r.created_at).toLocaleDateString(),
+                    specialist: r.profiles?.username || 'Staff'
+                })));
+            }
+            setLoading(false);
+        };
+        fetchReviews();
+    }, []);
 
     return (
         <div className="space-y-6">

@@ -8,6 +8,7 @@ import { ElegantInput } from '@/components/ui/ElegantInput';
 import { ActionButton } from '@/components/ui/ActionButton';
 import { motion } from 'framer-motion';
 import { authController } from '@/controllers/AuthController';
+import Link from 'next/link';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -96,6 +97,13 @@ export default function LoginPage() {
                         >
                             Sign In to System
                         </ActionButton>
+
+                        <p className="text-center text-sm text-slate-500 pt-4 font-medium">
+                            Don't have an account?{' '}
+                            <Link href="/signup" className="text-primary font-bold hover:underline">
+                                Create Account
+                            </Link>
+                        </p>
                     </form>
                 </GlassCard>
 

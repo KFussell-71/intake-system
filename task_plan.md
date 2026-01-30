@@ -1,100 +1,28 @@
-# Task Plan - DOR System Upgrade
+# Task Plan - Production Readiness Overhaul
 
-## Phase 1: Database Architecture (Supabase)
+## Phase 1: Audit & Discovery 🔍
 
-- [x] Modify `schema.sql` with new tables and RPC <!-- status: complete -->
-- [x] Apply migrations (manual run or script) <!-- status: complete -->
-- [x] Verify `get_client_intake_bundle` returns correct shape <!-- status: complete -->
+- [ ] Audit `/directory` route to fix 404 <!-- id: 0 -->
+- [ ] Audit `/follow-ups` for dummy data <!-- id: 1 -->
+- [ ] Audit Voice Dictation visibility across all steps <!-- id: 2 -->
+- [ ] Audit Client Portal access and visibility <!-- id: 3 -->
+- [ ] Verify build output and routing map <!-- id: 4 -->
 
-## Phase 2: Core Logic & Agent
+## Phase 2: Core Fixes 🛠️
 
-- [x] Implement `dorAgent.ts` <!-- status: complete -->
-- [x] Implement `generatePDF.ts` <!-- status: complete -->
-- [x] Implement `validateIntakeData.ts` <!-- status: complete -->
-- [x] Create API Route `/api/generate-report` <!-- status: complete -->
+- [ ] Implement real data fetching for `/follow-ups` <!-- id: 5 -->
+- [ ] Fix `/directory` route logic/visibility <!-- id: 6 -->
+- [ ] Remove all remaining placeholders in UI <!-- id: 7 -->
+- [ ] Ensure Voice Dictation is integrated in all large text areas <!-- id: 8 -->
 
-## Phase 3: UI Implementation
+## Phase 3: Production Hardening 🛡️
 
-- [x] Create `IntakeReportEditor` <!-- status: complete -->
-- [x] Create `SupervisorDashboard` <!-- status: complete -->
-- [x] Create `ComplianceDashboard` <!-- status: complete -->
+- [ ] Security audit (Keys, RLS) <!-- id: 9 -->
+- [ ] Performance check (Chart rendering, build size) <!-- id: 10 -->
+- [ ] Final UI/UX Polish <!-- id: 11 -->
 
-## Phase 4: Integration
+## Phase 4: Deployment & Verification 🚀
 
-- [x] Connect UI to API <!-- status: complete -->
-- [x] End-to-end Test <!-- status: complete -->
-
-## Phase 5: Switch to Google Gemini
-
-- [x] Install `@google/generative-ai` <!-- status: complete -->
-- [x] Refactor `dorAgent.ts` to use Gemini API <!-- status: complete -->
-- [x] Configure Environment Variables <!-- status: complete -->
-- [x] Verify Report Generation with Gemini <!-- status: complete -->
-
-## Phase 6: Deployment
-
-- [x] Push to GitHub <!-- status: complete -->
-
-## Phase 7: Preparation & Readiness Enhancements
-
-- [x] DB: Migration for `barriers` and `support_services` <!-- status: complete -->
-- [x] UI: Update `PreparationReadinessSection.tsx` <!-- status: complete -->
-- [x] Agent: Update `get_client_intake_bundle` RPC <!-- status: complete -->
-- [x] Deployment: Push to GitHub <!-- status: complete -->
-
-## Phase 8: Strengths & Motivation
-
-- [x] UI: Add Strengths/Motivation fields to `PreparationReadinessSection` <!-- status: complete -->
-- [x] Agent: Update Prompt context <!-- status: complete -->
-- [x] Deployment: Push to GitHub <!-- status: complete -->
-
-## Phase 9: Refactor - Move Strengths to Goals
-
-- [x] Refactor: Move Strengths/Motivation UI to Goals Page <!-- status: complete -->
-- [x] Deployment: Push to GitHub <!-- status: complete -->
-
-## Phase 10: Industry Preference & Job Targets
-
-- [x] UI: Add Industry/Pay/Type fields to `PreparationReadinessSection` <!-- status: complete -->
-- [x] Agent: Update Prompt context <!-- status: complete -->
-- [x] Deployment: Push to GitHub <!-- status: complete -->
-
-## Phase 11: Voice-to-Case-Note Dictation 🎙️
-
-- [x] UI: Create `VoiceInput` component <!-- status: complete -->
-- [x] UI: Integrate into `ElegantTextarea` <!-- status: complete -->
-- [x] Deploy: Push to GitHub <!-- status: complete -->
-
-## Phase 12: Accessibility "Gov-Spec" Mode 👁️
-
-- [ ] UI: Create `AccessibilityToggle` component <!-- status: todo -->
-- [ ] UI: Implement High Contrast Theme in Tailwind <!-- status: todo -->
-- [ ] UI: Add `OpenDyslexic` font support <!-- status: todo -->
-- [ ] Deploy: Push to GitHub <!-- status: todo -->
-
-## Phase 13: Field-Ready Mobility (PWA) 📱
-
-- [ ] Config: Install `next-pwa` <!-- status: todo -->
-- [ ] Config: Generate Manifest and Icons <!-- status: todo -->
-- [ ] Deploy: Push to GitHub <!-- status: todo -->
-
-## Phase 14: Longitudinal Progress Visualization 📈
-
-- [ ] Config: Install `recharts` <!-- status: todo -->
-- [ ] UI: Create `ReadinessChart` component <!-- status: todo -->
-- [ ] UI: Create `BarriersChart` component <!-- status: todo -->
-- [ ] Deploy: Push to GitHub <!-- status: todo -->
-
-## Phase 15: AI "Pre-Flight" Compliance Check 🛡️
-
-- [ ] Agent: Create `complianceAgent.ts` (LogicValidator) <!-- status: todo -->
-- [ ] API: Create `/api/validate-intake` endpoint <!-- status: todo -->
-- [ ] UI: Add Validation Step to Review Page <!-- status: todo -->
-- [ ] Deploy: Push to GitHub <!-- status: todo -->
-
-## Phase 16: Client "Self-Service" Portal 🤝
-
-- [ ] DB: Create `portal_access_tokens` table <!-- status: todo -->
-- [ ] UI: Create Client Login / Magic Link Page <!-- status: todo -->
-- [ ] UI: Create Client Intake View (Limited) <!-- status: todo -->
-- [ ] Deploy: Push to GitHub <!-- status: todo -->
+- [ ] Final Build Verification <!-- id: 12 -->
+- [ ] Push to GitHub <!-- id: 13 -->
+- [ ] Verify remote deployment <!-- id: 14 -->

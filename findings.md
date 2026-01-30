@@ -1,16 +1,18 @@
-# Findings
+# Findings Log - Production Readiness Overhaul
 
-## Analysis of Current System
+## Routing Issues
 
-- Existing stack: Next.js + Supabase.
-- Current `intakes` table uses JSONB `data` column.
-- **Requirement**: Pivot to normalized tables (`employment_history`, `isp_goals`, etc.) for deterministic reporting.
+- [ ] Why is `/directory` 404ing?
 
-## UI/UX Requirements
+## Dummy Data
 
-- Skill `ui-ux-pro-max` requires:
-  - No emojis as icons.
-  - SVG icons (Heroicons/Lucide).
-  - `cursor-pointer` on interactives.
-  - High contrast (4.5:1).
-  - 44x44px touch targets.
+- [ ] `/follow-ups` contains placeholders.
+
+## Feature Visibility
+
+- [ ] Voice dictation not visible to user in some views?
+- [ ] Client Portal not visible?
+
+## Build/Production Status
+
+- [ ] Build log analysis.

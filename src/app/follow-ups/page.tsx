@@ -14,22 +14,32 @@ export default function FollowUpsPage() {
 
     useEffect(() => {
         const fetchTasks = async () => {
-            // Mock logic to find 'tasks' - in reality this would query for specific missing docs or dates
-            const { data } = await supabase.from('intakes').select('*');
+            // Fetch real follow-ups linked to clients
+            const { data, error } = await supabase
+                .from('follow_ups')
+                .select(`
+                    id,
+                    contact_date,
+                    notes,
+                    method,
+                    clients (
+                        name
+                    )
+                `)
+                .order('contact_date', { ascending: true });
 
             if (data) {
-                // Generate fake tasks from real data for demo
-                const generatedTasks = data.map((client: any) => {
-                    const needsReview = !client.data.referralReviewDate;
-                    return {
-                        id: client.id,
-                        clientName: client.data.clientName,
-                        type: needsReview ? 'Document Review' : 'Weekly Check-in',
-                        priority: needsReview ? 'High' : 'Medium',
-                        dueDate: new Date(Date.now() + 86400000 * 2).toLocaleDateString()
-                    };
-                });
+                const generatedTasks = data.map((item: any) => ({
+                    id: item.id,
+                    clientName: item.clients?.name || 'Unknown Client',
+                    type: item.method === 'phone' ? 'Phone Follow-up' : 'In-person Check-in',
+                    priority: new Date(item.contact_date) < new Date() ? 'High' : 'Medium',
+                    dueDate: new Date(item.contact_date).toLocaleDateString(),
+                    notes: item.notes
+                }));
                 setTasks(generatedTasks);
+            } else if (error) {
+                console.error("Error fetching follow-ups:", error);
             }
             setLoading(false);
         };

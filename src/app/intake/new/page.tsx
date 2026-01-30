@@ -16,7 +16,9 @@ import {
     FileCheck,
     ArrowLeft,
     GraduationCap,
-    Briefcase
+    Briefcase,
+    Shield,
+    AlertCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GlassCard } from '@/components/ui/GlassCard';
@@ -30,6 +32,7 @@ import { IntakeStepGoals } from '@/features/intake/components/IntakeStepGoals';
 import { IntakeStepPrep } from '@/features/intake/components/IntakeStepPrep';
 import { IntakeStepPlacement } from '@/features/intake/components/IntakeStepPlacement';
 import { IntakeStepReview } from '@/features/intake/components/IntakeStepReview';
+import { AccessibilityToggle } from '@/components/ui/AccessibilityToggle';
 import { intakeController } from '@/controllers/IntakeController';
 
 const steps = [
@@ -71,6 +74,26 @@ export default function NewIntakePage() {
         checkAuth();
     }, [router]);
 
+    const [complianceResult, setComplianceResult] = useState<{ valid: boolean, issues: string[] } | null>(null);
+    const [checkingCompliance, setCheckingCompliance] = useState(false);
+
+    const runComplianceCheck = async () => {
+        setCheckingCompliance(true);
+        setError('');
+        try {
+            const result = await intakeController.runComplianceCheck(formData);
+            setComplianceResult(result);
+            if (!result.valid) {
+                setError('AI Compliance Scan found potential logic issues. Please review before submission.');
+            }
+        } catch (err) {
+            console.error('Compliance Scan Error:', err);
+            setError('Failed to run AI Compliance Scan.');
+        } finally {
+            setCheckingCompliance(false);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
@@ -80,6 +103,7 @@ export default function NewIntakePage() {
         try {
             // Validate using Zod
             const validatedData = intakeSchema.parse(formData);
+            // ... (rest of handleSubmit logic)
 
             // Use the Controller layer
             const result = await intakeController.handleIntakeSubmission({
@@ -165,13 +189,16 @@ export default function NewIntakePage() {
     return (
         <div className="min-h-screen bg-surface dark:bg-surface-dark py-12 px-6">
             <div className="max-w-3xl mx-auto">
-                <button
-                    onClick={() => router.push('/dashboard')}
-                    className="mb-8 flex items-center gap-2 text-slate-500 hover:text-primary transition-colors font-semibold group"
-                >
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    Back to Dashboard
-                </button>
+                <div className="flex justify-between items-start mb-8">
+                    <button
+                        onClick={() => router.push('/dashboard')}
+                        className="flex items-center gap-2 text-slate-500 hover:text-primary transition-colors font-semibold group"
+                    >
+                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                        Back to Dashboard
+                    </button>
+                    <AccessibilityToggle />
+                </div>
 
                 <div className="mb-12">
                     <h1 className="text-4xl font-bold mb-2">New Client Intake</h1>
@@ -249,6 +276,17 @@ export default function NewIntakePage() {
                         </ActionButton>
 
                         <div className="flex gap-4">
+                            {currentStep === steps.length - 1 && (
+                                <ActionButton
+                                    variant="secondary"
+                                    onClick={runComplianceCheck}
+                                    isLoading={checkingCompliance}
+                                    icon={<Shield className="w-4 h-4" />}
+                                    className="border-primary text-primary"
+                                >
+                                    AI Compliance Scan
+                                </ActionButton>
+                            )}
                             {currentStep < steps.length - 1 ? (
                                 <ActionButton
                                     onClick={nextStep}
@@ -263,11 +301,31 @@ export default function NewIntakePage() {
                                     isLoading={saving}
                                     icon={<CheckCircle className="w-4 h-4" />}
                                     className="bg-primary text-white"
+                                    disabled={complianceResult?.valid === false && !error.includes('override')}
                                 >
                                     Submit Final Intake
                                 </ActionButton>
                             )}
                         </div>
+
+                        {complianceResult && !complianceResult.valid && (
+                            <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-2xl">
+                                <h4 className="text-amber-800 dark:text-amber-400 font-bold text-sm mb-2 flex items-center gap-2">
+                                    <AlertCircle className="w-4 h-4" /> AI Compliance Warnings:
+                                </h4>
+                                <ul className="list-disc list-inside text-xs text-amber-700 dark:text-amber-500 space-y-1">
+                                    {complianceResult.issues.map((issue, i) => (
+                                        <li key={i}>{issue}</li>
+                                    ))}
+                                </ul>
+                                <button
+                                    onClick={() => setComplianceResult({ valid: true, issues: [] })}
+                                    className="mt-2 text-[10px] underline text-amber-600 hover:text-amber-700 font-bold"
+                                >
+                                    I have reviewed these, ignore and proceed
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </GlassCard>
             </div>

@@ -51,6 +51,7 @@ export const PreparationReadinessSection: React.FC<Props> = ({ formData, onChang
                         onChange={onChange}
                         placeholder="Add specific goals or feedback..."
                         className="text-sm min-h-[80px]"
+                        enableDictation
                     />
                 </div>
             </GlassCard>

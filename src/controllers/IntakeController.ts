@@ -1,7 +1,12 @@
 import { intakeService, IntakeService } from '../services/IntakeService';
+import { validateIntakeLogic } from '@/lib/agents/complianceAgent';
 
 export class IntakeController {
     constructor(private readonly service: IntakeService = intakeService) { }
+
+    async runComplianceCheck(data: any) {
+        return await validateIntakeLogic(data);
+    }
 
     async handleIntakeSubmission(formData: any) {
         try {

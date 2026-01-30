@@ -78,6 +78,7 @@ export const IntakeStepPlacement: React.FC<Props> = ({ formData, onChange }) => 
                 onChange={onChange}
                 placeholder="Describe benefits, commute details, etc..."
                 rows={3}
+                enableDictation
             />
         </div>
     );

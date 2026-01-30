@@ -85,4 +85,8 @@
     .glass {
         @apply backdrop-blur-md bg-white/70 dark:bg-slate-900/40 border border-white/20 dark:border-white/10;
     }
+
+    .page-container {
+        @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    }
 }
