@@ -1,19 +1,40 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { ActionButton } from "@/components/ui/ActionButton";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { ElegantInput } from "@/components/ui/ElegantInput";
-import { User, Bell, Shield, Moon, LogOut } from "lucide-react";
+import { User, Bell, Shield, Moon, Sun, LogOut, Check } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { authController } from '@/controllers/AuthController';
+import { useTheme } from 'next-themes';
+import { supabase } from '@/lib/supabase';
 
 export default function SettingsPage() {
     const router = useRouter();
+    const { theme, setTheme, resolvedTheme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+    const [userEmail, setUserEmail] = useState<string | null>(null);
+
+    useEffect(() => {
+        setMounted(true);
+        // Fetch authenticated user's email
+        const fetchUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user?.email) {
+                setUserEmail(user.email);
+            }
+        };
+        fetchUser();
+    }, []);
 
     const handleLogout = async () => {
         await authController.logout();
         router.push('/login');
     };
+
+    // Prevent hydration mismatch
+    if (!mounted) return null;
 
     return (
         <div className="min-h-screen bg-surface dark:bg-surface-dark">
@@ -26,7 +47,7 @@ export default function SettingsPage() {
                 </div>
             </nav>
 
-            <main className="max-w-7xl mx-auto px-6 py-10 max-w-3xl">
+            <main className="max-w-3xl mx-auto px-6 py-10">
                 <div className="space-y-6">
                     <GlassCard className="p-0 overflow-hidden">
                         <div className="p-6 border-b border-slate-100 dark:border-white/5">
@@ -39,7 +60,11 @@ export default function SettingsPage() {
                                 <ElegantInput label="First Name" placeholder="Staff Member" />
                                 <ElegantInput label="Last Name" placeholder="Name" />
                             </div>
-                            <ElegantInput label="Email Address" value="staff@newbeginning.org" disabled />
+                            <ElegantInput
+                                label="Email Address"
+                                value={userEmail || 'Loading...'}
+                                disabled
+                            />
                         </div>
                     </GlassCard>
 
@@ -52,7 +77,7 @@ export default function SettingsPage() {
                         <div className="p-6 space-y-4">
                             <div className="flex items-center justify-between">
                                 <span>Email Summaries</span>
-                                <input type="checkbox" className="toggle" checked readOnly />
+                                <input type="checkbox" className="toggle" defaultChecked />
                             </div>
                             <div className="flex items-center justify-between">
                                 <span>Desktop Alerts</span>
@@ -64,14 +89,45 @@ export default function SettingsPage() {
                     <GlassCard className="p-0 overflow-hidden">
                         <div className="p-6 border-b border-slate-100 dark:border-white/5">
                             <h2 className="text-lg font-bold flex items-center gap-2">
-                                <Moon className="w-5 h-5 text-purple-500" /> Appearance
+                                {resolvedTheme === 'dark' ? (
+                                    <Moon className="w-5 h-5 text-purple-500" />
+                                ) : (
+                                    <Sun className="w-5 h-5 text-yellow-500" />
+                                )}
+                                Appearance
                             </h2>
                         </div>
                         <div className="p-6">
                             <p className="text-sm text-slate-500 mb-4">Choose your preferred interface theme.</p>
                             <div className="flex gap-4">
-                                <div className="p-4 rounded-xl border-2 border-primary bg-slate-900 text-white cursor-pointer">Dark Mode</div>
-                                <div className="p-4 rounded-xl border border-slate-200 bg-white text-slate-900 cursor-pointer">Light Mode</div>
+                                <button
+                                    onClick={() => setTheme('dark')}
+                                    className={`
+                                        p-4 rounded-xl border-2 bg-slate-900 text-white cursor-pointer 
+                                        transition-all duration-200 flex items-center gap-2
+                                        ${resolvedTheme === 'dark'
+                                            ? 'border-primary ring-2 ring-primary/30'
+                                            : 'border-slate-700 hover:border-slate-500'}
+                                    `}
+                                >
+                                    <Moon className="w-4 h-4" />
+                                    Dark Mode
+                                    {resolvedTheme === 'dark' && <Check className="w-4 h-4 text-primary" />}
+                                </button>
+                                <button
+                                    onClick={() => setTheme('light')}
+                                    className={`
+                                        p-4 rounded-xl border-2 bg-white text-slate-900 cursor-pointer 
+                                        transition-all duration-200 flex items-center gap-2
+                                        ${resolvedTheme === 'light'
+                                            ? 'border-primary ring-2 ring-primary/30'
+                                            : 'border-slate-200 hover:border-slate-400'}
+                                    `}
+                                >
+                                    <Sun className="w-4 h-4" />
+                                    Light Mode
+                                    {resolvedTheme === 'light' && <Check className="w-4 h-4 text-primary" />}
+                                </button>
                             </div>
                         </div>
                     </GlassCard>

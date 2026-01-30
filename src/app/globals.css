@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Tailwind v4: Configure dark mode to use class-based selector */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
     /* Custom Spacing Units - moved out of @theme to avoid collisions */
     --unit-xs: 0.25rem;

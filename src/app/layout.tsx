@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 };
 
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { ErrorBoundary } from "@/components/providers/ErrorBoundary";
 
 export default function RootLayout({
     children,
@@ -35,7 +36,9 @@ export default function RootLayout({
                     enableSystem
                     disableTransitionOnChange
                 >
-                    {children}
+                    <ErrorBoundary>
+                        {children}
+                    </ErrorBoundary>
                 </ThemeProvider>
             </body>
         </html>
