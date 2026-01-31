@@ -105,10 +105,20 @@ ALTER TABLE job_placements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE follow_ups ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
 
+CREATE POLICY "System can record audit logs" ON audit_logs
+  FOR INSERT TO authenticated
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Admins can view all audit logs" ON audit_logs
+  FOR SELECT TO authenticated
+  USING ((SELECT role FROM profiles WHERE id = auth.uid()) = 'admin');
+
 -- Policies: Staff can view their own profile
 CREATE POLICY "Staff can view own profile" ON profiles 
   FOR SELECT TO authenticated 
   USING (id = auth.uid());
+
+CREATE INDEX IF NOT EXISTS idx_profiles_role ON profiles(role);
 
 -- Policies: Staff can only see clients assigned to them
 CREATE POLICY "Staff can view assigned clients" ON clients 
@@ -157,6 +167,19 @@ CREATE POLICY "Staff can view assigned placements" ON job_placements
 CREATE POLICY "Staff can view assigned followups" ON follow_ups
   FOR SELECT TO authenticated
   USING (EXISTS (
+    SELECT 1 FROM clients 
+    WHERE clients.id = follow_ups.client_id 
+    AND (clients.assigned_to = auth.uid() OR clients.created_by = auth.uid())
+  ));
+
+CREATE POLICY "Staff can update assigned followups" ON follow_ups
+  FOR UPDATE TO authenticated
+  USING (EXISTS (
+    SELECT 1 FROM clients 
+    WHERE clients.id = follow_ups.client_id 
+    AND (clients.assigned_to = auth.uid() OR clients.created_by = auth.uid())
+  ))
+  WITH CHECK (EXISTS (
     SELECT 1 FROM clients 
     WHERE clients.id = follow_ups.client_id 
     AND (clients.assigned_to = auth.uid() OR clients.created_by = auth.uid())
