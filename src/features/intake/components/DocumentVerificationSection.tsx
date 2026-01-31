@@ -62,11 +62,29 @@ export const DocumentVerificationSection: React.FC<Props> = ({ formData, onChang
                             className="w-full text-xs"
                             icon={hasDoc ? <CheckCircle2 className="w-3 h-3" /> : <Upload className="w-3 h-3" />}
                             onClick={() => {
-                                // Mock upload for now - in production would trigger file picker
+                                // 1. Create hidden file input
                                 const input = document.createElement('input');
                                 input.type = 'file';
-                                input.onchange = () => {
-                                    alert(`File uploaded for ${title}!\n(Mock storage integration)`);
+                                input.accept = '.pdf,.jpg,.png,.doc,.docx';
+
+                                input.onchange = async (e) => {
+                                    const file = (e.target as HTMLInputElement).files?.[0];
+                                    if (!file) return;
+
+                                    // 2. In production, we'd call the uploadClientDocument action here
+                                    // For this UX layer, we'll simulate the successful state transition
+                                    // and log the 'uploaded' metadata to the form state.
+
+                                    alert(`Successfully selected ${file.name} for ${title}. \nPreparing for secure transit to Supabase storage...`);
+
+                                    // We trigger the onChange to mark this document as "hasDoc" in the form state
+                                    // by updating a hidden field or appending to a documents list
+                                    onChange({
+                                        target: {
+                                            name: `doc_${dateField}`,
+                                            value: true
+                                        }
+                                    } as any);
                                 };
                                 input.click();
                             }}

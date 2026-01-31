@@ -1,6 +1,6 @@
 import React from 'react';
 import { Target } from 'lucide-react';
-import { ElegantTextarea } from '@/components/ui/ElegantInput';
+import { ElegantInput, ElegantTextarea } from '@/components/ui/ElegantInput';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { IntakeFormData } from '../types/intake';
 
@@ -137,8 +137,9 @@ export const IntakeStepGoals: React.FC<Props> = ({ formData, onChange, errors = 
                             <div className="flex items-center gap-2 mb-2">
                                 <span className="bg-slate-900 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">Goal {index + 1}</span>
                             </div>
-                            <input
-                                type="text"
+                            <ElegantInput
+                                id={`goal-title-${index}`}
+                                label="Goal Title"
                                 placeholder="State the goal (e.g., Update Resume)"
                                 value={goal.goal}
                                 onChange={(e) => {
@@ -147,8 +148,11 @@ export const IntakeStepGoals: React.FC<Props> = ({ formData, onChange, errors = 
                                     onChange({ target: { name: 'ispGoals', value: updated } } as any);
                                 }}
                                 className="w-full bg-transparent border-b border-slate-200 dark:border-white/10 py-1 focus:border-primary focus:outline-none font-medium"
+                                enableDictation
                             />
-                            <textarea
+                            <ElegantTextarea
+                                id={`goal-steps-${index}`}
+                                label="Action Steps"
                                 placeholder="Action steps..."
                                 value={goal.actionSteps}
                                 onChange={(e) => {
@@ -157,6 +161,7 @@ export const IntakeStepGoals: React.FC<Props> = ({ formData, onChange, errors = 
                                     onChange({ target: { name: 'ispGoals', value: updated } } as any);
                                 }}
                                 className="w-full bg-slate-50/50 dark:bg-white/5 rounded p-3 text-sm min-h-[60px] resize-none focus:outline-none focus:ring-1 focus:ring-primary"
+                                enableDictation
                             />
                             <div className="flex flex-wrap gap-4 items-center">
                                 <div className="flex flex-col gap-1">

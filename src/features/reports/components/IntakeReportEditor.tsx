@@ -6,6 +6,27 @@ import { Textarea } from '@/components/ui/textarea'; // Assuming existing compon
 import { generatePDF } from '@/lib/pdf/generatePDF';
 import { Loader2, FileText, Download, CheckCircle, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import DOMPurify from 'isomorphic-dompurify';
+
+/**
+ * SECURITY: HTML Sanitization Configuration
+ * 
+ * This configuration allows safe HTML elements for report rendering
+ * while blocking dangerous elements like <script>, <iframe>, event handlers, etc.
+ */
+const SANITIZE_CONFIG = {
+    ALLOWED_TAGS: [
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+        'p', 'br', 'hr',
+        'ul', 'ol', 'li',
+        'table', 'thead', 'tbody', 'tr', 'th', 'td',
+        'strong', 'em', 'u', 's', 'code', 'pre',
+        'blockquote', 'div', 'span'
+    ],
+    ALLOWED_ATTR: ['class', 'style'],
+    FORBID_TAGS: ['script', 'iframe', 'object', 'embed', 'form', 'input'],
+    FORBID_ATTR: ['onerror', 'onclick', 'onload', 'onmouseover']
+};
 
 // Simple types for props
 interface IntakeReportEditorProps {
@@ -171,7 +192,13 @@ export const IntakeReportEditor: React.FC<IntakeReportEditorProps> = ({ clientId
                                 <div
                                     className="relative z-10 dor-paper-preview prose prose-slate max-w-none text-slate-900"
                                     style={{ fontFamily: "'EB Garamond', serif" }}
-                                    dangerouslySetInnerHTML={{ __html: simpleMarkdownToHtml(draft) }}
+                                    // SECURITY: Sanitize HTML to prevent XSS from AI-generated or user-injected content
+                                    dangerouslySetInnerHTML={{
+                                        __html: DOMPurify.sanitize(
+                                            simpleMarkdownToHtml(draft),
+                                            SANITIZE_CONFIG
+                                        )
+                                    }}
                                 />
                             ) : (
                                 <div className="h-full flex flex-col items-center justify-center text-slate-300 opacity-50">

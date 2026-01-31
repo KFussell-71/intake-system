@@ -16,11 +16,18 @@ export default function DirectoryPage() {
     useEffect(() => {
         const fetchClients = async () => {
             setLoading(true);
-            // Fetch clients with their latest intake status
+            // SECURITY: Fetch only necessary columns - explicitly exclude ssn_last_four
+            // This prevents PII from being transmitted to the browser
             const { data, error } = await supabase
                 .from('clients')
                 .select(`
-                    *,
+                    id,
+                    name,
+                    email,
+                    phone,
+                    created_at,
+                    assigned_to,
+                    created_by,
                     intakes (
                         id,
                         status,

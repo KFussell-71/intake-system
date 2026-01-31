@@ -144,7 +144,18 @@ export default function NewIntakePage() {
                     ispGoals: formData.ispGoals,
                     workExperienceSummary: formData.workExperienceSummary,
                     desiredJobTitles: formData.desiredJobTitles,
-                    preferredContactMethods: formData.preferredContactMethods
+                    preferredContactMethods: formData.preferredContactMethods,
+                    placement: {
+                        companyName: formData.companyName,
+                        jobTitle: formData.jobTitle,
+                        wage: formData.wage,
+                        hoursPerWeek: formData.hoursPerWeek,
+                        placementDate: formData.placementDate,
+                        probationEnds: formData.probationEnds,
+                        supervisorName: formData.supervisorName,
+                        supervisorPhone: formData.supervisorPhone,
+                        benefits: formData.benefits
+                    }
                 }
             });
 

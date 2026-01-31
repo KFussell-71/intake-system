@@ -24,6 +24,7 @@ CREATE TABLE clients (
 CREATE INDEX idx_clients_assigned_to ON clients(assigned_to);
 CREATE INDEX idx_intakes_client_id ON intakes(client_id);
 CREATE INDEX idx_intakes_data_gin ON intakes USING gin (data);
+CREATE INDEX idx_profiles_role ON profiles(role);
 
 -- Create intakes table
 CREATE TABLE intakes (

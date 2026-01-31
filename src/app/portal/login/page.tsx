@@ -1,124 +1,80 @@
-'use client';
+/**
+ * PORTAL LOGIN PAGE
+ * 
+ * This page displays information about how to access the portal.
+ * There is NO login form - access is via magic-link only.
+ * 
+ * SECURITY: No credentials collected, no authentication attempts possible.
+ */
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { GlassCard } from '@/components/ui/GlassCard';
-import { ActionButton } from '@/components/ui/ActionButton';
-import { ShieldCheck, Mail, Lock, Loader2 } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { supabase } from '@/lib/supabase';
-
-export default function ClientLoginPage() {
-    const router = useRouter();
-    const [email, setEmail] = useState('');
-    const [ssn4, setSsn4] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setError('');
-
-        try {
-            // Find client by email and SSN4
-            const { data, error: fetchError } = await supabase
-                .from('clients')
-                .select('id, name')
-                .eq('email', email)
-                .eq('ssn_last_four', ssn4)
-                .single();
-
-            if (fetchError || !data) {
-                throw new Error('Invalid credentials. Please verify your email and the last 4 digits of your SSN.');
-            }
-
-            // In a real production app, we would use Supabase Auth with a custom claim or a secure session.
-            // For this portal, we will store the client ID in sessionStorage for the session duration.
-            sessionStorage.setItem('portal_client_id', data.id);
-            sessionStorage.setItem('portal_client_name', data.name);
-
-            router.push('/portal/dashboard');
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
+export default function PortalLogin() {
     return (
-        <div className="min-h-screen bg-surface dark:bg-surface-dark flex items-center justify-center p-6 relative overflow-hidden">
-            {/* Background Decorations */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -mr-48 -mt-48" />
-            <div className="absolute bottom-0 left-0 w-80 h-80 bg-accent/5 rounded-full blur-3xl -ml-40 -mb-40" />
-
-            <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="w-full max-w-md relative z-10"
-            >
-                <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-2xl shadow-xl shadow-primary/20 mb-4">
-                        <ShieldCheck className="w-8 h-8 text-white" />
+        <div className="min-h-[60vh] flex items-center justify-center">
+            <div className="max-w-md w-full">
+                {/* Card */}
+                <div className="bg-slate-800/50 border border-white/10 rounded-2xl p-8 backdrop-blur-xl shadow-2xl shadow-black/20">
+                    {/* Icon */}
+                    <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mb-6 shadow-lg shadow-emerald-500/30">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
                     </div>
-                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Client Portal</h1>
-                    <p className="text-slate-500 font-medium">Securely access your New Beginning journey.</p>
+
+                    {/* Title */}
+                    <h1 className="text-2xl font-bold text-white text-center mb-2">
+                        Secure Client Portal
+                    </h1>
+
+                    <p className="text-slate-400 text-center mb-6">
+                        Department of Rehabilitation Employment Services
+                    </p>
+
+                    {/* Security Notice */}
+                    <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 mb-6">
+                        <div className="flex items-start gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                            <div>
+                                <p className="text-sm text-emerald-300 font-medium">
+                                    Passwordless Security
+                                </p>
+                                <p className="text-sm text-slate-400 mt-1">
+                                    Access is provided through a secure one-time link sent by your Employment Specialist. No passwords are used.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Instructions */}
+                    <div className="space-y-4 text-sm text-slate-300">
+                        <div className="flex items-start gap-3">
+                            <span className="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">1</span>
+                            <p>Check your email for a secure access link from your Employment Specialist</p>
+                        </div>
+                        <div className="flex items-start gap-3">
+                            <span className="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">2</span>
+                            <p>Click the link to access your personalized portal</p>
+                        </div>
+                        <div className="flex items-start gap-3">
+                            <span className="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">3</span>
+                            <p>Links expire after 30 days for your security</p>
+                        </div>
+                    </div>
+
+                    {/* Help */}
+                    <div className="mt-8 pt-6 border-t border-white/10">
+                        <p className="text-center text-sm text-slate-400">
+                            Need access? Contact your Employment Specialist to receive a secure login link.
+                        </p>
+                    </div>
                 </div>
 
-                <GlassCard className="p-8">
-                    <form onSubmit={handleLogin} className="space-y-6">
-                        <div>
-                            <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Email Address</label>
-                            <div className="relative">
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                <input
-                                    type="email"
-                                    required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-primary outline-none transition-all"
-                                    placeholder="your@email.com"
-                                />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Last 4 of SSN</label>
-                            <div className="relative">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                <input
-                                    type="password"
-                                    maxLength={4}
-                                    required
-                                    value={ssn4}
-                                    onChange={(e) => setSsn4(e.target.value.replace(/\D/g, ''))}
-                                    className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-primary outline-none transition-all"
-                                    placeholder="••••"
-                                />
-                            </div>
-                        </div>
-
-                        {error && (
-                            <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-sm font-bold">
-                                {error}
-                            </div>
-                        )}
-
-                        <ActionButton
-                            type="submit"
-                            variant="primary"
-                            className="w-full py-4 text-lg"
-                            isLoading={loading}
-                        >
-                            Enter Portal
-                        </ActionButton>
-                    </form>
-                </GlassCard>
-
-                <p className="mt-8 text-center text-sm text-slate-400">
-                    Having trouble logging in? Contact your Case Manager at <span className="text-primary font-bold">New Beginning</span>.
+                {/* Accessibility Note */}
+                <p className="text-center text-xs text-slate-500 mt-6">
+                    This portal is designed to meet WCAG 2.1 Level AA accessibility standards.
                 </p>
-            </motion.div>
+            </div>
         </div>
     );
 }

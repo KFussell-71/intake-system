@@ -1,18 +1,11 @@
-# Findings Log - Production Readiness Overhaul
+# Database Schema Audit and Fix - Research Findings
+## Created: 2026-01-31
 
-## Routing Issues
+## Key Discoveries
+-
 
-- [ ] Why is `/directory` 404ing?
+## Open Questions
+-
 
-## Dummy Data
-
-- [ ] `/follow-ups` contains placeholders.
-
-## Feature Visibility
-
-- [ ] Voice dictation not visible to user in some views?
-- [ ] Client Portal not visible?
-
-## Build/Production Status
-
-- [ ] Build log analysis.
+## Resources
+-
