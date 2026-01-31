@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 export default function FollowUpsPage() {
     const router = useRouter();
     const [tasks, setTasks] = useState<any[]>([]);
+    const [completedCount, setCompletedCount] = useState(0);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -38,6 +39,15 @@ export default function FollowUpsPage() {
                     notes: item.notes
                 }));
                 setTasks(generatedTasks);
+
+                // Calculate completed this week (placeholder logic for now, using a real count from DB if status existed, but let's assume we filter by a status if available or just show a real number from another query)
+                const { count } = await supabase
+                    .from('follow_ups')
+                    .select('*', { count: 'exact', head: true })
+                    .not('contact_date', 'is', null); // This is just a demo filter, in real app would be status='completed'
+
+                setCompletedCount(count || 0);
+
             } else if (error) {
                 console.error("Error fetching follow-ups:", error);
             }
@@ -76,8 +86,8 @@ export default function FollowUpsPage() {
                     <GlassCard className="p-4 flex items-center gap-4 bg-green-500/10 border-green-500/20">
                         <div className="p-3 bg-green-500 rounded-xl text-white"><CheckCircle2 className="w-6 h-6" /></div>
                         <div>
-                            <p className="text-2xl font-bold text-green-500">12</p>
-                            <p className="text-xs uppercase font-bold text-slate-500">Completed This Week</p>
+                            <p className="text-2xl font-bold text-green-500">{completedCount}</p>
+                            <p className="text-xs uppercase font-bold text-slate-500">Total Recorded</p>
                         </div>
                     </GlassCard>
                 </div>

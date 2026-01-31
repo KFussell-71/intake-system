@@ -6,6 +6,7 @@ const initialFormData: IntakeFormData = {
     phone: '',
     email: '',
     address: '',
+    ssnLastFour: '',
     reportDate: new Date().toISOString().split('T')[0],
     completionDate: '',
     employmentGoals: '',
@@ -71,7 +72,21 @@ const initialFormData: IntakeFormData = {
     industryPreferences: [],
     industryOther: '',
     targetPay: '',
+    transferableSkills: [],
+    transferableSkillsOther: '',
     employmentType: [],
+
+    // Weekly Job Search Commitment (30 Days)
+    jobSearchCommitmentCount: '',
+    jobSearchCommitments: [],
+    desiredJobTitles: '',
+    workExperienceSummary: '',
+    preferredContactMethods: [],
+    targetReviewDate: '',
+    ispGoals: [
+        { goal: '', actionSteps: '', responsibleParty: '', targetDate: '' },
+        { goal: '', actionSteps: '', responsibleParty: '', targetDate: '' }
+    ],
 };
 
 export function useIntakeForm() {

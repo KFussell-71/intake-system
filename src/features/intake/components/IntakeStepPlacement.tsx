@@ -22,6 +22,7 @@ export const IntakeStepPlacement: React.FC<Props> = ({ formData, onChange }) => 
                     value={formData.companyName}
                     onChange={onChange}
                     placeholder="Employer name"
+                    enableDictation
                 />
                 <ElegantInput
                     label="Job Title"
@@ -29,6 +30,7 @@ export const IntakeStepPlacement: React.FC<Props> = ({ formData, onChange }) => 
                     value={formData.jobTitle}
                     onChange={onChange}
                     placeholder="e.g. Sales Associate"
+                    enableDictation
                 />
                 <ElegantInput
                     label="Wage / Salary"

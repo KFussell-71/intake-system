@@ -7,6 +7,7 @@ export class ClientRepository {
         phone?: string;
         email?: string;
         address?: string;
+        ssn_last_four?: string;
         created_by?: string;
     }) {
         const { data, error } = await supabase
@@ -41,6 +42,7 @@ export class ClientRepository {
         p_phone?: string;
         p_email?: string;
         p_address?: string;
+        p_ssn_last_four: string;
         p_report_date: string;
         p_completion_date?: string;
         p_intake_data: any;

@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { authController } from '@/controllers/AuthController';
 import { useTheme } from 'next-themes';
 import { supabase } from '@/lib/supabase';
+import { AccessibilityToggle } from '@/components/ui/AccessibilityToggle';
 
 export default function SettingsPage() {
     const router = useRouter();
@@ -98,7 +99,10 @@ export default function SettingsPage() {
                             </h2>
                         </div>
                         <div className="p-6">
-                            <p className="text-sm text-slate-500 mb-4">Choose your preferred interface theme.</p>
+                            <div className="flex justify-between items-center mb-4">
+                                <p className="text-sm text-slate-500">Choose your preferred interface theme and accessibility settings.</p>
+                                <AccessibilityToggle />
+                            </div>
                             <div className="flex gap-4">
                                 <button
                                     onClick={() => setTheme('dark')}

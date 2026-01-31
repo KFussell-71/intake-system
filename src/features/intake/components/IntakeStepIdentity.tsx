@@ -7,9 +7,10 @@ import { DocumentVerificationSection } from './DocumentVerificationSection';
 interface Props {
     formData: IntakeFormData;
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+    errors?: Record<string, string>;
 }
 
-export const IntakeStepIdentity: React.FC<Props> = ({ formData, onChange }) => {
+export const IntakeStepIdentity: React.FC<Props> = ({ formData, onChange, errors = {} }) => {
     return (
         <div className="space-y-6">
             <h2 className="text-2xl font-bold flex items-center gap-2">
@@ -24,6 +25,8 @@ export const IntakeStepIdentity: React.FC<Props> = ({ formData, onChange }) => {
                     onChange={onChange}
                     required
                     placeholder="First Last"
+                    enableDictation
+                    error={errors.clientName}
                 />
                 <ElegantInput
                     label="Phone Number"
@@ -32,6 +35,7 @@ export const IntakeStepIdentity: React.FC<Props> = ({ formData, onChange }) => {
                     onChange={onChange}
                     type="tel"
                     placeholder="(555) 000-0000"
+                    error={errors.phone}
                 />
                 <ElegantInput
                     label="Email Address"
@@ -40,6 +44,7 @@ export const IntakeStepIdentity: React.FC<Props> = ({ formData, onChange }) => {
                     onChange={onChange}
                     type="email"
                     placeholder="client@example.com"
+                    error={errors.email}
                 />
                 <ElegantInput
                     label="Physical Address"
@@ -48,6 +53,17 @@ export const IntakeStepIdentity: React.FC<Props> = ({ formData, onChange }) => {
                     onChange={onChange}
                     placeholder="Street, City, Zip"
                     enableDictation
+                    error={errors.address}
+                />
+                <ElegantInput
+                    label="Last 4 of SSN"
+                    name="ssnLastFour"
+                    value={formData.ssnLastFour}
+                    onChange={onChange}
+                    placeholder="1234"
+                    maxLength={4}
+                    required
+                    error={errors.ssnLastFour}
                 />
             </div>
             <hr className="border-slate-100 dark:border-white/5" />
@@ -67,6 +83,35 @@ export const IntakeStepIdentity: React.FC<Props> = ({ formData, onChange }) => {
                     onChange={onChange}
                     type="date"
                 />
+            </div>
+
+            <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg border border-slate-100 dark:border-white/5">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    Preferred Contact Method
+                </label>
+                <div className="flex gap-6">
+                    {['Phone', 'Text', 'Email'].map((method) => (
+                        <label key={method} className="flex items-center gap-2 cursor-pointer group">
+                            <input
+                                type="checkbox"
+                                checked={(formData.preferredContactMethods || []).includes(method)}
+                                onChange={(e) => {
+                                    const current = formData.preferredContactMethods || [];
+                                    const updated = e.target.checked
+                                        ? [...current, method]
+                                        : current.filter(m => m !== method);
+                                    onChange({
+                                        target: { name: 'preferredContactMethods', value: updated }
+                                    } as any);
+                                }}
+                                className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary"
+                            />
+                            <span className="text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+                                {method}
+                            </span>
+                        </label>
+                    ))}
+                </div>
             </div>
 
             <hr className="border-slate-100 dark:border-white/5" />

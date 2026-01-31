@@ -165,7 +165,66 @@ export const PreparationReadinessSection: React.FC<Props> = ({ formData, onChang
                             </div>
                         </div>
                     </div>
+
+                    <div className="pt-4 mt-4 border-t border-slate-100 dark:border-white/5">
+                        <label className="block text-sm font-bold text-slate-800 dark:text-slate-100 mb-4 uppercase tracking-tight">
+                            Transferable Skills (check all that apply)
+                        </label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                            {[
+                                'Customer Service', 'Manual Labor', 'Computer / Tech',
+                                'Leadership / Supervision', 'Time Management', 'Communication',
+                                'Problem Solving', 'Safety Awareness'
+                            ].map((skill) => (
+                                <div key={skill} className="flex items-center space-x-2">
+                                    <input
+                                        type="checkbox"
+                                        id={`skill-${skill}`}
+                                        checked={(formData.transferableSkills || []).includes(skill)}
+                                        onChange={(e) => {
+                                            const current = formData.transferableSkills || [];
+                                            const updated = e.target.checked
+                                                ? [...current, skill]
+                                                : current.filter(s => s !== skill);
+                                            const event = {
+                                                target: {
+                                                    name: 'transferableSkills',
+                                                    value: updated
+                                                }
+                                            } as any;
+                                            onChange(event);
+                                        }}
+                                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                    />
+                                    <label htmlFor={`skill-${skill}`} className="text-sm text-slate-700 dark:text-slate-300">{skill}</label>
+                                </div>
+                            ))}
+                            <div className="col-span-1 md:col-span-2 lg:col-span-3 mt-2">
+                                <ElegantInput
+                                    name="transferableSkillsOther"
+                                    label="Other Skills"
+                                    value={formData.transferableSkillsOther}
+                                    onChange={onChange}
+                                    placeholder="Specify other skills..."
+                                    className="bg-white/50"
+                                />
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </GlassCard>
+
+            <GlassCard className="p-6 mt-6 border border-white/20">
+                <h4 className="font-semibold text-slate-800 dark:text-slate-100 mb-4 uppercase tracking-wider text-sm">Skills & Experience Snapshot</h4>
+                <ElegantTextarea
+                    name="workExperienceSummary"
+                    label="Previous Work Experience (brief)"
+                    value={formData.workExperienceSummary}
+                    onChange={onChange}
+                    placeholder="Summarize key roles and work history..."
+                    className="bg-white/50 min-h-[100px]"
+                    enableDictation
+                />
             </GlassCard>
 
             <GlassCard className="p-6 mt-6 border border-white/20">

@@ -7,9 +7,10 @@ import { FormCheckbox } from './FormCheckbox';
 interface Props {
     formData: IntakeFormData;
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+    errors?: Record<string, string>;
 }
 
-export const IntakeStepEvaluation: React.FC<Props> = ({ formData, onChange }) => {
+export const IntakeStepEvaluation: React.FC<Props> = ({ formData, onChange, errors = {} }) => {
     return (
         <div className="space-y-6">
             <h2 className="text-2xl font-bold flex items-center gap-2">
@@ -22,12 +23,14 @@ export const IntakeStepEvaluation: React.FC<Props> = ({ formData, onChange }) =>
                     name="medicalEvalNeeded"
                     checked={formData.medicalEvalNeeded}
                     onChange={onChange}
+                    error={errors.medicalEvalNeeded}
                 />
                 <FormCheckbox
                     label="Psychological Eval Required"
                     name="psychEvalNeeded"
                     checked={formData.psychEvalNeeded}
                     onChange={onChange}
+                    error={errors.psychEvalNeeded}
                 />
             </div>
             <ElegantTextarea
@@ -38,6 +41,7 @@ export const IntakeStepEvaluation: React.FC<Props> = ({ formData, onChange }) =>
                 placeholder="Briefly state any medical or psychological barriers identified..."
                 rows={4}
                 enableDictation
+                error={errors.medicalPsychNotes}
             />
             <div className="p-6 bg-accent/5 border border-accent/20 rounded-3xl">
                 <FormCheckbox
@@ -45,6 +49,7 @@ export const IntakeStepEvaluation: React.FC<Props> = ({ formData, onChange }) =>
                     name="consentToRelease"
                     checked={formData.consentToRelease}
                     onChange={onChange}
+                    error={errors.consentToRelease}
                 />
                 <p className="mt-2 ml-10 text-xs text-slate-500 font-medium">
                     Checking this confirms HIPAA compliance by securing client signature on release forms.

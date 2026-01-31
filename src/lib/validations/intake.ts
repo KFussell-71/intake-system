@@ -5,6 +5,7 @@ export const intakeSchema = z.object({
     phone: z.string().optional(),
     email: z.string().email("Invalid email address").optional().or(z.literal('')),
     address: z.string().optional(),
+    ssnLastFour: z.string().length(4, "SSN last 4 must be exactly 4 digits").regex(/^\d{4}$/, "Must be digits only"),
     reportDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format"),
     completionDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format").optional().or(z.literal('')),
     employmentGoals: z.string().optional(),
@@ -44,6 +45,20 @@ export const intakeSchema = z.object({
         message: "Consent to release is required for production compliance"
     }),
     notes: z.string().optional(),
+    transferableSkills: z.array(z.string()).default([]),
+    transferableSkillsOther: z.string().optional(),
+    jobSearchCommitmentCount: z.string().optional(),
+    jobSearchCommitments: z.array(z.string()).default([]),
+    desiredJobTitles: z.string().optional(),
+    workExperienceSummary: z.string().optional(),
+    preferredContactMethods: z.array(z.string()).default([]),
+    targetReviewDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal('')),
+    ispGoals: z.array(z.object({
+        goal: z.string(),
+        actionSteps: z.string(),
+        responsibleParty: z.enum(['Participant', 'Case Manager', 'Both', '']),
+        targetDate: z.string()
+    })).default([]),
 });
 
 export type IntakeFormValues = z.infer<typeof intakeSchema>;

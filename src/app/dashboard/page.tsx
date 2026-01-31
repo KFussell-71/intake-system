@@ -22,6 +22,7 @@ import { AccessibilityToggle } from '@/components/ui/AccessibilityToggle';
 import { motion } from 'framer-motion';
 import { dashboardController } from '@/controllers/DashboardController';
 import { authController } from '@/controllers/AuthController';
+import { NotificationCenter } from '@/features/dashboard/components/NotificationCenter';
 
 export default function DashboardPage() {
     const router = useRouter();
@@ -101,6 +102,7 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="flex items-center gap-6">
+                        <NotificationCenter />
                         <AccessibilityToggle />
                         <div className="hidden md:block text-right">
                             <p className="text-sm font-semibold">{user?.email?.split('@')[0]}</p>
@@ -253,7 +255,7 @@ export default function DashboardPage() {
                         </GlassCard>
                     </motion.div>
 
-                    {/* New Document Management Tile */}
+                    {/* Document Management Tile */}
                     <motion.div variants={itemVariants} className="md:col-span-2 lg:col-span-3">
                         <GlassCard
                             hoverable

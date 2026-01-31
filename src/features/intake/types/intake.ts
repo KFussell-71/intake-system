@@ -3,6 +3,7 @@ export interface IntakeFormData {
     phone: string;
     email: string;
     address: string;
+    ssnLastFour: string;
     reportDate: string;
     completionDate: string;
     employmentGoals: string;
@@ -37,6 +38,10 @@ export interface IntakeFormData {
     benefits: string;
     transportationType: 'bus' | 'car' | 'other' | '';
     commuteTime: string;
+    desiredJobTitles: string;
+    workExperienceSummary: string;
+    preferredContactMethods: string[];
+    targetReviewDate: string;
 
     // Document Review & Verification
     referralReviewDate: string;
@@ -74,7 +79,19 @@ export interface IntakeFormData {
     industryPreferences: string[];
     industryOther: string;
     targetPay: string;
+    transferableSkills: string[];
+    transferableSkillsOther: string;
     employmentType: string[];
+
+    // Weekly Job Search Commitment (30 Days)
+    jobSearchCommitmentCount: string;
+    jobSearchCommitments: string[];
+    ispGoals: {
+        goal: string;
+        actionSteps: string;
+        responsibleParty: 'Participant' | 'Case Manager' | 'Both' | '';
+        targetDate: string;
+    }[];
 }
 
 export type IntakeStep = 'Identity' | 'Evaluation' | 'Goals' | 'Prep' | 'Placement' | 'Review';

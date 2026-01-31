@@ -34,6 +34,7 @@ import { IntakeStepPlacement } from '@/features/intake/components/IntakeStepPlac
 import { IntakeStepReview } from '@/features/intake/components/IntakeStepReview';
 import { AccessibilityToggle } from '@/components/ui/AccessibilityToggle';
 import { intakeController } from '@/controllers/IntakeController';
+import { LogicValidationSummary } from '@/features/intake/components/LogicValidationSummary';
 
 const steps = [
     { title: 'Identity', icon: <UserIcon className="w-4 h-4" /> },
@@ -74,7 +75,7 @@ export default function NewIntakePage() {
         checkAuth();
     }, [router]);
 
-    const [complianceResult, setComplianceResult] = useState<{ valid: boolean, issues: string[] } | null>(null);
+    const [complianceResult, setComplianceResult] = useState<{ valid: boolean, score: number, issues: any[] } | null>(null);
     const [checkingCompliance, setCheckingCompliance] = useState(false);
 
     const runComplianceCheck = async () => {
@@ -84,7 +85,7 @@ export default function NewIntakePage() {
             const result = await intakeController.runComplianceCheck(formData);
             setComplianceResult(result);
             if (!result.valid) {
-                setError('AI Compliance Scan found potential logic issues. Please review before submission.');
+                setError('AI Logic Guard found potential contradictions. Please review the summary below.');
             }
         } catch (err) {
             console.error('Compliance Scan Error:', err);
@@ -101,16 +102,16 @@ export default function NewIntakePage() {
         setValidationErrors({});
 
         try {
-            // Validate using Zod
+            // 1. Zod Validation
             const validatedData = intakeSchema.parse(formData);
-            // ... (rest of handleSubmit logic)
 
-            // Use the Controller layer
+            // 2. Database Submission via Controller
             const result = await intakeController.handleIntakeSubmission({
                 p_name: validatedData.clientName,
                 p_phone: validatedData.phone,
                 p_email: validatedData.email,
                 p_address: validatedData.address,
+                p_ssn_last_four: validatedData.ssnLastFour,
                 p_report_date: validatedData.reportDate,
                 p_completion_date: validatedData.completionDate || null,
                 p_intake_data: {
@@ -138,15 +139,19 @@ export default function NewIntakePage() {
                         consentToRelease: validatedData.consentToRelease,
                     },
                     notes: validatedData.notes,
+                    // Additional fields from details that the RPC expects
+                    barriers: formData.barriers,
+                    ispGoals: formData.ispGoals,
+                    workExperienceSummary: formData.workExperienceSummary,
+                    desiredJobTitles: formData.desiredJobTitles,
+                    preferredContactMethods: formData.preferredContactMethods
                 }
             });
 
             if (!result.success) throw new Error(result.error);
 
             setSuccess(true);
-            setTimeout(() => {
-                router.push('/dashboard');
-            }, 2000);
+            return { success: true, clientId: result.data?.client_id };
 
         } catch (err) {
             console.error('Error saving intake:', err);
@@ -157,10 +162,11 @@ export default function NewIntakePage() {
                     if (path) errors[path.toString()] = issue.message;
                 });
                 setValidationErrors(errors);
-                setError('Please fix the validation errors below.');
+                setError('Please fix the validation errors on the preceding steps.');
             } else {
                 setError(err instanceof Error ? err.message : 'Failed to save intake');
             }
+            return { success: false };
         } finally {
             setSaving(false);
         }
@@ -175,9 +181,15 @@ export default function NewIntakePage() {
     }
 
     const renderStep = () => {
+        const commonProps = {
+            formData,
+            onChange: handleInputChange,
+            errors: validationErrors
+        };
+
         switch (currentStep) {
-            case 0: return <IntakeStepIdentity formData={formData} onChange={handleInputChange} />;
-            case 1: return <IntakeStepEvaluation formData={formData} onChange={handleInputChange} />;
+            case 0: return <IntakeStepIdentity {...commonProps} />;
+            case 1: return <IntakeStepEvaluation {...commonProps} />;
             case 2: return <IntakeStepGoals formData={formData} onChange={handleInputChange} />;
             case 3: return <IntakeStepPrep formData={formData} onChange={handleInputChange} />;
             case 4: return <IntakeStepPlacement formData={formData} onChange={handleInputChange} />;
@@ -210,24 +222,29 @@ export default function NewIntakePage() {
                 {/* Stepper Header */}
                 <div className="flex justify-between items-center mb-12 relative px-4">
                     <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 dark:bg-white/5 -translate-y-1/2 z-0" />
-                    {steps.map((step, idx) => (
-                        <div key={idx} className="relative z-10 flex flex-col items-center">
-                            <motion.div
-                                initial={false}
-                                animate={{
-                                    scale: idx === currentStep ? 1.2 : 1,
-                                    backgroundColor: idx <= currentStep ? 'var(--color-primary)' : 'var(--color-surface)',
-                                    color: idx <= currentStep ? '#fff' : '#64748b'
-                                }}
-                                className={`w-10 h-10 rounded-2xl flex items-center justify-center shadow-lg border-4 ${idx <= currentStep ? 'border-primary' : 'border-slate-100 dark:border-white/5'} transition-colors duration-500`}
-                            >
-                                {idx < currentStep ? <CheckCircle className="w-5 h-5" /> : step.icon}
-                            </motion.div>
-                            <span className={`text-[10px] font-bold uppercase tracking-wider mt-3 ${idx === currentStep ? 'text-primary' : 'text-slate-400'}`}>
-                                {step.title}
-                            </span>
-                        </div>
-                    ))}
+                    {steps.map((step, idx) => {
+                        const hasError = (idx === 0 && (validationErrors.clientName || validationErrors.ssnLastFour)) ||
+                            (idx === 1 && validationErrors.consentToRelease);
+
+                        return (
+                            <div key={idx} className="relative z-10 flex flex-col items-center">
+                                <motion.div
+                                    initial={false}
+                                    animate={{
+                                        scale: idx === currentStep ? 1.2 : 1,
+                                        backgroundColor: hasError ? '#ef4444' : (idx <= currentStep ? 'var(--color-primary)' : 'var(--color-surface)'),
+                                        color: idx <= currentStep || hasError ? '#fff' : '#64748b'
+                                    }}
+                                    className={`w-10 h-10 rounded-2xl flex items-center justify-center shadow-lg border-4 ${hasError ? 'border-red-500' : (idx <= currentStep ? 'border-primary' : 'border-slate-100 dark:border-white/5')} transition-colors duration-500`}
+                                >
+                                    {idx < currentStep && !hasError ? <CheckCircle className="w-5 h-5" /> : step.icon}
+                                </motion.div>
+                                <span className={`text-[10px] font-bold uppercase tracking-wider mt-3 ${hasError ? 'text-red-500' : (idx === currentStep ? 'text-primary' : 'text-slate-400')}`}>
+                                    {step.title}
+                                </span>
+                            </div>
+                        );
+                    })}
                 </div>
 
                 {success && (
@@ -244,9 +261,15 @@ export default function NewIntakePage() {
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="mb-8 p-6 bg-red-500/10 border border-red-500/30 rounded-3xl text-red-600 dark:text-red-400 font-bold"
+                        className="mb-8 p-6 bg-red-500/10 border border-red-500/30 rounded-3xl text-red-600 dark:text-red-400 font-bold flex items-center gap-3"
                     >
-                        Error: {error}
+                        <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                        <div>
+                            <p>Error: {error}</p>
+                            {Object.keys(validationErrors).length > 0 && (
+                                <p className="text-xs mt-1 font-medium opacity-80">Fields affected: {Object.keys(validationErrors).join(', ')}</p>
+                            )}
+                        </div>
                     </motion.div>
                 )}
 
@@ -296,37 +319,52 @@ export default function NewIntakePage() {
                                     Continue
                                 </ActionButton>
                             ) : (
-                                <ActionButton
-                                    onClick={handleSubmit}
-                                    isLoading={saving}
-                                    icon={<CheckCircle className="w-4 h-4" />}
-                                    className="bg-primary text-white"
-                                    disabled={complianceResult?.valid === false && !error.includes('override')}
-                                >
-                                    Submit Final Intake
-                                </ActionButton>
+                                <div className="flex gap-4">
+                                    <ActionButton
+                                        variant="secondary"
+                                        onClick={handleSubmit}
+                                        isLoading={saving}
+                                        className="border-slate-200"
+                                    >
+                                        Save Draft
+                                    </ActionButton>
+                                    <ActionButton
+                                        onClick={(e) => {
+                                            // Trigger regular submit but then handle navigation differently
+                                            const submitBtn = e.currentTarget;
+                                            (async () => {
+                                                const result = await handleSubmit(e as any);
+                                                if (result?.success) {
+                                                    router.push(`/reports/${result.clientId}`);
+                                                }
+                                            })();
+                                        }}
+                                        isLoading={saving}
+                                        icon={<FileCheck className="w-4 h-4" />}
+                                        className="bg-primary text-white shadow-xl shadow-primary/20"
+                                    >
+                                        Submit & Generate Report
+                                    </ActionButton>
+                                </div>
                             )}
                         </div>
-
-                        {complianceResult && !complianceResult.valid && (
-                            <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-2xl">
-                                <h4 className="text-amber-800 dark:text-amber-400 font-bold text-sm mb-2 flex items-center gap-2">
-                                    <AlertCircle className="w-4 h-4" /> AI Compliance Warnings:
-                                </h4>
-                                <ul className="list-disc list-inside text-xs text-amber-700 dark:text-amber-500 space-y-1">
-                                    {complianceResult.issues.map((issue, i) => (
-                                        <li key={i}>{issue}</li>
-                                    ))}
-                                </ul>
-                                <button
-                                    onClick={() => setComplianceResult({ valid: true, issues: [] })}
-                                    className="mt-2 text-[10px] underline text-amber-600 hover:text-amber-700 font-bold"
-                                >
-                                    I have reviewed these, ignore and proceed
-                                </button>
-                            </div>
-                        )}
                     </div>
+
+                    {/* AI Logic Summary Integration */}
+                    {currentStep === steps.length - 1 && (complianceResult || checkingCompliance) && (
+                        <div className="px-8 pb-8">
+                            <LogicValidationSummary result={complianceResult} isChecking={checkingCompliance} />
+
+                            {complianceResult && !complianceResult.valid && (
+                                <button
+                                    onClick={() => setComplianceResult({ ...complianceResult, valid: true })}
+                                    className="mt-4 text-[10px] underline text-slate-400 hover:text-primary font-bold transition-colors"
+                                >
+                                    Override: I have verified these contradictions are actually accurate for this specific case
+                                </button>
+                            )}
+                        </div>
+                    )}
                 </GlassCard>
             </div>
         </div>

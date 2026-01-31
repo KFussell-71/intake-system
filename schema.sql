@@ -14,6 +14,7 @@ CREATE TABLE clients (
   phone TEXT,
   email TEXT,
   address TEXT,
+  ssn_last_four CHAR(4),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   created_by UUID REFERENCES profiles(id),
   assigned_to UUID REFERENCES profiles(id) DEFAULT auth.uid()
@@ -82,17 +83,6 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE OR REPLACE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
-
--- Create follow_ups table (duplicate removed by IF NOT EXISTS)
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
-  contact_date DATE NOT NULL,
-  method TEXT CHECK (method IN ('phone', 'in-person')),
-  performance TEXT,
-  notes TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  created_by UUID REFERENCES profiles(id)
-);
 
 -- Create audit_logs table
 CREATE TABLE audit_logs (
@@ -214,6 +204,10 @@ CREATE POLICY "Staff can delete assigned documents" ON documents
 -- Storage Bucket Setup (Idempotent)
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('client-documents', 'client-documents', false)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('reports', 'reports', false)
 ON CONFLICT (id) DO NOTHING;
 
 -- Storage Policies for 'client-documents' bucket
@@ -339,8 +333,8 @@ CREATE POLICY "Staff can view report_reviews" ON report_reviews FOR SELECT TO au
 CREATE POLICY "Staff can manage report_reviews" ON report_reviews FOR ALL TO authenticated USING (true);
 
 
--- 7. Implement get_client_intake_bundle RPC
-CREATE OR REPLACE FUNCTION get_client_intake_bundle(client_id uuid)
+-- 7. Implement get_client_intake_bundle RPC (Authoritative Source of Truth)
+CREATE OR REPLACE FUNCTION get_client_intake_bundle(p_client_id uuid)
 RETURNS jsonb
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -348,103 +342,60 @@ AS $$
 DECLARE
   result jsonb;
 BEGIN
-  result := jsonb_build_object(
+  SELECT jsonb_build_object(
     'client', (
-      SELECT jsonb_build_object(
-        'id', c.id,
-        'first_name', split_part(c.name, ' ', 1), -- Simple split for demo
-        'last_name', split_part(c.name, ' ', 2),
-        'name', c.name,
-        'phone', c.phone,
-        'email', c.email
-      )
+      SELECT row_to_json(c)
       FROM clients c
-      WHERE c.id = client_id
+      WHERE c.id = p_client_id
     ),
-
     'intake', (
       SELECT jsonb_build_object(
         'id', i.id,
-        'intake_date', i.report_date,
+        'client_id', i.client_id,
         'report_date', i.report_date,
-        'status', i.status
+        'completion_date', i.completion_date,
+        'status', i.status,
+        'details', i.data,
+        'created_at', i.created_at
       )
       FROM intakes i
-      WHERE i.client_id = client_id
+      WHERE i.client_id = p_client_id
       ORDER BY i.created_at DESC
       LIMIT 1
     ),
-
     'documents', (
-      SELECT coalesce(jsonb_agg(
-        jsonb_build_object(
-          'id', d.id,
-          'name', d.name,
-          'type', d.type,
-          'url', d.url,
-          'uploaded_at', d.uploaded_at
-        )
-      ), '[]'::jsonb)
+      SELECT coalesce(jsonb_agg(row_to_json(d)), '[]'::jsonb)
       FROM documents d
-      WHERE d.client_id = client_id
+      WHERE d.client_id = p_client_id
     ),
-
     'employment_history', (
-      SELECT coalesce(jsonb_agg(
-        jsonb_build_object(
-          'id', e.id,
-          'job_title', e.job_title,
-          'employer', e.employer,
-          'start_date', e.start_date,
-          'end_date', e.end_date,
-          'notes', e.notes
-        )
-      ), '[]'::jsonb)
+      SELECT coalesce(jsonb_agg(row_to_json(e)), '[]'::jsonb)
       FROM employment_history e
-      WHERE e.client_id = client_id
+      WHERE e.client_id = p_client_id
     ),
-
     'isp_goals', (
-      SELECT coalesce(jsonb_agg(
-        jsonb_build_object(
-          'id', g.id,
-          'goal_type', g.goal_type,
-          'target_date', g.target_date,
-          'status', g.status,
-          'notes', g.notes
-        )
-      ), '[]'::jsonb)
+      SELECT coalesce(jsonb_agg(row_to_json(g)), '[]'::jsonb)
       FROM isp_goals g
-      WHERE g.client_id = client_id
+      WHERE g.client_id = p_client_id
     ),
-
     'supportive_services', (
-      SELECT coalesce(jsonb_agg(
-        jsonb_build_object(
-          'id', s.id,
-          'service_type', s.service_type,
-          'description', s.description,
-          'status', s.status
-        )
-      ), '[]'::jsonb)
+      SELECT coalesce(jsonb_agg(row_to_json(s)), '[]'::jsonb)
       FROM supportive_services s
-      WHERE s.client_id = client_id
+      WHERE s.client_id = p_client_id
     ),
-
     'follow_up', (
-      SELECT jsonb_build_object(
-        'next_meeting_date', f.contact_date,
-        'notes', f.notes
-      )
+      SELECT row_to_json(f)
       FROM follow_ups f
-      WHERE f.client_id = client_id
+      WHERE f.client_id = p_client_id
       ORDER BY f.contact_date DESC
       LIMIT 1
     )
-  );
+  )
+  INTO result;
 
   RETURN result;
 END;
+$$;
 
 -- 8. Implement create_client_intake RPC (Transactional Insert)
 CREATE OR REPLACE FUNCTION create_client_intake(
@@ -452,6 +403,7 @@ CREATE OR REPLACE FUNCTION create_client_intake(
   p_phone TEXT,
   p_email TEXT,
   p_address TEXT,
+  p_ssn_last_four CHAR(4),
   p_report_date DATE,
   p_completion_date DATE,
   p_intake_data JSONB
@@ -465,8 +417,8 @@ DECLARE
   new_intake_id UUID;
 BEGIN
   -- 1. Create Client
-  INSERT INTO clients (name, phone, email, address, created_by)
-  VALUES (p_name, p_phone, p_email, p_address, auth.uid())
+  INSERT INTO clients (name, phone, email, address, ssn_last_four, created_by)
+  VALUES (p_name, p_phone, p_email, p_address, p_ssn_last_four, auth.uid())
   RETURNING id INTO new_client_id;
 
   -- 2. Create Intake
@@ -484,3 +436,54 @@ EXCEPTION WHEN OTHERS THEN
   RETURN jsonb_build_object('success', false, 'error', SQLERRM);
 END;
 $$;
+
+-- 10. Create report_versions table for immutable records
+CREATE TABLE report_versions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+  content_markdown TEXT NOT NULL,
+  version_number INTEGER DEFAULT 1,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  created_by UUID REFERENCES profiles(id)
+);
+
+ALTER TABLE report_versions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Staff can view assigned report_versions" ON report_versions FOR SELECT TO authenticated USING (EXISTS (SELECT 1 FROM clients WHERE clients.id = report_versions.client_id AND (clients.assigned_to = auth.uid() OR clients.created_by = auth.uid())));
+CREATE POLICY "Staff can insert report_versions" ON report_versions FOR INSERT TO authenticated WITH CHECK (auth.uid() = created_by);
+
+-- 11. Auditor Permissions (Read-Only Portal Support)
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'auditor') THEN
+        CREATE ROLE auditor;
+    END IF;
+END
+$$;
+
+GRANT SELECT ON clients, report_versions, report_reviews, intakes TO auditor;
+
+CREATE POLICY "Auditors can read all report_versions" ON report_versions FOR SELECT TO authenticated USING (auth.jwt()->>'role' = 'auditor' OR (SELECT role FROM profiles WHERE id = auth.uid()) = 'auditor');
+CREATE POLICY "Auditors can read all clients" ON clients FOR SELECT TO authenticated USING (auth.jwt()->>'role' = 'auditor' OR (SELECT role FROM profiles WHERE id = auth.uid()) = 'auditor');
+
+-- Create notifications table
+CREATE TABLE notifications (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+  staff_id UUID REFERENCES profiles(id),
+  type TEXT NOT NULL,
+  message TEXT NOT NULL,
+  is_read BOOLEAN DEFAULT false,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS for notifications
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+
+-- Policies: Staff can view all notifications for now (simplified)
+CREATE POLICY "Staff can view all notifications" ON notifications 
+  FOR SELECT TO authenticated 
+  USING (true);
+
+CREATE POLICY "System can create notifications" ON notifications
+  FOR INSERT TO authenticated
+  WITH CHECK (true);

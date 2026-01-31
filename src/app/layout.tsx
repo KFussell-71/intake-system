@@ -15,12 +15,21 @@ const notoSafe = Noto_Sans({
 });
 
 export const metadata: Metadata = {
-    title: "Social Services Intake",
-    description: "Nonprofit social services client intake and tracking system",
+    title: "New Beginning | Intake",
+    description: "Premium social services client intake and tracking system",
+    manifest: "/manifest.json",
+    themeColor: "#4f46e5",
+    viewport: "width=device-width, initial-scale=1, maximum-scale=1",
+    appleWebApp: {
+        capable: true,
+        statusBarStyle: "default",
+        title: "New Beginning",
+    },
 };
 
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { ErrorBoundary } from "@/components/providers/ErrorBoundary";
+import { PWARegister } from "@/components/providers/PWARegister";
 
 export default function RootLayout({
     children,
@@ -36,6 +45,7 @@ export default function RootLayout({
                     enableSystem
                     disableTransitionOnChange
                 >
+                    <PWARegister />
                     <ErrorBoundary>
                         {children}
                     </ErrorBoundary>
