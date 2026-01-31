@@ -6,7 +6,6 @@ import { supabase } from "@/lib/supabase";
 import { Search, Filter, MoreHorizontal, FileText, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ReportGenerator } from "@/lib/pdf/ReportGenerator";
 
 export default function DirectoryPage() {
     const router = useRouter();
@@ -122,8 +121,8 @@ export default function DirectoryPage() {
                                 </div>
                                 <div className="flex gap-1">
                                     <span className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${client.latest_intake?.status === 'approved' ? 'bg-green-500/10 text-green-600' :
-                                            client.latest_intake?.status === 'locked' ? 'bg-slate-500/10 text-slate-500' :
-                                                'bg-blue-500/10 text-blue-600'
+                                        client.latest_intake?.status === 'locked' ? 'bg-slate-500/10 text-slate-500' :
+                                            'bg-blue-500/10 text-blue-600'
                                         }`}>
                                         {client.latest_intake?.status || 'No Intake'}
                                     </span>

@@ -66,6 +66,7 @@ CREATE TABLE IF NOT EXISTS follow_ups (
   method TEXT CHECK (method IN ('phone', 'in-person')),
   performance TEXT,
   notes TEXT,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'completed')),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   created_by UUID REFERENCES profiles(id)
 );

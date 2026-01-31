@@ -2,18 +2,18 @@
 
 ## Phase 1: Audit & Discovery 🔍
 
-- [ ] Audit `/directory` route to fix 404 <!-- id: 0 -->
-- [ ] Audit `/follow-ups` for dummy data <!-- id: 1 -->
-- [ ] Audit Voice Dictation visibility across all steps <!-- id: 2 -->
-- [ ] Audit Client Portal access and visibility <!-- id: 3 -->
-- [ ] Verify build output and routing map <!-- id: 4 -->
+- [x] Audit `/directory` route to fix 404 <!-- id: 0 -->
+- [x] Audit `/follow-ups` for dummy data <!-- id: 1 -->
+- [x] Audit Voice Dictation visibility across all steps <!-- id: 2 -->
+- [x] Audit Client Portal access and visibility <!-- id: 3 -->
+- [x] Verify build output and routing map <!-- id: 4 -->
 
 ## Phase 2: Core Fixes 🛠️
 
-- [ ] Implement real data fetching for `/follow-ups` <!-- id: 5 -->
-- [ ] Fix `/directory` route logic/visibility <!-- id: 6 -->
-- [ ] Remove all remaining placeholders in UI <!-- id: 7 -->
-- [ ] Ensure Voice Dictation is integrated in all large text areas <!-- id: 8 -->
+- [x] Implement real data fetching for `/follow-ups` (and persistence) <!-- id: 5 -->
+- [x] Fix `/directory` route logic/visibility <!-- id: 6 -->
+- [x] Remove all remaining placeholders in UI <!-- id: 7 -->
+- [x] Ensure Voice Dictation is integrated in all large text areas <!-- id: 8 -->
 
 ## Phase 3: Production Hardening 🛡️
 

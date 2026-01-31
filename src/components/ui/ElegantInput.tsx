@@ -10,13 +10,18 @@ interface ElegantInputProps extends React.InputHTMLAttributes<HTMLInputElement> 
     enableDictation?: boolean;
 }
 
-export const ElegantInput = ({ label, error, icon, className = '', id, enableDictation, ...props }: ElegantInputProps) => {
+export const ElegantInput = ({ label, error, icon, className = '', id: providedId, enableDictation, ...props }: ElegantInputProps) => {
+    const id = providedId || props.name;
+
     // Handler for voice input
     const handleVoiceInput = (text: string) => {
-        const nativeInput = document.getElementById(id || props.name || 'input') as HTMLInputElement;
+        const nativeInput = document.getElementById(id as string) as HTMLInputElement;
         if (nativeInput) {
             const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
-            setter?.call(nativeInput, text);
+
+            // Append or replace? For dictation, usually we append if there's content
+            const newValue = (nativeInput.value ? nativeInput.value + ' ' : '') + text;
+            setter?.call(nativeInput, newValue);
             nativeInput.dispatchEvent(new Event('input', { bubbles: true }));
         }
     };
@@ -64,14 +69,16 @@ interface ElegantTextareaProps extends React.TextareaHTMLAttributes<HTMLTextArea
     enableDictation?: boolean;
 }
 
-export const ElegantTextarea = ({ label, error, className = '', id, enableDictation = false, ...props }: ElegantTextareaProps) => {
+export const ElegantTextarea = ({ label, error, className = '', id: providedId, enableDictation = false, ...props }: ElegantTextareaProps) => {
+    const id = providedId || props.name;
+
     const handleTranscript = (text: string) => {
         const textarea = document.getElementById(id as string) as HTMLTextAreaElement;
         if (textarea) {
             const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value")?.set;
 
             if (nativeInputValueSetter) {
-                const newValue = (textarea.value || '') + text;
+                const newValue = (textarea.value ? textarea.value + ' ' : '') + text;
                 nativeInputValueSetter.call(textarea, newValue);
 
                 const event = new Event('input', { bubbles: true });

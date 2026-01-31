@@ -7,54 +7,70 @@ import { Calendar, CheckCircle2, AlertCircle, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { updateFollowUpStatus } from "@/app/actions/updateFollowUpStatus";
+
 export default function FollowUpsPage() {
     const router = useRouter();
     const [tasks, setTasks] = useState<any[]>([]);
     const [completedCount, setCompletedCount] = useState(0);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchTasks = async () => {
-            // Fetch real follow-ups linked to clients
-            const { data, error } = await supabase
+    const fetchTasks = async () => {
+        setLoading(true);
+        // Fetch real follow-ups linked to clients
+        const { data, error } = await supabase
+            .from('follow_ups')
+            .select(`
+                id,
+                contact_date,
+                notes,
+                method,
+                status,
+                clients (
+                    name
+                )
+            `)
+            .order('contact_date', { ascending: true });
+
+        if (data) {
+            const filteredData = data.filter((item: any) => item.status !== 'completed');
+            const generatedTasks = filteredData.map((item: any) => ({
+                id: item.id,
+                clientName: item.clients?.name || 'Unknown Client',
+                type: item.method === 'phone' ? 'Phone Follow-up' : 'In-person Check-in',
+                priority: new Date(item.contact_date) < new Date() ? 'High' : 'Medium',
+                dueDate: new Date(item.contact_date).toLocaleDateString(),
+                notes: item.notes,
+                status: item.status
+            }));
+            setTasks(generatedTasks);
+
+            // Calculate completed count
+            const { count } = await supabase
                 .from('follow_ups')
-                .select(`
-                    id,
-                    contact_date,
-                    notes,
-                    method,
-                    clients (
-                        name
-                    )
-                `)
-                .order('contact_date', { ascending: true });
+                .select('*', { count: 'exact', head: true })
+                .eq('status', 'completed');
 
-            if (data) {
-                const generatedTasks = data.map((item: any) => ({
-                    id: item.id,
-                    clientName: item.clients?.name || 'Unknown Client',
-                    type: item.method === 'phone' ? 'Phone Follow-up' : 'In-person Check-in',
-                    priority: new Date(item.contact_date) < new Date() ? 'High' : 'Medium',
-                    dueDate: new Date(item.contact_date).toLocaleDateString(),
-                    notes: item.notes
-                }));
-                setTasks(generatedTasks);
+            setCompletedCount(count || 0);
 
-                // Calculate completed this week (placeholder logic for now, using a real count from DB if status existed, but let's assume we filter by a status if available or just show a real number from another query)
-                const { count } = await supabase
-                    .from('follow_ups')
-                    .select('*', { count: 'exact', head: true })
-                    .not('contact_date', 'is', null); // This is just a demo filter, in real app would be status='completed'
+        } else if (error) {
+            console.error("Error fetching follow-ups:", error);
+        }
+        setLoading(false);
+    };
 
-                setCompletedCount(count || 0);
-
-            } else if (error) {
-                console.error("Error fetching follow-ups:", error);
-            }
-            setLoading(false);
-        };
+    useEffect(() => {
         fetchTasks();
     }, []);
+
+    const handleComplete = async (id: string) => {
+        const result = await updateFollowUpStatus(id, 'completed');
+        if (result.success) {
+            await fetchTasks();
+        } else {
+            alert('Failed to update status');
+        }
+    };
 
     return (
         <div className="min-h-screen bg-surface dark:bg-surface-dark">
@@ -110,7 +126,12 @@ export default function FollowUpsPage() {
                                         <Calendar className="w-3 h-3" /> {task.dueDate}
                                     </p>
                                 </div>
-                                <ActionButton size="sm">Mark Complete</ActionButton>
+                                <ActionButton
+                                    size="sm"
+                                    onClick={() => handleComplete(task.id)}
+                                >
+                                    Mark Complete
+                                </ActionButton>
                             </div>
                         </GlassCard>
                     ))}
