@@ -453,7 +453,7 @@ export class IntakeService {
         //     },
         // });
 
-        return intake.data;
+        return intake.data as IntakeFormValues;
     }
 }
 
