@@ -434,6 +434,17 @@ export const config = {
          * - favicon.ico, robots.txt, sitemap.xml
          * - public files (images, fonts, etc.)
          */
-        '/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)$).*)',
+         // List all routes that need authentication/rate limiting
+        '/dashboard/:path*',
+        '/intake/:path*',
+        '/directory/:path*',
+        '/reports/:path*',
+        '/follow-ups/:path*',
+        '/documents/:path*',
+        '/settings/:path*',
+        '/supervisor/:path*',
+        '/auditor/:path*',
+        '/compliance/:path*',
+        '/portal/:path*',
     ],
 };
