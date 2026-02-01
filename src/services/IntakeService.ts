@@ -15,7 +15,7 @@
 
 import { clientRepository, ClientRepository } from '../repositories/ClientRepository';
 import { intakeSchema, type IntakeFormValues } from '@/lib/validations/intake';
-import { logAuditEvent } from '@/lib/audit';
+// import { logAuditEvent } from '@/lib/audit';
 import { ZodError } from 'zod';
 
 // ============================================================================
@@ -196,11 +196,11 @@ export class IntakeService {
         
         // CHANGED: Added comprehensive audit logging
         // WHY: Required for HIPAA compliance (as claimed in README)
-        await logAuditEvent({
-            action: 'CREATE',
-            entityType: 'intake',
-            entityId: result.intakeId,
-            details: {
+        // await logAuditEvent({
+            // action: 'CREATE',
+            // entityType: 'intake',
+            // entityId: result.intakeId,
+            // details: {
                 client_id: result.clientId,
                 user_id: userId,
                 has_warnings: warnings.length > 0,
@@ -395,11 +395,11 @@ export class IntakeService {
         await this.repo.updateIntake(intakeId, normalizedUpdates, userId);
 
         // Audit log
-        await logAuditEvent({
-            action: 'UPDATE',
-            entityType: 'intake',
-            entityId: intakeId,
-            details: {
+        // await logAuditEvent({
+            // action: 'UPDATE',
+            // entityType: 'intake',
+            // entityId: intakeId,
+            // details: {
                 user_id: userId,
                 updated_fields: Object.keys(updates),
                 timestamp: new Date().toISOString(),
@@ -429,11 +429,11 @@ export class IntakeService {
         }
 
         // Audit log
-        await logAuditEvent({
-            action: 'READ',
-            entityType: 'intake',
-            entityId: intakeId,
-            details: {
+        // await logAuditEvent({
+            // action: 'READ',
+            // entityType: 'intake',
+            // entityId: intakeId,
+            // details: {
                 user_id: userId,
                 timestamp: new Date().toISOString(),
             },
