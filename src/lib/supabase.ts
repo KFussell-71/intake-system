@@ -1,5 +1,6 @@
 import { createClient as createSupabaseClient, SupabaseClient } from '@supabase/supabase-js';
 import { config } from '@/config/unifiedConfig';
+import { createMockSupabase } from '@/lib/supabase/mock';
 
 /**
  * SECURITY: Supabase Client Factory
@@ -17,10 +18,10 @@ import { config } from '@/config/unifiedConfig';
 const { url, anonKey } = config.supabase;
 const isSupabaseConfigured = !!(url && anonKey);
 const isDevelopment = process.env.NODE_ENV === 'development';
-const isMockAuthExplicitlyAllowed = process.env.ALLOW_MOCK_AUTH === 'true';
+const isMockAuthExplicitlyAllowed = process.env.NEXT_PUBLIC_ALLOW_MOCK_AUTH === 'true' || process.env.ALLOW_MOCK_AUTH === 'true';
 
 // SECURITY: Mock auth is ONLY permitted in development with explicit flag
-const canUseMockAuth = isDevelopment && isMockAuthExplicitlyAllowed && !isSupabaseConfigured;
+const canUseMockAuth = isDevelopment && isMockAuthExplicitlyAllowed;
 
 // Create a real Supabase client if configured
 let supabaseInstance: SupabaseClient | null = null;
@@ -86,14 +87,15 @@ const mockSupabase = {
 };
 
 // Export the appropriate client based on security conditions
+// Export the appropriate client based on security conditions
 function getSupabaseClient(): SupabaseClient {
-    if (isSupabaseConfigured && supabaseInstance) {
-        return supabaseInstance;
-    }
-
     if (canUseMockAuth) {
         console.warn('[SECURITY] Returning MOCK Supabase client - DEVELOPMENT ONLY');
-        return mockSupabase as unknown as SupabaseClient;
+        return createMockSupabase();
+    }
+
+    if (isSupabaseConfigured && supabaseInstance) {
+        return supabaseInstance;
     }
 
     // SECURITY: Fail-safe - return a client that will fail all operations

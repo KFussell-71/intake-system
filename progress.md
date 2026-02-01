@@ -1,26 +1,28 @@
-# Database Schema Audit and Fix - Progress Log
+# Production Hardening Progress Log
 
 ## Created: 2026-01-31
 
 ## Session Log
 
-### 2026-01-31
+### 2026-01-31 - Architecture Review Response
 
-- Started project: Database Schema Audit and Fix
-- Created planning files
-- Completed Phase 1: Audit Current State
-- Completed Phase 2: Create Missing Tables Migration
-- Completed Phase 3: Apply Migration
-- Completed Phase 4: Verification
-- Completed Phase 5: Codebase Verification & Repair
-  - Fixed major security vulnerability in Supabase Server Client (no cookies).
-  - Fixed API response leaking magic links.
-  - Fixed schema mismatches in portal actions and pages.
-- **FINAL STATUS: COMPLETE** ✅
+- Reviewed "High-Level Health Check" feedback.
+- Created `task_plan.md` for Production Level 1.
+- **Started Phase 1: Structural Integrity**
+  - [x] Isolated Admin logic: Created `src/lib/supabase/admin.ts`.
+  - [x] Removed `createAdminClient` from `src/lib/supabase/server.ts`.
+  - [x] Updated all imports (`inviteClientToPortal`, `revokeAccess`, `portal-activity`).
+  - [x] Created `src/lib/auth/guard.ts` for standardized Auth Resolution.
+  - [x] Hardened `generateEmploymentReport` with `requireAuth` and **Idempotency Check**.
+  - [x] Enabled strict linting (`--max-warnings=0`).
 
-## Test Results
+## Next Steps
 
-| Test | Result | Notes |
-|------|--------|-------|
-| `npm run build` | ✅ PASSED | Confirmed codebase matches new schema and client architecture |
-| Database Migration | ✅ PASSED | All 14 missing tables created, RLS applied |
+- Implement `ActionResult` pattern (Phase 2.1).
+- Audit Portal RLS policies (Phase 3.1).
+- Complete Sanitization audit (Phase 4.1).
+
+### 2026-02-01 - Deployment Hygiene
+
+- **Fixed Node Version Mismatch:** Updated `package.json` engines to support `>=20.0.0` (resolves Vercel warnings).
+- **Fixed Metadata Deprecation:** Migrated `themeColor` and `viewport` to `export const viewport` in `src/app/layout.tsx` (resolves warnings across all routes).

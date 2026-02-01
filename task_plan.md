@@ -1,120 +1,67 @@
-# Database Schema Audit and Fix
+# Production Hardening Plan: Level 1 Architecture
 
-Created: 2026-01-31T20:25:28Z
-
-## Objective
-
-Audit and fix the Supabase database schema to ensure all tables, columns, policies, and relationships are properly created and labeled.
+**Objective:** Elevate the codebase to "Production Level 1" by addressing structural issues, mixed trust boundaries, and code smells identified in the architectural health check.
 
 ---
 
-## Phase 1: Audit Current State [status: complete] ✅
+## Phase 1: Structural Integrity & Trust Boundaries
 
-- [x] Export current database schema
-- [x] Compare with expected schema.sql
-- [x] Document missing tables
+*Goal: Enforce strict separation of concerns and remove "God Mode" clients from general scope.*
 
-### Initial Findings
+- [ ] **1.1 Isolate Admin Logic**
+  - Create `src/lib/supabase/admin.ts` (Service Role only).
+  - Move `createAdminClient` from `server.ts` to `admin.ts`.
+  - Add production warning/guard to `admin.ts`.
+  - Audit and update all imports.
 
-**Tables in Supabase (Before):**
+- [ ] **1.2 Standardize Auth Resolution**
+  - Create `src/lib/auth/guard.ts` utility.
+  - Implement invariant: `requireAuth()` that throws on failure.
+  - Replace ad-hoc `supabase.auth.getUser()` checks in Server Actions.
 
-- ✅ profiles
-- ✅ clients  
-- ✅ intakes
-- ✅ client_users (from portal migration)
-- ✅ portal_activity (from portal migration)
+- [ ] **1.3 CI/CD Hygiene**
+  - Verify `tsconfig.json` has `"strict": true`.
+  - Add `eslint --max-warnings=0` to build script.
+  - Add migration integrity check script.
 
-**Missing Tables (14 total):** All identified and documented
+## Phase 2: Reliability & Error Handling
 
----
+*Goal: Eliminate silent failures and "it builds but doesn't work" scenarios.*
 
-## Phase 2: Create Missing Tables Migration [status: complete] ✅
+- [ ] **2.1 Standardize Action Results**
+  - Create `src/types/action-result.ts`.
+  - Define `type ActionResult<T> = { ok: true; data: T } | { ok: false; error: string }`.
+  - Refactor `inviteClientToPortal` and `generateEmploymentReport` to use this pattern.
 
-- [x] Generate comprehensive migration script
-- [x] Include all table definitions (14 tables)
-- [x] Include all RLS policies (40+ policies)
-- [x] Include all indexes (16 indexes)
-- [x] Include all functions (handle_new_user, get_client_intake_bundle)
+- [ ] **2.2 Idempotency Guards**
+  - Update `generateEmploymentReport` to prevent duplicate concurrent runs.
+  - Add database-level constraint or application-level check (e.g., checksum or status lock).
 
-**Created:** `supabase/migrations/20260131100000_complete_schema.sql`
+## Phase 3: Portal Security Hardening
 
----
+*Goal: Ensure portal users are strictly isolated from staff logic.*
 
-## Phase 3: Apply Migration [status: complete] ✅
+- [ ] **3.1 Portal RLS Verification**
+  - Audit `client_users` policies.
+  - Ensure Portal Actions strictly enforce `role = 'client'` (or equivalent metadata check).
+  - Test boundary: Verify a localized portal user cannot access staff RPCs.
 
-- [x] Push migration to Supabase
-- [x] Verify all tables created
-- [x] Verify RLS enabled
-- [x] Verify policies applied
+## Phase 4: Code Smells & Maintenance
 
----
+*Goal: Fix "repairable" smells for audit cleanliness.*
 
-## Phase 4: Verification [status: complete] ✅
+- [ ] **4.1 HTML Sanitization Review**
+  - Audit `IntakeReportEditor.tsx` `dangerouslySetInnerHTML`.
+  - Ensure `DOMPurify` is configured with strict AllowList.
 
-- [x] Run db dump to confirm all tables
-
-### Final Table Count: **18 tables**
-
-| Table | Status | Description |
-|-------|--------|-------------|
-| audit_logs | ✅ Created | System audit trail |
-| client_users | ✅ Exists | Portal auth link |
-| clients | ✅ Exists | Core client data |
-| compliance_scans | ✅ Created | Compliance audit records |
-| documents | ✅ Created | Client documents |
-| employment_history | ✅ Created | Work history |
-| follow_ups | ✅ Created | Follow-up tracking |
-| intakes | ✅ Exists | Intake forms |
-| isp_goals | ✅ Created | ISP goal tracking |
-| isp_outcomes | ✅ Created | Goal outcomes |
-| job_placements | ✅ Created | Job placement records |
-| notifications | ✅ Created | User notifications |
-| portal_activity | ✅ Exists | Portal audit log |
-| profiles | ✅ Exists | User profiles |
-| report_reviews | ✅ Created | Supervisor review queue |
-| report_versions | ✅ Created | Immutable report history |
-| supportive_services | ✅ Created | Service tracking |
-| tracking_milestones | ✅ Created | Client milestones |
+- [ ] **4.2 RPC cleanup (Optional/High Effort)**
+  - Identify "fat" SQL functions.
+  - Plan migration of business logic to TypeScript where feasible.
 
 ---
+**Success Criteria:**
 
-## Summary
-
-### Migration Applied
-
-- `20260131000000_client_portal_schema.sql` - Portal auth tables
-- `20260131100000_complete_schema.sql` - All remaining tables
-
-### All Components Created
-
-- ✅ 18 database tables
-- ✅ 40+ RLS policies  
-- ✅ 16 performance indexes
-- ✅ 2 storage buckets (client-documents, reports)
-- ✅ 5 storage policies
-- ✅ 2 database functions
-- ✅ 1 auth trigger
-
-### Database is now fully synchronized with schema.sql
-
----
-
-## Phase 5: Codebase Verification & Repair [status: complete] ✅
-
-### Critical Issues Fixed
-
-1. **Server Client Architecture (High Severity)**
-    - **Problem:** `createClient()` in `src/lib/supabase/server.ts` was not using cookies, breaking authentication in all Server Actions.
-    - **Fix:** Rewrote to use `@supabase/ssr` with `cookies()` support. Updated all Server Actions to `await createClient()`.
-
-2. **Portal Security & Logic**
-    - **Fix:** Removed magic link exposure in `inviteClientToPortal.ts` API response.
-    - **Fix:** Corrected logic in `revokeClientPortalAccess.ts` to ensure audit logs capture client name even when admin revokes access.
-
-3. **Schema Alignment**
-    - **Fix:** Updated `getPortalClientData.ts` and `uploadPortalDocument.ts` to use correct column names (`type` vs `document_type`, `completion_date` vs `achieved_date`).
-    - **Fix:** Updated `src/app/portal/page.tsx` and `src/app/portal/status/page.tsx` to reflect schema changes.
-
-4. **Build Verification**
-    - **Status:** ✅ PASSED
-    - **Command:** `npm run build`
+- No mixed usage of Admin/Anon clients.
+- All Server Actions use standardized Guard + Error patterns.
+- Build passes with Strict Mode.
+- Portal identity is cryptographically isolated.

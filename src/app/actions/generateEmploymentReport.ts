@@ -1,17 +1,30 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { requireAuth } from '@/lib/auth/guard';
 import { validateIntakeBundle } from "@/lib/validations/generationValidator";
 import { runDorAgent } from "@/lib/agents/dorAgent";
 import { logReportGenerated } from "@/lib/audit";
 import { v4 as uuidv4 } from "uuid";
 
 export async function generateEmploymentReport(clientId: string) {
-    const supabase = await createClient();
+    // 1. Strict Auth Verification
+    const { user, supabase } = await requireAuth();
 
-    // 1. Pre-capture auth context (prevent timeout loss during long generation)
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Unauthorized: Active session required");
+    // 2. Idempotency Check (Prevent spamming generation)
+    // Check for reports generated in last 30 seconds
+    const { data: recent } = await supabase
+        .from('report_versions')
+        .select('created_at')
+        .eq('client_id', clientId)
+        .eq('created_by', user.id)
+        .gt('created_at', new Date(Date.now() - 30 * 1000).toISOString())
+        .limit(1)
+        .single();
+
+    if (recent) {
+        throw new Error("Please wait 30 seconds before regenerating.");
+    }
 
     // 2. Fetch frozen intake bundle
     const { data: bundle, error } = await supabase.rpc(

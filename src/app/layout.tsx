@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Figtree, Noto_Sans } from 'next/font/google';
 import "./globals.css";
 
@@ -18,13 +18,18 @@ export const metadata: Metadata = {
     title: "New Beginning | Intake",
     description: "Premium social services client intake and tracking system",
     manifest: "/manifest.json",
-    themeColor: "#4f46e5",
-    viewport: "width=device-width, initial-scale=1, maximum-scale=1",
     appleWebApp: {
         capable: true,
         statusBarStyle: "default",
         title: "New Beginning",
     },
+};
+
+export const viewport: Viewport = {
+    themeColor: "#4f46e5",
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
 };
 
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
