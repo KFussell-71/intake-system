@@ -196,18 +196,19 @@ export class IntakeService {
         
         // CHANGED: Added comprehensive audit logging
         // WHY: Required for HIPAA compliance (as claimed in README)
+        // TODO: Audit logging should be handled at controller/API route level
         // await logAuditEvent({
-            // action: 'CREATE',
-            // entityType: 'intake',
-            // entityId: result.intakeId,
-            // details: {
-                client_id: result.clientId,
-                user_id: userId,
-                has_warnings: warnings.length > 0,
-                warning_count: warnings.length,
-                timestamp: new Date().toISOString(),
-            },
-        });
+        //     action: 'CREATE',
+        //     entityType: 'intake',
+        //     entityId: result.intakeId,
+        //     details: {
+        //         client_id: result.clientId,
+        //         user_id: userId,
+        //         has_warnings: warnings.length > 0,
+        //         warning_count: warnings.length,
+        //         timestamp: new Date().toISOString(),
+        //     },
+        // });
 
         return result;
     }
@@ -394,17 +395,17 @@ export class IntakeService {
         // Update in database
         await this.repo.updateIntake(intakeId, normalizedUpdates, userId);
 
-        // Audit log
+        // TODO: Audit logging should be handled at controller/API route level
         // await logAuditEvent({
-            // action: 'UPDATE',
-            // entityType: 'intake',
-            // entityId: intakeId,
-            // details: {
-                user_id: userId,
-                updated_fields: Object.keys(updates),
-                timestamp: new Date().toISOString(),
-            },
-        });
+        //     action: 'UPDATE',
+        //     entityType: 'intake',
+        //     entityId: intakeId,
+        //     details: {
+        //         user_id: userId,
+        //         updated_fields: Object.keys(updates),
+        //         timestamp: new Date().toISOString(),
+        //     },
+        // });
     }
 
     /**
@@ -428,16 +429,16 @@ export class IntakeService {
             throw new Error('Unauthorized: You do not have access to this intake');
         }
 
-        // Audit log
+        // TODO: Audit logging should be handled at controller/API route level
         // await logAuditEvent({
-            // action: 'READ',
-            // entityType: 'intake',
-            // entityId: intakeId,
-            // details: {
-                user_id: userId,
-                timestamp: new Date().toISOString(),
-            },
-        });
+        //     action: 'READ',
+        //     entityType: 'intake',
+        //     entityId: intakeId,
+        //     details: {
+        //         user_id: userId,
+        //         timestamp: new Date().toISOString(),
+        //     },
+        // });
 
         return intake.data;
     }
