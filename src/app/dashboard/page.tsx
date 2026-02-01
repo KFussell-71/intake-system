@@ -30,14 +30,6 @@ export default function DashboardPage() {
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState({
         totalClients: 0,
-        activeClients: 0,
-        completedIntakes: 0,
-        inProgressIntakes: 0,
-        pendingIntakes: 0,
-        completionRate: 0,
-        averageCompletionDays: 0,
-        recentActivity: 0,
-        // Legacy fields for backward compatibility
         completed: 0,
         inProgress: 0,
         efficiency: 0
@@ -55,14 +47,7 @@ export default function DashboardPage() {
             // Fetch real stats
             const statsResult = await dashboardController.getStats();
             if (statsResult.success && statsResult.data) {
-                // Map new stats structure to legacy format
-                setStats({
-                    ...statsResult.data,
-                    // Legacy field mappings for backward compatibility
-                    completed: statsResult.data.completedIntakes,
-                    inProgress: statsResult.data.inProgressIntakes,
-                    efficiency: statsResult.data.completionRate
-                });
+                setStats(statsResult.data);
             }
 
             setLoading(false);

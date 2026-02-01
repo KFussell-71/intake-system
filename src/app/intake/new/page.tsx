@@ -162,7 +162,7 @@ export default function NewIntakePage() {
             if (!result.success) throw new Error(result.error);
 
             setSuccess(true);
-            return { success: true, clientId: result.data?.clientId };
+            return { success: true, clientId: result.data?.client_id };
 
         } catch (err) {
             console.error('Error saving intake:', err);
