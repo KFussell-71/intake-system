@@ -80,11 +80,12 @@ const memoryCache = new Map<string, RateLimitEntry>();
  */
 setInterval(() => {
     const now = Date.now();
-    for (const [key, entry] of memoryCache.entries()) {
+    // Convert iterator to array for TypeScript compatibility
+    Array.from(memoryCache.entries()).forEach(([key, entry]) => {
         if (entry.resetAt < now) {
             memoryCache.delete(key);
         }
-    }
+    });
 }, 60000); // Run every 60 seconds
 
 // ============================================================================
