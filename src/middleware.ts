@@ -110,7 +110,8 @@ function isProtectedPath(pathname: string, routes: Set<string>): boolean {
     }
 
     // Check prefix match (e.g., /dashboard/* matches /dashboard/clients)
-    for (const route of routes) {
+    // Convert Set to Array for TypeScript compatibility
+    for (const route of Array.from(routes)) {
         if (pathname.startsWith(route + '/')) {
             return true;
         }
