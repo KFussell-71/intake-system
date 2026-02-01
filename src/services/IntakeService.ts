@@ -392,8 +392,17 @@ export class IntakeService {
             consentToRelease: false,
         } as IntakeFormValues);
 
+        // Serialize to database format (JSONB data column)
+        const dbUpdate = {
+            data: this.serializeIntakeData({
+                ...normalizedUpdates,
+                createdBy: userId,
+                createdAt: new Date().toISOString(),
+            }),
+        };
+
         // Update in database
-        await this.repo.updateIntake(intakeId, normalizedUpdates, userId);
+        await this.repo.updateIntake(intakeId, dbUpdate as any, userId);
 
         // TODO: Audit logging should be handled at controller/API route level
         // await logAuditEvent({
