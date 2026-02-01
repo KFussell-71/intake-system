@@ -160,8 +160,7 @@ export class DashboardRepository {
         // Build query
         let query = supabase
             .from('dashboard_stats_view')
-            .select('*')
-            .single();
+            .select('*');
 
         // Apply time range filter if provided
         if (timeRange?.startDate) {
@@ -171,7 +170,8 @@ export class DashboardRepository {
             query = query.lte('created_at', timeRange.endDate);
         }
 
-        const { data, error } = await query;
+        // Execute query and get single result
+        const { data, error } = await query.single();
 
         if (error) {
             throw error;
