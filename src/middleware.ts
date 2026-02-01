@@ -276,8 +276,17 @@ export async function middleware(request: NextRequest) {
         const { supabase, response } = createMiddlewareSupabaseClient(request);
 
         try {
-            // CHANGED: Verify the session is valid by calling Supabase
-            const { data: { user }, error } = await supabase.auth.getUser();
+            // CHANGED: Verify the session is valid by calling Supabase with timeout
+            // Add 5-second timeout to prevent hanging
+            const authPromise = supabase.auth.getUser();
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Auth timeout')), 5000)
+            );
+            
+            const { data: { user }, error } = await Promise.race([
+                authPromise,
+                timeoutPromise
+            ]) as any;
 
             if (error || !user) {
                 // SECURITY: Redirect unauthenticated users to login
@@ -331,11 +340,13 @@ export async function middleware(request: NextRequest) {
             // CHANGED: Added proper error handling for Supabase failures
             console.error(`[AUTH] Middleware error (Request ID: ${requestId}):`, error);
             
-            // Fail closed (deny access) on errors for security
-            return new NextResponse('Authentication service unavailable', {
-                status: 503,
-                headers: { 'X-Request-ID': requestId },
-            });
+            // On timeout or error, redirect to login instead of showing 503
+            // This prevents the app from hanging on the user
+            const loginUrl = new URL('/login', request.url);
+            loginUrl.searchParams.set('redirect', pathname);
+            loginUrl.searchParams.set('reason', 'auth_error');
+            
+            return NextResponse.redirect(loginUrl);
         }
     }
 
