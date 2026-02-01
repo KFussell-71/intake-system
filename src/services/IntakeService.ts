@@ -432,6 +432,10 @@ export class IntakeService {
         }
 
         // Verify user has access to this intake (via client assignment)
+        if (!intake.client_id) {
+            throw new Error('Intake has no associated client');
+        }
+        
         const hasAccess = await this.repo.userHasAccessToClient(userId, intake.client_id);
         
         if (!hasAccess) {
