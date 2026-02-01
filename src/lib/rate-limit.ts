@@ -13,7 +13,7 @@
  * its own state, allowing attackers to bypass limits by hitting different instances.
  */
 
-import { Redis } from '@upstash/redis/with-fetch';
+import { Redis } from '@upstash/redis';
 
 // ============================================================================
 // CONFIGURATION
