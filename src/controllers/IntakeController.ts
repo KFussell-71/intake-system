@@ -13,10 +13,17 @@ export class IntakeController {
         return await generateSuccessSuggestions(data);
     }
 
-    async handleIntakeSubmission(formData: any) {
+    async handleIntakeSubmission(formData: any, userId?: string) {
         try {
+            // Get userId from formData if not provided as parameter
+            const effectiveUserId = userId || formData.assigned_to || formData.userId;
+            
+            if (!effectiveUserId) {
+                throw new Error('User ID is required for intake submission');
+            }
+            
             // Controller coordinates the service call
-            const result = await this.service.submitNewIntake(formData);
+            const result = await this.service.submitNewIntake(formData, effectiveUserId);
             return { success: true, data: result };
         } catch (error) {
             console.error('Intake submission error:', error);
