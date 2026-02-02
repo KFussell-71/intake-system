@@ -1,14 +1,18 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || '');
+/**
+ * COMPLIANCE AGENT
+ * 
+ * This agent validates intake logic.
+ * SECURITY: It automatically detects if it's running on the server or client.
+ * - On Server: Uses the API Key directly (safe).
+ * - On Client: Calls our secure internal API proxy (prevents key exposure).
+ */
 
 export async function validateIntakeLogic(intakeData: any) {
-    if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
-        return { valid: true, issues: [], score: 100 };
-    }
-
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
-
+    const isServer = typeof window === 'undefined';
+    
+    // 1. Prepare the prompt
     const prompt = `
     You are the "New Beginning Logic Guard" for Social Services.
     Your mission is to detect contradictions in Intake Data to prevent service delays.
@@ -41,15 +45,56 @@ export async function validateIntakeLogic(intakeData: any) {
     `;
 
     try {
-        const result = await model.generateContent(prompt);
-        const text = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
-        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        let textResponse: string;
+
+        if (isServer) {
+            // SERVER-SIDE: Use the SDK directly
+            const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+            if (!apiKey) {
+                console.warn('[COMPLIANCE] No API key found for server-side validation.');
+                return { valid: true, issues: [], score: 100 };
+            }
+            const genAI = new GoogleGenerativeAI(apiKey);
+            const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
+            const result = await model.generateContent(prompt);
+            textResponse = result.response.text();
+        } else {
+            // CLIENT-SIDE: Call our secure internal API proxy
+            const response = await fetch('/api/ai/gemini', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt, model: 'gemini-1.5-pro' }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Proxy error: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            // Map Google's response format back to what we expect
+            textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        }
+
+        // Parse the JSON from the AI response
+        const cleanedText = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+        const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
+        
         if (jsonMatch) {
             return JSON.parse(jsonMatch[0]);
         }
+        
         return { valid: true, issues: [], score: 100 };
+
     } catch (error) {
-        console.error('Validation Error:', error);
-        return { valid: true, issues: [{ severity: 'warning', message: 'Logic engine timeout', fields: [] }], score: 99 };
+        console.error('[COMPLIANCE] Validation Error:', error);
+        return { 
+            valid: true, 
+            issues: [{ 
+                severity: 'warning', 
+                message: 'Logic engine connection issue. Manual review suggested.', 
+                fields: [] 
+            }], 
+            score: 99 
+        };
     }
 }
