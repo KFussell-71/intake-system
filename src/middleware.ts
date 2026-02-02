@@ -1,17 +1,16 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { rateLimiters, getRateLimitKey } from '@/lib/rate-limit';
 
 /**
  * SECURITY: Next.js Middleware for Server-Side Route Protection & Rate Limiting
  * 
- * This middleware runs on the Edge and provides:
- * 1. Authentication verification before page load
- * 2. Role-based route protection for sensitive areas
- * 3. Rate limiting for abuse prevention
- * 4. Portal-specific authentication flow
- * 
- * NOTE: This is a first line of defense. Components should still verify auth.
+ * This middleware provides:
+ * 1. REAL authentication verification using supabase.auth.getUser()
+ * 2. Timeout protection to prevent hanging if Supabase is slow
+ * 3. Proper error handling and fail-safe redirects
+ * 4. Rate limiting for abuse prevention
  */
 
 // Routes that require staff authentication
@@ -38,10 +37,48 @@ const PUBLIC_ROUTES = [
     '/',
 ];
 
-// Portal routes (require portal user auth, not staff auth)
-const PORTAL_ROUTES = [
-    '/portal',
-];
+/**
+ * Helper to create a Supabase client for middleware
+ */
+function createMiddlewareSupabaseClient(request: NextRequest) {
+    let response = NextResponse.next({
+        request: {
+            headers: request.headers,
+        },
+    });
+
+    const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                get(name: string) {
+                    return request.cookies.get(name)?.value;
+                },
+                set(name: string, value: string, options: CookieOptions) {
+                    request.cookies.set({ name, value, ...options });
+                    response = NextResponse.next({
+                        request: {
+                            headers: request.headers,
+                        },
+                    });
+                    response.cookies.set({ name, value, ...options });
+                },
+                remove(name: string, options: CookieOptions) {
+                    request.cookies.set({ name, value: '', ...options });
+                    response = NextResponse.next({
+                        request: {
+                            headers: request.headers,
+                        },
+                    });
+                    response.cookies.set({ name, value: '', ...options });
+                },
+            },
+        }
+    );
+
+    return { supabase, response };
+}
 
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
@@ -66,7 +103,7 @@ export async function middleware(request: NextRequest) {
             });
         }
 
-        // Add rate limit headers to response
+        // Handle portal routes
         const response = await handlePortalRoutes(request, pathname);
         response.headers.set('X-RateLimit-Remaining', remaining.toString());
         return response;
@@ -82,11 +119,6 @@ export async function middleware(request: NextRequest) {
     // ======================================================================
     // STAFF AUTHENTICATION CHECK
     // ======================================================================
-    const supabaseAuthToken = request.cookies.get('sb-access-token') ||
-        request.cookies.get('sb-refresh-token') ||
-        Array.from(request.cookies.getAll()).find(c => c.name.includes('-auth-token'));
-
-    // Check if route requires authentication
     const requiresAuth = PROTECTED_ROUTES.some(route =>
         pathname === route || pathname.startsWith(route + '/')
     );
@@ -96,18 +128,40 @@ export async function middleware(request: NextRequest) {
     );
 
     if (requiresAuth || requiresSupervisor) {
-        if (!supabaseAuthToken) {
-            // SECURITY: Redirect unauthenticated users to login
+        const { supabase, response } = createMiddlewareSupabaseClient(request);
+
+        try {
+            // SECURITY: Actually validate the session with a 5-second timeout
+            // This prevents the app from hanging if Supabase is slow or misconfigured
+            const authPromise = supabase.auth.getUser();
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Auth timeout')), 5000)
+            );
+            
+            const result = await Promise.race([authPromise, timeoutPromise]) as any;
+            const user = result?.data?.user;
+            const error = result?.error;
+
+            if (error || !user) {
+                const loginUrl = new URL('/login', request.url);
+                loginUrl.searchParams.set('redirect', pathname);
+                return NextResponse.redirect(loginUrl);
+            }
+
+            // For supervisor routes, we could check the role here, 
+            // but to keep this first fix safe, we'll just verify the user exists
+            if (requiresSupervisor) {
+                response.headers.set('x-requires-supervisor', 'true');
+            }
+
+            return response;
+        } catch (error) {
+            console.error('[AUTH] Middleware authentication error:', error);
+            // On error/timeout, redirect to login as a safe fallback
             const loginUrl = new URL('/login', request.url);
             loginUrl.searchParams.set('redirect', pathname);
+            loginUrl.searchParams.set('reason', 'auth_error');
             return NextResponse.redirect(loginUrl);
-        }
-
-        if (requiresSupervisor) {
-            // Add a header that components can check
-            const response = NextResponse.next();
-            response.headers.set('x-requires-supervisor', 'true');
-            return response;
         }
     }
 
@@ -118,23 +172,19 @@ export async function middleware(request: NextRequest) {
  * Handle portal-specific routes
  */
 async function handlePortalRoutes(request: NextRequest, pathname: string): Promise<NextResponse> {
-    // Portal login page is always accessible
     if (pathname === '/portal/login') {
         return NextResponse.next();
     }
 
-    // Check for portal user auth token
-    const supabaseAuthToken = request.cookies.get('sb-access-token') ||
+    // Use cookie existence check for portal for now (legacy behavior)
+    const hasToken = request.cookies.get('sb-access-token') ||
         request.cookies.get('sb-refresh-token') ||
         Array.from(request.cookies.getAll()).find(c => c.name.includes('-auth-token'));
 
-    // If no auth token, redirect to portal login
-    if (!supabaseAuthToken) {
+    if (!hasToken) {
         return NextResponse.redirect(new URL('/portal/login', request.url));
     }
 
-    // Auth token exists - allow access
-    // Further validation (client_users check) happens in the page component
     return NextResponse.next();
 }
 
@@ -151,6 +201,14 @@ export const config = {
          * - favicon.ico
          * - public files
          */
-        '/((?!api|_next/static|_next/image|favicon.ico|.*\\.png$|.*\\.jpg$|.*\\.svg$|.*\\.webp$).*)',
+        '/dashboard/:path*',
+        '/intake/:path*',
+        '/directory/:path*',
+        '/reports/:path*',
+        '/follow-ups/:path*',
+        '/documents/:path*',
+        '/settings/:path*',
+        '/supervisor/:path*',
+        '/portal/:path*',
     ],
 };
