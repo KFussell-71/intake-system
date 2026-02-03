@@ -11,6 +11,7 @@ export class DashboardController {
             console.error('Dashboard stats fetch error:', error);
             return {
                 success: false,
+                data: null, // Ensure consistent return shape if needed, or handle in component
                 error: error instanceof Error ? error.message : 'Unknown error'
             };
         }

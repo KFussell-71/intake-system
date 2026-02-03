@@ -1,25 +1,25 @@
 import { supabase } from '@/lib/supabase';
+import { DashboardStats, IntakeTrend, StaffWorkload, MyWorkload, ActivityFeedItem } from '@/types/dashboard';
 
 export class DashboardRepository {
-    async getClientStats() {
-        // In a real app, these would be actual queries
-        const { count: totalClients } = await supabase
-            .from('clients')
-            .select('*', { count: 'exact', head: true });
 
-        const { count: completedIntakes } = await supabase
-            .from('intakes')
-            .select('*', { count: 'exact', head: true })
-            .not('completion_date', 'is', null);
+    async getMyWorkload(): Promise<MyWorkload | null> {
+        const { data, error } = await supabase.rpc('get_my_workload');
+        if (error) {
+            console.error('Error fetching my workload:', error);
+            return null;
+        }
+        // RPC returns an array of one object
+        return data && data.length > 0 ? data[0] : null;
+    }
 
-        return {
-            totalClients: totalClients || 0,
-            completed: completedIntakes || 0,
-            inProgress: (totalClients || 0) - (completedIntakes || 0),
-            efficiency: (totalClients || 0) > 0
-                ? Math.round(((completedIntakes || 0) / (totalClients || 1)) * 100)
-                : 0
-        };
+    async getRecentActivity(limit: number = 20): Promise<ActivityFeedItem[]> {
+        const { data, error } = await supabase.rpc('get_recent_activity_feed', { limit_count: limit });
+        if (error) {
+            console.error('Error fetching activity feed:', error);
+            return [];
+        }
+        return data || [];
     }
 }
 

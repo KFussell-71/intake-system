@@ -1,0 +1,47 @@
+name: Migration Safety Check
+
+on:
+  pull_request:
+    paths:
+      - 'supabase/migrations/*.sql'
+
+jobs:
+  check-migrations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Check for Destructive SQL
+        run: |
+          echo "Scanning for destructive operations..."
+          
+          # Get list of changed SQL files
+          files=$(git diff --name-only origin/main -- supabase/migrations/*.sql)
+          
+          if [ -z "$files" ]; then
+            echo "No migration files changed."
+            exit 0
+          fi
+          
+          echo "Checking files: $files"
+          
+          # Patterns to flag
+          errors=0
+          
+          for file in $files; do
+            if grep -iE "DROP TABLE" "$file"; then
+              echo "::warning file=$file::Destructive command 'DROP TABLE' found. Please ensure this is intended."
+            fi
+            
+            if grep -iE "DROP COLUMN" "$file"; then
+              echo "::warning file=$file::Destructive command 'DROP COLUMN' found. Please ensure this is intended."
+            fi
+            
+            if grep -iE "TRUNCATE" "$file"; then
+              echo "::warning file=$file::Destructive command 'TRUNCATE' found."
+            fi
+          done
+          
+          echo "Scan complete."

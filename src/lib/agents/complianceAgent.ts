@@ -1,14 +1,26 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+/**
+ * Compliance Agent - Real-time Intake Logic Validation
+ * 
+ * SECURITY (BLUE TEAM): Uses secure server-side proxy to eliminate
+ * browser-accessible API keys. All AI requests go through /api/ai/gemini
+ * which enforces authentication, rate limiting, and audit logging.
+ */
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || '');
+export interface ValidationResult {
+    valid: boolean;
+    score: number;
+    issues: Array<{
+        severity: 'critical' | 'warning';
+        message: string;
+        fields: string[];
+    }>;
+}
 
-export async function validateIntakeLogic(intakeData: any) {
-    if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
-        return { valid: true, issues: [], score: 100 };
-    }
-
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
-
+/**
+ * Validate intake data for logical consistency
+ * Uses secure proxy route to protect API credentials
+ */
+export async function validateIntakeLogic(intakeData: any): Promise<ValidationResult> {
     const prompt = `
     You are the "New Beginning Logic Guard" for Social Services.
     Your mission is to detect contradictions in Intake Data to prevent service delays.
@@ -41,15 +53,63 @@ export async function validateIntakeLogic(intakeData: any) {
     `;
 
     try {
-        const result = await model.generateContent(prompt);
-        const text = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
-        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        // SECURITY: Call secure proxy instead of Google AI directly
+        const response = await fetch('/api/ai/gemini', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                prompt,
+                model: 'gemini-1.5-pro',
+                temperature: 0.3
+            }),
+            credentials: 'include' // Include session cookies
+        });
+
+        if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+                console.error('Authentication required for AI validation');
+                return { valid: true, issues: [], score: 100 };
+            }
+            if (response.status === 429) {
+                console.warn('Rate limit exceeded for AI validation');
+                return {
+                    valid: true,
+                    issues: [{
+                        severity: 'warning',
+                        message: 'Logic validation rate limit exceeded. Please try again later.',
+                        fields: []
+                    }],
+                    score: 99
+                };
+            }
+            throw new Error(`AI proxy error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const text = data.text || '';
+
+        // Parse JSON response
+        const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim();
+        const jsonMatch = cleanText.match(/\{[\s\S]*\}/);
+
         if (jsonMatch) {
             return JSON.parse(jsonMatch[0]);
         }
+
         return { valid: true, issues: [], score: 100 };
+
     } catch (error) {
         console.error('Validation Error:', error);
-        return { valid: true, issues: [{ severity: 'warning', message: 'Logic engine timeout', fields: [] }], score: 99 };
+        return {
+            valid: true,
+            issues: [{
+                severity: 'warning',
+                message: 'Logic engine timeout',
+                fields: []
+            }],
+            score: 99
+        };
     }
 }

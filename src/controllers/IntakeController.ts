@@ -26,6 +26,33 @@ export class IntakeController {
             };
         }
     }
+
+    async getAssessment(intakeId: string) {
+        return await this.service.getIntakeAssessment(intakeId);
+    }
+
+    async saveAssessment(data: any) {
+        try {
+            const result = await this.service.saveAssessment(data);
+            return { success: true, data: result };
+        } catch (error) {
+            console.error('Assessment save error:', error);
+            return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+        }
+    }
+
+    async addSupervisionNote(note: any) {
+        try {
+            const result = await this.service.addSupervisionNote(note);
+            return { success: true, data: result };
+        } catch (error) {
+            return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+        }
+    }
+
+    async getSupervisionHistory(intakeId: string) {
+        return await this.service.getSupervisionHistory(intakeId);
+    }
 }
 
 export const intakeController = new IntakeController();

@@ -13,8 +13,9 @@ import {
     LogOut,
     Search,
     TrendingUp,
-    CheckCircle2,
-    Clock
+    Clock,
+    BarChart3,
+    Activity
 } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ActionButton } from '@/components/ui/ActionButton';
@@ -23,31 +24,39 @@ import { motion } from 'framer-motion';
 import { dashboardController } from '@/controllers/DashboardController';
 import { authController } from '@/controllers/AuthController';
 import { NotificationCenter } from '@/features/dashboard/components/NotificationCenter';
+import { IntakeTrendChart, WorkloadBarChart } from '@/components/dashboard/AnalyticsCharts';
+import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
+import { DashboardStats } from '@/types/dashboard';
 
 export default function DashboardPage() {
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
+    const [role, setRole] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
-    const [stats, setStats] = useState({
-        totalClients: 0,
-        completed: 0,
-        inProgress: 0,
-        efficiency: 0
-    });
+    const [stats, setStats] = useState<DashboardStats | null>(null);
 
     useEffect(() => {
         const initDashboard = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
                 router.push('/login');
                 return;
             }
-            setUser(user);
+            setUser(session.user);
+
+            // Fetch role
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', session.user.id)
+                .single();
+            setRole(profile?.role || 'staff');
 
             // Fetch real stats
             const statsResult = await dashboardController.getStats();
             if (statsResult.success && statsResult.data) {
-                setStats(statsResult.data);
+                // Assert type safety here since controller returns generic data wrapper
+                setStats(statsResult.data as DashboardStats);
             }
 
             setLoading(false);
@@ -86,6 +95,17 @@ export default function DashboardPage() {
         }
     };
 
+    const isSupervisor = role === 'supervisor' || role === 'admin';
+
+    // Calculate dynamic aggregates
+    const totalClients = isSupervisor ?
+        stats?.staffWorkload.reduce((acc, curr) => acc + curr.active_clients, 0) || 0 :
+        stats?.myWorkload?.active_clients || 0;
+
+    const activeCases = isSupervisor ?
+        stats?.staffWorkload.reduce((acc, curr) => acc + curr.intakes_in_progress, 0) || 0 :
+        stats?.myWorkload?.intakes_in_progress || 0;
+
     return (
         <div className="min-h-screen bg-surface dark:bg-surface-dark selection:bg-accent/30 selection:text-accent">
             {/* Nav */}
@@ -102,11 +122,23 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="flex items-center gap-6">
+                        <ActionButton
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => window.dispatchEvent(new Event('open-global-search'))}
+                            icon={<Search className="w-4 h-4" />}
+                            className="hidden md:flex"
+                        >
+                            <span className="hidden lg:inline">Search</span>
+                            <kbd className="ml-2 pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-slate-100 px-1.5 font-mono text-[10px] font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                                <span className="text-xs">⌘K</span>
+                            </kbd>
+                        </ActionButton>
                         <NotificationCenter />
                         <AccessibilityToggle />
                         <div className="hidden md:block text-right">
                             <p className="text-sm font-semibold">{user?.email?.split('@')[0]}</p>
-                            <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Staff Member</p>
+                            <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">{role || 'Staff'}</p>
                         </div>
                         <ActionButton
                             variant="ghost"
@@ -133,13 +165,15 @@ export default function DashboardPage() {
                             <div className="relative z-10 flex flex-col h-full justify-between">
                                 <div>
                                     <span className="inline-block px-3 py-1 bg-white/10 text-white/80 text-[10px] font-bold uppercase tracking-wider rounded-full mb-4">
-                                        Active Session
+                                        {isSupervisor ? 'Supervisor Dashboard' : 'My Workspace'}
                                     </span>
                                     <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
                                         Good morning,<br />{user?.email?.split('@')[0]}
                                     </h2>
                                     <p className="text-white/60 max-w-md text-lg">
-                                        Ready to help more people today? You have no pending reviews for this morning.
+                                        {isSupervisor
+                                            ? `Team currently managing ${activeCases} active intakes across ${stats?.staffWorkload.length || 0} staff members.`
+                                            : `You have ${activeCases} intakes in progress and ${stats?.myWorkload?.active_clients || 0} active clients.`}
                                     </p>
                                 </div>
                                 <div className="mt-10 flex gap-4">
@@ -158,120 +192,129 @@ export default function DashboardPage() {
                         </GlassCard>
                     </motion.div>
 
-                    {/* Quick Stats */}
+                    {/* Quick Stats - Dynamic */}
                     <motion.div variants={itemVariants} className="md:col-span-4 lg:col-span-4 grid grid-cols-2 gap-4">
                         <GlassCard className="flex flex-col justify-center items-center text-center">
                             <div className="p-3 bg-blue-500/10 rounded-2xl mb-3">
                                 <Users className="w-6 h-6 text-blue-500" />
                             </div>
-                            <p className="text-2xl font-bold">{stats.totalClients.toString().padStart(2, '0')}</p>
+                            <p className="text-2xl font-bold">{totalClients}</p>
                             <p className="text-[10px] uppercase font-bold text-slate-400">Total Clients</p>
-                        </GlassCard>
-                        <GlassCard className="flex flex-col justify-center items-center text-center">
-                            <div className="p-3 bg-green-500/10 rounded-2xl mb-3">
-                                <CheckCircle2 className="w-6 h-6 text-green-500" />
-                            </div>
-                            <p className="text-2xl font-bold">{stats.completed.toString().padStart(2, '0')}</p>
-                            <p className="text-[10px] uppercase font-bold text-slate-400">Completed</p>
                         </GlassCard>
                         <GlassCard className="flex flex-col justify-center items-center text-center">
                             <div className="p-3 bg-amber-500/10 rounded-2xl mb-3">
                                 <Clock className="w-6 h-6 text-amber-500" />
                             </div>
-                            <p className="text-2xl font-bold">{stats.inProgress.toString().padStart(2, '0')}</p>
+                            <p className="text-2xl font-bold">{activeCases}</p>
                             <p className="text-[10px] uppercase font-bold text-slate-400">In Progress</p>
                         </GlassCard>
-                        <GlassCard className="flex flex-col justify-center items-center text-center hoverable" onClick={() => router.push('/reports')}>
+                        <GlassCard className="col-span-2 flex flex-col justify-center items-center text-center">
                             <div className="p-3 bg-purple-500/10 rounded-2xl mb-3">
-                                <TrendingUp className="w-6 h-6 text-purple-500" />
+                                <Activity className="w-6 h-6 text-purple-500" />
                             </div>
-                            <p className="text-2xl font-bold">{stats.efficiency}%</p>
-                            <p className="text-[10px] uppercase font-bold text-slate-400">Efficiency</p>
+                            <p className="text-sm font-medium text-slate-500 mb-1">Latest Activity</p>
+                            <p className="text-xs text-slate-400 max-w-[200px] truncate">
+                                {stats?.recentActivity?.[0]?.description || 'No recent activity'}
+                            </p>
                         </GlassCard>
                     </motion.div>
 
-                    {/* Navigation Bento */}
-                    <motion.div variants={itemVariants} className="md:col-span-2 lg:col-span-3">
+                    {/* Analytics Section - Supervisor Only */}
+                    {isSupervisor && stats && (
+                        <>
+                            <motion.div variants={itemVariants} className="md:col-span-4 lg:col-span-8">
+                                <GlassCard className="h-full">
+                                    <div className="flex items-center gap-2 mb-6">
+                                        <TrendingUp className="w-5 h-5 text-blue-500" />
+                                        <h3 className="text-lg font-bold">Intake Volume Trends</h3>
+                                    </div>
+                                    <IntakeTrendChart data={stats.intakeTrends} />
+                                </GlassCard>
+                            </motion.div>
+                            <motion.div variants={itemVariants} className="md:col-span-4 lg:col-span-4">
+                                <GlassCard className="h-full">
+                                    <div className="flex items-center gap-2 mb-6">
+                                        <BarChart3 className="w-5 h-5 text-orange-500" />
+                                        <h3 className="text-lg font-bold">Team Workload</h3>
+                                    </div>
+                                    <WorkloadBarChart data={stats.staffWorkload} />
+                                </GlassCard>
+                            </motion.div>
+                        </>
+                    )}
+
+                    {/* Activity Feed - Everyone */}
+                    <motion.div variants={itemVariants} className="md:col-span-4 lg:col-span-6">
+                        <GlassCard className="h-full min-h-[400px]">
+                            <div className="flex items-center justify-between mb-6">
+                                <div className="flex items-center gap-2">
+                                    <History className="w-5 h-5 text-slate-500" />
+                                    <h3 className="text-lg font-bold">Recent Activity</h3>
+                                </div>
+                                <span className="text-xs text-slate-400">Last 10 events</span>
+                            </div>
+                            {stats?.recentActivity && <ActivityFeed items={stats.recentActivity} />}
+                        </GlassCard>
+                    </motion.div>
+
+                    {/* Navigation Bento (Reduced) */}
+                    <motion.div variants={itemVariants} className="md:col-span-4 lg:col-span-6 grid grid-cols-2 gap-6">
                         <GlassCard
                             hoverable
                             onClick={() => router.push('/directory')}
-                            className="h-full flex flex-col justify-between"
+                            className="flex flex-col justify-between"
                         >
-                            <div className="w-12 h-12 bg-slate-100 dark:bg-white/5 rounded-2xl flex items-center justify-center mb-6">
-                                <Search className="w-6 h-6 text-slate-600 dark:text-slate-300" />
+                            <div className="w-10 h-10 bg-slate-100 dark:bg-white/5 rounded-xl flex items-center justify-center mb-4">
+                                <Search className="w-5 h-5 text-slate-600 dark:text-slate-300" />
                             </div>
                             <div>
-                                <h3 className="text-xl font-bold mb-2">Search Directory</h3>
-                                <p className="text-sm text-slate-500">Find any client or historical intake record instantly.</p>
+                                <h3 className="font-bold mb-1">Directory</h3>
+                                <p className="text-xs text-slate-500">Search clients</p>
                             </div>
                         </GlassCard>
-                    </motion.div>
 
-                    <motion.div variants={itemVariants} className="md:col-span-2 lg:col-span-3">
-                        <GlassCard
-                            hoverable
-                            onClick={() => router.push('/follow-ups')}
-                            className="h-full flex flex-col justify-between"
-                        >
-                            <div className="w-12 h-12 bg-accent/10 rounded-2xl flex items-center justify-center mb-6">
-                                <History className="w-6 h-6 text-accent" />
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-bold mb-2 text-accent">Follow-ups</h3>
-                                <p className="text-sm text-slate-500">View clients requiring contact or service updates.</p>
-                            </div>
-                        </GlassCard>
-                    </motion.div>
-
-                    <motion.div variants={itemVariants} className="md:col-span-2 lg:col-span-3">
-                        <GlassCard
-                            hoverable
-                            onClick={() => router.push('/reports')}
-                            className="h-full flex flex-col justify-between"
-                        >
-                            <div className="w-12 h-12 bg-slate-100 dark:bg-white/5 rounded-2xl flex items-center justify-center mb-6">
-                                <FileText className="w-6 h-6 text-slate-600 dark:text-slate-300" />
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-bold mb-2">Service Reports</h3>
-                                <p className="text-sm text-slate-500">Generate analytics and impact summaries for the DOR.</p>
-                            </div>
-                        </GlassCard>
-                    </motion.div>
-
-                    <motion.div variants={itemVariants} className="md:col-span-2 lg:col-span-3">
-                        <GlassCard
-                            hoverable
-                            onClick={() => router.push('/settings')}
-                            className="h-full flex flex-col justify-between"
-                        >
-                            <div className="w-12 h-12 bg-slate-100 dark:bg-white/5 rounded-2xl flex items-center justify-center mb-6">
-                                <Settings className="w-6 h-6 text-slate-600 dark:text-slate-300" />
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-bold mb-2">Platform Settings</h3>
-                                <p className="text-sm text-slate-500">Manage your profile, preferences, and notifications.</p>
-                            </div>
-                        </GlassCard>
-                    </motion.div>
-
-                    {/* Document Management Tile */}
-                    <motion.div variants={itemVariants} className="md:col-span-2 lg:col-span-3">
                         <GlassCard
                             hoverable
                             onClick={() => router.push('/documents')}
-                            className="h-full flex flex-col justify-between border-l-4 border-l-blue-500"
+                            className="flex flex-col justify-between border-l-4 border-l-blue-500"
                         >
-                            <div className="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6">
-                                <FileText className="w-6 h-6 text-blue-500" />
+                            <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center mb-4">
+                                <FileText className="w-5 h-5 text-blue-500" />
                             </div>
                             <div>
-                                <h3 className="text-xl font-bold mb-2 text-blue-600 dark:text-blue-400">File Cabinet</h3>
-                                <p className="text-sm text-slate-500">Scan, upload, and print client consents & forms.</p>
+                                <h3 className="font-bold mb-1">Files</h3>
+                                <p className="text-xs text-slate-500">Manage docs</p>
+                            </div>
+                        </GlassCard>
+
+                        <GlassCard
+                            hoverable
+                            onClick={() => router.push('/reports')}
+                            className="flex flex-col justify-between"
+                        >
+                            <div className="w-10 h-10 bg-slate-100 dark:bg-white/5 rounded-xl flex items-center justify-center mb-4">
+                                <FileText className="w-5 h-5 text-slate-600 dark:text-slate-300" />
+                            </div>
+                            <div>
+                                <h3 className="font-bold mb-1">Reports</h3>
+                                <p className="text-xs text-slate-500">Export data</p>
+                            </div>
+                        </GlassCard>
+
+                        <GlassCard
+                            hoverable
+                            onClick={() => router.push('/settings')}
+                            className="flex flex-col justify-between"
+                        >
+                            <div className="w-10 h-10 bg-slate-100 dark:bg-white/5 rounded-xl flex items-center justify-center mb-4">
+                                <Settings className="w-5 h-5 text-slate-600 dark:text-slate-300" />
+                            </div>
+                            <div>
+                                <h3 className="font-bold mb-1">Settings</h3>
+                                <p className="text-xs text-slate-500">Preferences</p>
                             </div>
                         </GlassCard>
                     </motion.div>
-
                 </motion.div>
             </main>
         </div>

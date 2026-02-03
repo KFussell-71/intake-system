@@ -55,7 +55,9 @@ export default function NewIntakePage() {
         currentStep,
         handleInputChange,
         nextStep,
-        prevStep
+        prevStep,
+        lastSaved,
+        clearDraft
     } = useIntakeForm();
 
     const [error, setError] = useState('');
@@ -93,6 +95,15 @@ export default function NewIntakePage() {
         } finally {
             setCheckingCompliance(false);
         }
+    };
+
+    const handleSaveAndExit = () => {
+        // Validation skipped, strictly save draft state (already handled by Auto-save hook)
+        // Just provide feedback and route
+        setSaving(true);
+        setTimeout(() => {
+            router.push('/dashboard');
+        }, 800);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -161,6 +172,7 @@ export default function NewIntakePage() {
 
             if (!result.success) throw new Error(result.error);
 
+            clearDraft(); // Critical: clear local storage on success
             setSuccess(true);
             return { success: true, clientId: result.data?.client_id };
 
@@ -212,15 +224,40 @@ export default function NewIntakePage() {
     return (
         <div className="min-h-screen bg-surface dark:bg-surface-dark py-12 px-6">
             <div className="max-w-3xl mx-auto">
+                {/* Header with Auto-Save Status */}
                 <div className="flex justify-between items-start mb-8">
-                    <button
-                        onClick={() => router.push('/dashboard')}
-                        className="flex items-center gap-2 text-slate-500 hover:text-primary transition-colors font-semibold group"
-                    >
-                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                        Back to Dashboard
-                    </button>
-                    <AccessibilityToggle />
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={() => router.push('/dashboard')}
+                            className="flex items-center gap-2 text-slate-500 hover:text-primary transition-colors font-semibold group"
+                        >
+                            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                            Back to Dashboard
+                        </button>
+                        {lastSaved && (
+                            <div className="flex items-center gap-2 px-3 py-1 bg-green-500/10 rounded-full">
+                                <span className="relative flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                </span>
+                                <span className="text-xs font-bold text-green-600 dark:text-green-400">
+                                    Draft Saved {lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                                </span>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="flex gap-4">
+                        <ActionButton
+                            variant="secondary"
+                            size="sm"
+                            onClick={handleSaveAndExit}
+                            className="border-slate-200"
+                        >
+                            Save & Exit
+                        </ActionButton>
+                        <AccessibilityToggle />
+                    </div>
                 </div>
 
                 <div className="mb-12">
@@ -333,7 +370,7 @@ export default function NewIntakePage() {
                                 <div className="flex gap-4">
                                     <ActionButton
                                         variant="secondary"
-                                        onClick={handleSubmit}
+                                        onClick={handleSaveAndExit}
                                         isLoading={saving}
                                         className="border-slate-200"
                                     >

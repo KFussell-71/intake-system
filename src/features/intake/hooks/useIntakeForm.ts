@@ -1,5 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { IntakeFormData } from '../types/intake';
+
+const STORAGE_KEY = 'intake_draft_v1';
 
 const initialFormData: IntakeFormData = {
     clientName: '',
@@ -90,8 +92,35 @@ const initialFormData: IntakeFormData = {
 };
 
 export function useIntakeForm() {
-    const [formData, setFormData] = useState<IntakeFormData>(initialFormData);
+    // Lazy initialization to load draft if exists
+    const [formData, setFormData] = useState<IntakeFormData>(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    return { ...initialFormData, ...JSON.parse(saved) };
+                } catch (e) {
+                    console.error('Failed to parse draft', e);
+                }
+            }
+        }
+        return initialFormData;
+    });
+
     const [currentStep, setCurrentStep] = useState(0);
+    const [lastSaved, setLastSaved] = useState<Date | null>(null);
+
+    // Auto-Save Effect (Debounced 1s)
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            if (typeof window !== 'undefined') {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+                setLastSaved(new Date());
+            }
+        }, 1000);
+
+        return () => clearTimeout(timeoutId);
+    }, [formData]);
 
     const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
@@ -106,6 +135,14 @@ export function useIntakeForm() {
     const nextStep = useCallback(() => setCurrentStep(prev => Math.min(prev + 1, 5)), []);
     const prevStep = useCallback(() => setCurrentStep(prev => Math.max(prev - 1, 0)), []);
 
+    const clearDraft = useCallback(() => {
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem(STORAGE_KEY);
+        }
+        setFormData(initialFormData);
+        setCurrentStep(0);
+    }, []);
+
     return {
         formData,
         setFormData,
@@ -114,5 +151,7 @@ export function useIntakeForm() {
         handleInputChange,
         nextStep,
         prevStep,
+        lastSaved,
+        clearDraft
     };
 }
