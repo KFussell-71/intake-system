@@ -1,9 +1,14 @@
 import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
 import { marked } from "marked";
+import DOMPurify from "isomorphic-dompurify";
 
 export async function markdownToPdf(markdown: string): Promise<Buffer> {
-    const htmlContent = `
+  // SECURITY: Sanitize HTML content before rendering (BLUE TEAM REMEDIATION: RT-SEC-002)
+  // This prevents XSS and potential SSRF via Puppeteer
+  const sanitizedHtml = DOMPurify.sanitize(marked(markdown) as string);
+
+  const htmlContent = `
   <html>
     <head>
       <style>
@@ -65,7 +70,7 @@ export async function markdownToPdf(markdown: string): Promise<Buffer> {
       </style>
     </head>
     <body>
-      ${marked(markdown)}
+      ${sanitizedHtml}
       <div class="signature-block">
         <div>
           <div style="height: 40px;"></div>
@@ -88,31 +93,31 @@ export async function markdownToPdf(markdown: string): Promise<Buffer> {
   </html>
   `;
 
-    // Determine if we are running in a local environment or serverless
-    const isLocal = process.env.NODE_ENV === 'development';
+  // Determine if we are running in a local environment or serverless
+  const isLocal = process.env.NODE_ENV === 'development';
 
-    const browser = await puppeteer.launch({
-        args: chromium.args,
-        defaultViewport: (chromium as any).defaultViewport || { width: 1280, height: 720 },
-        executablePath: await chromium.executablePath(),
-        headless: (chromium as any).headless !== undefined ? (chromium as any).headless : true
-    });
+  const browser = await puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: (chromium as any).defaultViewport || { width: 1280, height: 720 },
+    executablePath: await chromium.executablePath(),
+    headless: (chromium as any).headless !== undefined ? (chromium as any).headless : true
+  });
 
-    const page = await browser.newPage();
-    await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+  const page = await browser.newPage();
+  await page.setContent(htmlContent, { waitUntil: "networkidle0" });
 
-    const pdf = await page.pdf({
-        format: "Letter",
-        printBackground: true,
-        margin: {
-            top: '0',
-            right: '0',
-            bottom: '0',
-            left: '0'
-        }
-    });
+  const pdf = await page.pdf({
+    format: "Letter",
+    printBackground: true,
+    margin: {
+      top: '0',
+      right: '0',
+      bottom: '0',
+      left: '0'
+    }
+  });
 
-    await browser.close();
-    // PDF is returned as Uint8Array/Buffer
-    return Buffer.from(pdf);
+  await browser.close();
+  // PDF is returned as Uint8Array/Buffer
+  return Buffer.from(pdf);
 }

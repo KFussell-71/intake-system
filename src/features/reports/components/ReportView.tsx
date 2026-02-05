@@ -6,7 +6,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { IntakeReportEditor } from './IntakeReportEditor';
 import { DocumentList } from '@/components/documents/DocumentList';
 import { FileUploadZone } from '@/components/documents/FileUploadZone';
-import { FileText, FolderOpen } from 'lucide-react';
+import { FileText, FolderOpen, Mail } from 'lucide-react';
+import InviteToPortalButton from '@/features/clients/components/InviteToPortalButton';
 
 interface ReportViewProps {
     clientId: string;
@@ -14,15 +15,37 @@ interface ReportViewProps {
 
 export function ReportView({ clientId }: ReportViewProps) {
     const [userId, setUserId] = useState<string | null>(null);
+    const [clientData, setClientData] = useState<any>(null);
+    const [portalAccess, setPortalAccess] = useState<any>(null);
     const [refreshDocs, setRefreshDocs] = useState(0);
 
     useEffect(() => {
-        supabase.auth.getUser().then(({ data }) => {
-            if (data.user) {
-                setUserId(data.user.id);
+        // Fetch User and Client Data
+        const fetchData = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                setUserId(user.id);
             }
-        });
-    }, []);
+
+            // Fetch client details
+            const { data: client } = await supabase
+                .from('clients')
+                .select('name, email')
+                .eq('id', clientId)
+                .single();
+            setClientData(client);
+
+            // Fetch portal access status
+            const { data: access } = await supabase
+                .from('client_users')
+                .select('is_active, expires_at')
+                .eq('client_id', clientId)
+                .single();
+            setPortalAccess(access);
+        };
+
+        fetchData();
+    }, [clientId]);
 
     // Function to force refresh document list after upload
     const handleUploadComplete = () => {
@@ -32,21 +55,34 @@ export function ReportView({ clientId }: ReportViewProps) {
     return (
         <div className="space-y-6">
             <Tabs defaultValue="report" className="w-full">
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                     <div>
-                        <h2 className="text-2xl font-bold tracking-tight mb-1 dark:text-white">Client Case File</h2>
+                        <h2 className="text-2xl font-bold tracking-tight mb-1 dark:text-white">
+                            {clientData?.name || 'Client'} - Case File
+                        </h2>
                         <p className="text-sm text-slate-500 dark:text-slate-400">Manage intake reporting and supporting documentation</p>
                     </div>
-                    <TabsList className="bg-slate-100 dark:bg-slate-800/50 p-1">
-                        <TabsTrigger value="report" className="gap-2 px-4">
-                            <FileText className="w-4 h-4" />
-                            Intake Report
-                        </TabsTrigger>
-                        <TabsTrigger value="documents" className="gap-2 px-4">
-                            <FolderOpen className="w-4 h-4" />
-                            Documents
-                        </TabsTrigger>
-                    </TabsList>
+                    <div className="flex items-center gap-3">
+                        {clientData && (
+                            <InviteToPortalButton
+                                clientId={clientId}
+                                clientName={clientData.name}
+                                clientEmail={clientData.email}
+                                hasActiveAccess={portalAccess?.is_active}
+                                expiresAt={portalAccess?.expires_at}
+                            />
+                        )}
+                        <TabsList className="bg-slate-100 dark:bg-slate-800/50 p-1">
+                            <TabsTrigger value="report" className="gap-2 px-4">
+                                <FileText className="w-4 h-4" />
+                                Intake Report
+                            </TabsTrigger>
+                            <TabsTrigger value="documents" className="gap-2 px-4">
+                                <FolderOpen className="w-4 h-4" />
+                                Documents
+                            </TabsTrigger>
+                        </TabsList>
+                    </div>
                 </div>
 
                 <TabsContent value="report" className="mt-0">

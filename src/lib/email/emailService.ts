@@ -8,6 +8,35 @@ import { Resend } from 'resend';
 
 const apiKey = process.env.RESEND_API_KEY;
 const isDev = !apiKey || apiKey.startsWith('re_placeholder');
+const resend = new Resend(apiKey);
+
+// CONFIGURATION
+const FROM_EMAIL = process.env.FROM_EMAIL || 'notifications@nbo-intake.org';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+
+// SECURITY REMEDIATION: FINDING 6 - Email Rate Limiting
+// Simple in-memory rate limiter (Note: Production Edge/Serverless requires Redis/Upstash)
+// Prevents spam, cost escalations, and quota exhaustion.
+const emailRateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const EMAIL_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour
+const EMAIL_LIMIT_MAX = 20; // 20 emails per hour per recipient
+
+function checkEmailRateLimit(recipient: string): { allowed: boolean; error?: string } {
+    const now = Date.now();
+    const limit = emailRateLimitMap.get(recipient);
+
+    if (!limit || now > limit.resetTime) {
+        emailRateLimitMap.set(recipient, { count: 1, resetTime: now + EMAIL_LIMIT_WINDOW });
+        return { allowed: true };
+    }
+
+    if (limit.count >= EMAIL_LIMIT_MAX) {
+        return { allowed: false, error: 'Recipient rate limit exceeded (20/hr)' };
+    }
+
+    limit.count++;
+    return { allowed: true };
+}
 
 /**
  * Send report submitted email to supervisor
@@ -19,6 +48,11 @@ export async function sendReportSubmittedEmail(params: {
     clientName: string;
     reportId: string;
 }) {
+    // SECURITY: Enforce rate limiting
+    const rateLimit = checkEmailRateLimit(params.supervisorEmail);
+    if (!rateLimit.allowed) {
+        return { success: false, error: rateLimit.error };
+    }
     if (isDev) {
         console.log('📧 [DEV MODE] Email would be sent:', {
             to: params.supervisorEmail,
@@ -83,6 +117,11 @@ export async function sendReportReturnedEmail(params: {
     reportId: string;
     urgent: boolean;
 }) {
+    // SECURITY: Enforce rate limiting
+    const rateLimit = checkEmailRateLimit(params.staffEmail);
+    if (!rateLimit.allowed) {
+        return { success: false, error: rateLimit.error };
+    }
     if (isDev) {
         console.log('📧 [DEV MODE] Email would be sent:', {
             to: params.staffEmail,
@@ -154,6 +193,11 @@ export async function sendReportApprovedEmail(params: {
     clientName: string;
     reportId: string;
 }) {
+    // SECURITY: Enforce rate limiting
+    const rateLimit = checkEmailRateLimit(params.staffEmail);
+    if (!rateLimit.allowed) {
+        return { success: false, error: rateLimit.error };
+    }
     if (isDev) {
         console.log('📧 [DEV MODE] Email would be sent:', {
             to: params.staffEmail,
@@ -219,6 +263,11 @@ export async function sendWorkerAssignmentEmail(params: {
     clientId: string;
     assignmentType: string;
 }) {
+    // SECURITY: Enforce rate limiting
+    const rateLimit = checkEmailRateLimit(params.workerEmail);
+    if (!rateLimit.allowed) {
+        return { success: false, error: rateLimit.error };
+    }
     if (isDev) {
         console.log('📧 [DEV MODE] Email would be sent:', {
             to: params.workerEmail,

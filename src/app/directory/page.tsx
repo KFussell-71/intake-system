@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { Search, Filter, MoreHorizontal, FileText, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import InviteToPortalButton from "@/features/clients/components/InviteToPortalButton";
 
 export default function DirectoryPage() {
     const router = useRouter();
@@ -33,6 +34,10 @@ export default function DirectoryPage() {
                         status,
                         report_date,
                         created_at
+                    ),
+                    client_users (
+                        is_active,
+                        expires_at
                     )
                 `)
                 .order('created_at', { ascending: false });
@@ -151,6 +156,14 @@ export default function DirectoryPage() {
                                     {client.latest_intake ? `Last update: ${new Date(client.latest_intake.report_date).toLocaleDateString()}` : 'Added ' + new Date(client.created_at).toLocaleDateString()}
                                 </span>
                                 <div className="flex gap-2">
+                                    <InviteToPortalButton
+                                        clientId={client.id}
+                                        clientName={client.name}
+                                        clientEmail={client.email}
+                                        hasActiveAccess={client.client_users?.is_active}
+                                        expiresAt={client.client_users?.expires_at}
+                                        iconOnly={true}
+                                    />
                                     <button
                                         className="p-2 bg-slate-50 dark:bg-white/5 rounded-xl hover:bg-primary/10 hover:text-primary transition-all"
                                         title="View Report"

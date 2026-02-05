@@ -89,6 +89,15 @@ const initialFormData: IntakeFormData = {
         { goal: '', actionSteps: '', responsibleParty: '', targetDate: '' },
         { goal: '', actionSteps: '', responsibleParty: '', targetDate: '' }
     ],
+    // Clinical Assessment & Rationale (SME Fix #3)
+    counselorObservations: '',
+    clinicalRationale: '',
+    eligibilityDetermination: 'pending',
+
+    // Performance & Audit tracking
+    sessionStartedAt: new Date().toISOString(),
+    lastSavedAt: new Date().toISOString(),
+    edit_comment: '',
 };
 
 export function useIntakeForm() {

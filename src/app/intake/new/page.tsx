@@ -18,7 +18,8 @@ import {
     GraduationCap,
     Briefcase,
     Shield,
-    AlertCircle
+    AlertCircle,
+    Eye
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GlassCard } from '@/components/ui/GlassCard';
@@ -35,6 +36,8 @@ import { IntakeStepReview } from '@/features/intake/components/IntakeStepReview'
 import { AccessibilityToggle } from '@/components/ui/AccessibilityToggle';
 import { intakeController } from '@/controllers/IntakeController';
 import { LogicValidationSummary } from '@/features/intake/components/LogicValidationSummary';
+import { ReportPreviewModal } from '@/features/intake/components/ReportPreviewModal';
+import { ComplianceSidebar } from '@/features/intake/components/ComplianceSidebar';
 
 const steps = [
     { title: 'Identity', icon: <UserIcon className="w-4 h-4" /> },
@@ -50,9 +53,12 @@ export default function NewIntakePage() {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [intakeId, setIntakeId] = useState<string | null>(null);
     const {
         formData,
+        setFormData,
         currentStep,
+        setCurrentStep,
         handleInputChange,
         nextStep,
         prevStep,
@@ -63,6 +69,7 @@ export default function NewIntakePage() {
     const [error, setError] = useState('');
     const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
     const [success, setSuccess] = useState(false);
+    const [showPreview, setShowPreview] = useState(false);
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -97,13 +104,31 @@ export default function NewIntakePage() {
         }
     };
 
-    const handleSaveAndExit = () => {
-        // Validation skipped, strictly save draft state (already handled by Auto-save hook)
-        // Just provide feedback and route
+    const handleSaveAndExit = async () => {
         setSaving(true);
-        setTimeout(() => {
+        try {
+            if (intakeId) {
+                await intakeController.saveIntakeProgress(intakeId, formData, "Manual Draft Save");
+            } else {
+                const result = await intakeController.handleIntakeSubmission({
+                    p_name: formData.clientName || 'Draft ' + new Date().toLocaleDateString(),
+                    p_phone: formData.phone || '',
+                    p_email: formData.email || '',
+                    p_address: formData.address || '',
+                    p_ssn_last_four: formData.ssnLastFour || '0000',
+                    p_report_date: formData.reportDate,
+                    p_intake_data: { ...formData, status: 'draft' }
+                });
+                if (result.success && result.data?.intake_id) {
+                    setIntakeId(result.data.intake_id);
+                }
+            }
             router.push('/dashboard');
-        }, 800);
+        } catch (err) {
+            setError('Failed to save draft securely.');
+        } finally {
+            setSaving(false);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -113,10 +138,7 @@ export default function NewIntakePage() {
         setValidationErrors({});
 
         try {
-            // 1. Zod Validation
             const validatedData = intakeSchema.parse(formData);
-
-            // 2. Database Submission via Controller
             const result = await intakeController.handleIntakeSubmission({
                 p_name: validatedData.clientName,
                 p_phone: validatedData.phone,
@@ -126,53 +148,14 @@ export default function NewIntakePage() {
                 p_report_date: validatedData.reportDate,
                 p_completion_date: validatedData.completionDate || null,
                 p_intake_data: {
-                    employmentGoals: validatedData.employmentGoals,
-                    educationGoals: validatedData.educationGoals,
-                    housingNeeds: validatedData.housingNeeds,
-                    preEmploymentPrep: {
-                        resumeComplete: validatedData.resumeComplete,
-                        interviewSkills: validatedData.interviewSkills,
-                        jobSearchAssistance: validatedData.jobSearchAssistance,
-                    },
-                    supportiveServices: {
-                        transportation: validatedData.transportationAssistance,
-                        childcare: validatedData.childcareAssistance,
-                        housing: validatedData.housingAssistance,
-                    },
-                    referral: {
-                        source: validatedData.referralSource,
-                        contact: validatedData.referralContact,
-                    },
-                    medicalPsychEvaluations: {
-                        medicalEvalNeeded: validatedData.medicalEvalNeeded,
-                        psychEvalNeeded: validatedData.psychEvalNeeded,
-                        notes: validatedData.medicalPsychNotes,
-                        consentToRelease: validatedData.consentToRelease,
-                    },
-                    notes: validatedData.notes,
-                    // Additional fields from details that the RPC expects
-                    barriers: formData.barriers,
-                    ispGoals: formData.ispGoals,
-                    workExperienceSummary: formData.workExperienceSummary,
-                    desiredJobTitles: formData.desiredJobTitles,
-                    preferredContactMethods: formData.preferredContactMethods,
-                    placement: {
-                        companyName: formData.companyName,
-                        jobTitle: formData.jobTitle,
-                        wage: formData.wage,
-                        hoursPerWeek: formData.hoursPerWeek,
-                        placementDate: formData.placementDate,
-                        probationEnds: formData.probationEnds,
-                        supervisorName: formData.supervisorName,
-                        supervisorPhone: formData.supervisorPhone,
-                        benefits: formData.benefits
-                    }
+                    ...formData,
+                    status: 'submitted'
                 }
             });
 
             if (!result.success) throw new Error(result.error);
 
-            clearDraft(); // Critical: clear local storage on success
+            clearDraft();
             setSuccess(true);
             return { success: true, clientId: result.data?.client_id };
 
@@ -207,6 +190,7 @@ export default function NewIntakePage() {
         const commonProps = {
             formData,
             onChange: handleInputChange,
+            setFormData, // Added for AI Auto-Fill
             errors: validationErrors
         };
 
@@ -216,16 +200,15 @@ export default function NewIntakePage() {
             case 2: return <IntakeStepGoals formData={formData} onChange={handleInputChange} />;
             case 3: return <IntakeStepPrep formData={formData} onChange={handleInputChange} />;
             case 4: return <IntakeStepPlacement formData={formData} onChange={handleInputChange} />;
-            case 5: return <IntakeStepReview formData={formData} onChange={handleInputChange} />;
+            case 5: return <IntakeStepReview {...commonProps} />;
             default: return null;
         }
     };
 
     return (
         <div className="min-h-screen bg-surface dark:bg-surface-dark py-12 px-6">
-            <div className="max-w-3xl mx-auto">
-                {/* Header with Auto-Save Status */}
-                <div className="flex justify-between items-start mb-8">
+            <div className="max-w-7xl mx-auto">
+                <div className="flex justify-between items-start mb-8 max-w-3xl mx-auto lg:mx-0">
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => router.push('/dashboard')}
@@ -241,13 +224,22 @@ export default function NewIntakePage() {
                                     <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                                 </span>
                                 <span className="text-xs font-bold text-green-600 dark:text-green-400">
-                                    Draft Saved {lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                                    Last Snapshot Taken {lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                                 </span>
                             </div>
                         )}
                     </div>
 
                     <div className="flex gap-4">
+                        <ActionButton
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => setShowPreview(true)}
+                            icon={<Eye className="w-4 h-4" />}
+                            className="bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100"
+                        >
+                            Preview Report
+                        </ActionButton>
                         <ActionButton
                             variant="secondary"
                             size="sm"
@@ -260,161 +252,141 @@ export default function NewIntakePage() {
                     </div>
                 </div>
 
-                <div className="mb-12">
+                <div className="mb-12 max-w-3xl mx-auto lg:mx-0">
                     <h1 className="text-4xl font-bold mb-2">New Client Intake</h1>
                     <p className="text-slate-500 font-medium leading-relaxed">
-                        Please follow the steps below to document a new client's information and career readiness plan.
+                        Non-linear documentation enabled. Use the sidebar to track mandatory items.
                     </p>
                 </div>
 
-                {/* Stepper Header */}
-                <div className="flex justify-between items-center mb-12 relative px-4">
-                    <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 dark:bg-white/5 -translate-y-1/2 z-0" />
-                    {steps.map((step, idx) => {
-                        const hasError = (idx === 0 && (validationErrors.clientName || validationErrors.ssnLastFour)) ||
-                            (idx === 1 && validationErrors.consentToRelease);
+                <div className="flex flex-col lg:flex-row gap-10">
+                    <div className="flex-1 max-w-4xl">
+                        <div className="flex justify-between items-center mb-12 relative px-4">
+                            <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 dark:bg-white/5 -translate-y-1/2 z-0" />
+                            {steps.map((step, idx) => {
+                                const hasError = (idx === 0 && (validationErrors.clientName || validationErrors.ssnLastFour)) ||
+                                    (idx === 1 && validationErrors.consentToRelease);
 
-                        return (
-                            <div key={idx} className="relative z-10 flex flex-col items-center">
-                                <motion.div
-                                    initial={false}
-                                    animate={{
-                                        scale: idx === currentStep ? 1.2 : 1,
-                                        backgroundColor: hasError ? '#ef4444' : (idx <= currentStep ? 'var(--color-primary)' : 'var(--color-surface)'),
-                                        color: idx <= currentStep || hasError ? '#fff' : '#64748b'
-                                    }}
-                                    className={`w-10 h-10 rounded-2xl flex items-center justify-center shadow-lg border-4 ${hasError ? 'border-red-500' : (idx <= currentStep ? 'border-primary' : 'border-slate-100 dark:border-white/5')} transition-colors duration-500`}
-                                >
-                                    {idx < currentStep && !hasError ? <CheckCircle className="w-5 h-5" /> : step.icon}
-                                </motion.div>
-                                <span className={`text-[10px] font-bold uppercase tracking-wider mt-3 ${hasError ? 'text-red-500' : (idx === currentStep ? 'text-primary' : 'text-slate-400')}`}>
-                                    {step.title}
-                                </span>
-                            </div>
-                        );
-                    })}
-                </div>
-
-                {success && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="mb-8 p-6 bg-green-500/10 border border-green-500/30 rounded-3xl text-green-600 dark:text-green-400 font-bold text-center"
-                    >
-                        ✓ Intake saved successfully! Creating record and returning to dashboard...
-                    </motion.div>
-                )}
-
-                {error && (
-                    <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className="mb-8 p-6 bg-red-500/10 border border-red-500/30 rounded-3xl text-red-600 dark:text-red-400 font-bold flex items-center gap-3"
-                    >
-                        <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                        <div>
-                            <p>Error: {error}</p>
-                            {Object.keys(validationErrors).length > 0 && (
-                                <p className="text-xs mt-1 font-medium opacity-80">Fields affected: {Object.keys(validationErrors).join(', ')}</p>
-                            )}
+                                return (
+                                    <div
+                                        key={idx}
+                                        className={`relative z-10 flex flex-col items-center ${idx <= currentStep ? 'cursor-pointer hover:scale-105 active:scale-95' : 'opacity-70 cursor-not-allowed'} transition-all`}
+                                        onClick={() => {
+                                            if (idx < currentStep || currentStep === steps.length - 1) {
+                                                setCurrentStep(idx);
+                                            }
+                                        }}
+                                    >
+                                        <motion.div
+                                            initial={false}
+                                            animate={{
+                                                scale: idx === currentStep ? 1.2 : 1,
+                                                backgroundColor: hasError ? '#ef4444' : (idx <= currentStep ? 'var(--color-primary)' : 'var(--color-surface)'),
+                                                color: idx <= currentStep || hasError ? '#fff' : '#64748b'
+                                            }}
+                                            className={`w-10 h-10 rounded-2xl flex items-center justify-center shadow-lg border-4 ${hasError ? 'border-red-500' : (idx <= currentStep ? 'border-primary' : 'border-slate-100 dark:border-white/5')} transition-colors duration-500`}
+                                        >
+                                            {idx < currentStep && !hasError ? <CheckCircle className="w-5 h-5" /> : step.icon}
+                                        </motion.div>
+                                        <span className={`text-[10px] font-bold uppercase tracking-wider mt-3 ${hasError ? 'text-red-500' : (idx === currentStep ? 'text-primary' : 'text-slate-400')}`}>
+                                            {step.title}
+                                        </span>
+                                    </div>
+                                );
+                            })}
                         </div>
-                    </motion.div>
-                )}
 
-                <GlassCard className="overflow-hidden">
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={currentStep}
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            transition={{ duration: 0.3 }}
-                            className="space-y-8"
-                        >
-                            {renderStep()}
-                        </motion.div>
-                    </AnimatePresence>
+                        {error && (
+                            <motion.div
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                className="mb-8 p-6 bg-red-500/10 border border-red-500/30 rounded-3xl text-red-600 dark:text-red-400 font-bold flex items-center gap-3"
+                            >
+                                <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                                <div>
+                                    <p>Error: {error}</p>
+                                </div>
+                            </motion.div>
+                        )}
 
-                    {/* Navigation Buttons */}
-                    <div className="mt-12 flex justify-between items-center border-t border-slate-100 dark:border-white/5 pt-8">
-                        <ActionButton
-                            variant="secondary"
-                            onClick={prevStep}
-                            disabled={currentStep === 0 || saving}
-                            icon={<ChevronLeft className="w-4 h-4" />}
-                        >
-                            Previous
-                        </ActionButton>
+                        <GlassCard className="overflow-hidden">
+                            <AnimatePresence mode="wait">
+                                <motion.div
+                                    key={currentStep}
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="space-y-8"
+                                >
+                                    {renderStep()}
+                                </motion.div>
+                            </AnimatePresence>
 
-                        <div className="flex gap-4">
-                            {currentStep === steps.length - 1 && (
+                            <div className="mt-12 flex justify-between items-center border-t border-slate-100 dark:border-white/5 pt-8">
                                 <ActionButton
                                     variant="secondary"
-                                    onClick={runComplianceCheck}
-                                    isLoading={checkingCompliance}
-                                    icon={<Shield className="w-4 h-4" />}
-                                    className="border-primary text-primary"
+                                    onClick={prevStep}
+                                    disabled={currentStep === 0 || saving}
+                                    icon={<ChevronLeft className="w-4 h-4" />}
                                 >
-                                    AI Compliance Scan
+                                    Previous
                                 </ActionButton>
-                            )}
-                            {currentStep < steps.length - 1 ? (
-                                <ActionButton
-                                    onClick={nextStep}
-                                    icon={<ChevronRight className="w-4 h-4" />}
-                                    className="bg-accent text-white"
-                                >
-                                    Continue
-                                </ActionButton>
-                            ) : (
+
                                 <div className="flex gap-4">
-                                    <ActionButton
-                                        variant="secondary"
-                                        onClick={handleSaveAndExit}
-                                        isLoading={saving}
-                                        className="border-slate-200"
-                                    >
-                                        Save Draft
-                                    </ActionButton>
-                                    <ActionButton
-                                        onClick={(e) => {
-                                            // Trigger regular submit but then handle navigation differently
-                                            const submitBtn = e.currentTarget;
-                                            (async () => {
-                                                const result = await handleSubmit(e as any);
-                                                if (result?.success) {
-                                                    router.push(`/reports/${result.clientId}`);
-                                                }
-                                            })();
-                                        }}
-                                        isLoading={saving}
-                                        icon={<FileCheck className="w-4 h-4" />}
-                                        className="bg-primary text-white shadow-xl shadow-primary/20"
-                                    >
-                                        Submit & Generate Report
-                                    </ActionButton>
+                                    {currentStep < steps.length - 1 ? (
+                                        <ActionButton
+                                            onClick={nextStep}
+                                            icon={<ChevronRight className="w-4 h-4" />}
+                                            className="bg-accent text-white"
+                                        >
+                                            Continue
+                                        </ActionButton>
+                                    ) : (
+                                        <div className="flex gap-4">
+                                            <ActionButton
+                                                variant="secondary"
+                                                onClick={handleSaveAndExit}
+                                                className="border-slate-200"
+                                            >
+                                                Save Draft
+                                            </ActionButton>
+                                            <ActionButton
+                                                onClick={(e) => {
+                                                    const dummyEvent = { preventDefault: () => { } } as React.FormEvent;
+                                                    handleSubmit(dummyEvent);
+                                                }}
+                                                isLoading={saving}
+                                                icon={<FileCheck className="w-4 h-4" />}
+                                                className="bg-primary text-white shadow-xl shadow-primary/20"
+                                            >
+                                                Submit & Finalize
+                                            </ActionButton>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                        </div>
+                            </div>
+                        </GlassCard>
                     </div>
 
-                    {/* AI Logic Summary Integration */}
-                    {currentStep === steps.length - 1 && (complianceResult || checkingCompliance) && (
-                        <div className="px-8 pb-8">
-                            <LogicValidationSummary result={complianceResult} isChecking={checkingCompliance} />
-
-                            {complianceResult && !complianceResult.valid && (
-                                <button
-                                    onClick={() => setComplianceResult({ ...complianceResult, valid: true })}
-                                    className="mt-4 text-[10px] underline text-slate-400 hover:text-primary font-bold transition-colors"
-                                >
-                                    Override: I have verified these contradictions are actually accurate for this specific case
-                                </button>
-                            )}
-                        </div>
-                    )}
-                </GlassCard>
+                    <ComplianceSidebar formData={formData} />
+                </div>
             </div>
+
+            <ReportPreviewModal
+                open={showPreview}
+                onOpenChange={setShowPreview}
+                formData={formData}
+                onJumpToStep={(stepIndex) => {
+                    setShowPreview(false);
+                    setCurrentStep(stepIndex);
+                }}
+                onSubmit={() => {
+                    setShowPreview(false);
+                    const dummyEvent = { preventDefault: () => { } } as React.FormEvent;
+                    handleSubmit(dummyEvent);
+                }}
+            />
         </div>
     );
 }

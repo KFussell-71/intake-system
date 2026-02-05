@@ -459,14 +459,15 @@ export async function bulkApproveReports(intakeIds: string[]): Promise<{ success
             return { success: false, error: authz.error || 'Unauthorized' };
         }
 
-        const { data, error } = await supabase
-            .from('intakes')
-            .update({ status: 'approved' })
-            .in('id', intakeIds);
+        // RELIABILITY & SECURITY REMEDIATION: RT-REL-001 - Atomic Transactions
+        // Moves the update and status-gate into a single database transaction
+        const { data, error } = await supabase.rpc('bulk_approve_reports', {
+            p_intake_ids: intakeIds
+        });
 
-        if (error) {
-            console.error('Error bulk approving reports:', error);
-            return { success: false, error };
+        if (error || (data && !data.success)) {
+            console.error('Error bulk approving reports:', error || data?.error);
+            return { success: false, error: error || data?.error };
         }
 
         // COMPLIANCE: Log the bulk action - BLOCKING

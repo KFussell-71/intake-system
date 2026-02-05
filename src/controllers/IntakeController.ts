@@ -27,6 +27,17 @@ export class IntakeController {
         }
     }
 
+    async saveIntakeProgress(intakeId: string, data: any, editComment?: string) {
+        try {
+            const result = await this.service.saveIntakeProgress(intakeId, data, editComment);
+            return { success: true, data: result };
+        } catch (error) {
+            console.error('Save progress error:', error);
+            return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+        }
+    }
+
+
     async getAssessment(intakeId: string) {
         return await this.service.getIntakeAssessment(intakeId);
     }

@@ -35,7 +35,7 @@ export type UserRole = 'admin' | 'supervisor' | 'staff' | 'client';
 /**
  * Create a Supabase server client for API routes
  */
-async function createSupabaseServerClient() {
+export async function createSupabaseServerClient() {
     const cookieStore = await cookies();
 
     return createServerClient(
@@ -191,6 +191,13 @@ export function verifyOrigin(request: Request): boolean {
     // Verify origin contains the host
     if (!host || !origin.includes(host)) {
         console.warn(`CSRF: Origin ${origin} does not match host ${host}`);
+        return false;
+    }
+
+    // SECURITY REMEDIATION: FINDING 9 - Missing HTTPS Enforcement
+    // Reject non-HTTPS origins in production to prevent intercepted payloads
+    if (process.env.NODE_ENV === 'production' && !origin.startsWith('https://')) {
+        console.error(`SECURITY: Blocked non-HTTPS origin in production: ${origin}`);
         return false;
     }
 

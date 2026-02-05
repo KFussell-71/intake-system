@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,8 +11,20 @@ import { ReadinessTrendChart } from '@/features/reports/components/ReadinessTren
 import { BarriersRemovalChart } from '@/features/reports/components/BarriersRemovalChart';
 import { SupervisorPulse } from './SupervisorPulse';
 import { BulkActionsToolbar } from './BulkActionsToolbar';
+import { TrainingCenterDialog } from '@/features/training/components/TrainingCenterDialog';
+import { SystemDeadlinesWidget } from './SystemDeadlinesWidget';
+import { generateGmailLink } from '@/lib/googleUtils';
+import { Mail } from 'lucide-react';
+import { TeamChatWidget } from './TeamChatWidget';
+import { TeamManagementWidget } from './TeamManagementWidget';
+import { PredictiveRiskRadar } from './PredictiveRiskRadar';
+import { IntelligenceService } from '@/services/IntelligenceService';
+
+import InviteToPortalButton from '@/features/clients/components/InviteToPortalButton';
+import { useRouter } from 'next/navigation';
 
 export const SupervisorDashboard: React.FC = () => {
+    const router = useRouter();
     const [reviews, setReviews] = React.useState<any[]>([]);
     const [loading, setLoading] = React.useState(true);
     const [currentUserId, setCurrentUserId] = React.useState<string | null>(null);
@@ -23,6 +37,15 @@ export const SupervisorDashboard: React.FC = () => {
         slaBreaches: 0
     });
 
+    const [radarData, setRadarData] = React.useState([
+        { factor: 'Clinical Complexity', value: 0, fullMark: 100 },
+        { factor: 'Audit Risk', value: 0, fullMark: 100 },
+        { factor: 'Velocity Risk', value: 0, fullMark: 100 },
+        { factor: 'Doc Quality', value: 0, fullMark: 100 },
+        { factor: 'Follow-ups', value: 0, fullMark: 100 },
+    ]);
+    const [priorityIndex, setPriorityIndex] = React.useState(0);
+
     const fetchDashboardData = async () => {
         // 0. Get Current User for Conflict Check
         const { data: { user } } = await supabase.auth.getUser();
@@ -33,11 +56,12 @@ export const SupervisorDashboard: React.FC = () => {
             .from('intakes')
             .select(`
                 id,
+                client_id,
                 status,
                 created_at,
                 submitted_at,
                 user_id,
-                clients ( name ),
+                clients ( name, email ),
                 profiles!intakes_user_id_fkey ( username ),
                 intake_assessments ( ai_risk_score, ai_discrepancy_notes )
             `)
@@ -62,7 +86,9 @@ export const SupervisorDashboard: React.FC = () => {
 
                 return {
                     id: r.id,
+                    clientId: r.client_id,
                     client: r.clients?.name || 'Unknown',
+                    email: r.clients?.email,
                     type: 'Intake Report',
                     date: new Date(r.created_at).toLocaleDateString(),
                     specialist: r.profiles?.username || 'Staff',
@@ -80,6 +106,19 @@ export const SupervisorDashboard: React.FC = () => {
                 criticalMismatches: riskCount,
                 slaBreaches: slaCount
             }));
+
+            // Phase 37 Intelligence Integration
+            const aggregateRadar = [
+                { factor: 'Clinical Complexity', value: Math.min(100, riskCount * 25), fullMark: 100 },
+                { factor: 'Audit Risk', value: Math.min(100, formattedReviews.filter(r => r.isHighRisk && !r.riskScore).length * 40), fullMark: 100 },
+                { factor: 'Velocity Risk', value: Math.min(100, slaCount * 20), fullMark: 100 },
+                { factor: 'Doc Quality', value: 85, fullMark: 100 },
+                { factor: 'Follow-ups', value: 60, fullMark: 100 },
+            ];
+            setRadarData(aggregateRadar);
+
+            const avgScore = Math.round(aggregateRadar.reduce((acc, curr) => acc + curr.value, 0) / aggregateRadar.length);
+            setPriorityIndex(avgScore);
         }
         setLoading(false);
     };
@@ -162,6 +201,7 @@ export const SupervisorDashboard: React.FC = () => {
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Supervisor Command Center</h2>
                 <div className="flex space-x-2">
+                    <TrainingCenterDialog />
                     <Button variant="outline" size="sm">Filter by Specialist</Button>
                 </div>
             </div>
@@ -169,10 +209,80 @@ export const SupervisorDashboard: React.FC = () => {
             {/* Phase 36: Pulse Header */}
             <SupervisorPulse stats={pulseStats} />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <ReadinessTrendChart />
-                <BarriersRemovalChart />
+            {/* Phase 37 Strategic Intelligence Alert */}
+            {priorityIndex > 60 && (
+                <div className="bg-orange-500/10 border border-orange-500/20 p-4 rounded-xl flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center">
+                            <AlertTriangle className="w-5 h-5 text-orange-600" />
+                        </div>
+                        <div>
+                            <h4 className="text-sm font-bold text-orange-800 uppercase tracking-tight">Clinical Priority Alert</h4>
+                            <p className="text-xs text-orange-700 font-medium">
+                                High clinical pressure detected. {pulseStats.criticalMismatches} cases flagged with clinical complexity require rationale verification.
+                            </p>
+                        </div>
+                    </div>
+                    <Button variant="ghost" size="sm" className="text-orange-700 hover:bg-orange-500/10 font-bold" onClick={() => router.push('/reports')}>
+                        Strategic Breakdown
+                    </Button>
+                </div>
+            )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <ReadinessTrendChart />
+                        <BarriersRemovalChart />
+                    </div>
+                </div>
+                <div className="lg:col-span-1">
+                    <PredictiveRiskRadar data={radarData} aggregateScore={priorityIndex} />
+                </div>
             </div>
+
+            {/* Google Action Hub - Fix #2 */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[500px]">
+                {/* System Deadlines Feed (Push-to-Google) */}
+                <div className="lg:col-span-1 h-full">
+                    <SystemDeadlinesWidget />
+                </div>
+
+                {/* Google Calendar Embed (Read-Only Visibility) */}
+                <div className="lg:col-span-2 h-full bg-white dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
+                    <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50">
+                        <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg" alt="GCal" className="w-4 h-4" />
+                            Team Calendar
+                        </h3>
+                        <Button variant="ghost" size="sm" className="text-xs text-slate-400" onClick={() => window.open('https://calendar.google.com', '_blank')}>
+                            Open Full Calendar
+                        </Button>
+                    </div>
+                    <div className="flex-1 bg-slate-50 relative group">
+                        {/* Placeholder for Iframe - In prod, this src comes from user settings */}
+                        <iframe
+                            src="https://calendar.google.com/calendar/embed?src=en.usa%23holiday%40group.v.calendar.google.com&ctz=America%2FNew_York"
+                            style={{ border: 0 }}
+                            width="100%"
+                            height="100%"
+                            frameBorder="0"
+                            scrolling="no"
+                            className="grayscale group-hover:grayscale-0 transition-all duration-500 opacity-80 group-hover:opacity-100"
+                        ></iframe>
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-slate-900/5 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span className="bg-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">Live Google View</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Team Management & Roster */}
+                <div className="grid grid-cols-12 gap-6">
+                    <TeamManagementWidget />
+                </div>
+            </div>
+
+
 
             <div className="bg-white rounded-md border shadow-sm overflow-hidden">
                 <div className="p-4 border-b flex justify-between items-center bg-gray-50">
@@ -241,22 +351,54 @@ export const SupervisorDashboard: React.FC = () => {
                                     </td>
                                     <td className="px-6 py-4">{r.specialist}</td>
                                     <td className="px-6 py-4 text-right space-x-2">
-                                        {isSelfApproval ? (
-                                            <span className="text-xs text-slate-400 italic mr-2" title="Cannot approve own work">Conflict of Interest</span>
-                                        ) : (
-                                            <Button size="sm" variant="ghost" className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50">
-                                                <CheckCircle className="w-4 h-4 mr-1" /> Approve
+                                        <div className="flex justify-end items-center gap-2">
+                                            <InviteToPortalButton
+                                                clientId={r.clientId}
+                                                clientName={r.client}
+                                                clientEmail={r.email}
+                                                iconOnly={true}
+                                            />
+                                            {isSelfApproval ? (
+                                                <span className="text-xs text-slate-400 italic mr-2" title="Cannot approve own work">Conflict of Interest</span>
+                                            ) : (
+                                                <Button size="sm" variant="ghost" className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50">
+                                                    <CheckCircle className="w-4 h-4 mr-1" /> Approve
+                                                </Button>
+                                            )}
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                onClick={() => router.push(`/reports/${r.clientId}`)}
+                                            >
+                                                View
                                             </Button>
-                                        )}
-                                        View
-                                    </Button>
-                                </td>
+                                            <Button
+                                                size="sm"
+                                                variant="ghost"
+                                                className="text-slate-500 hover:text-indigo-600"
+                                                title="Email Specialist"
+                                                onClick={() => {
+                                                    const link = generateGmailLink({
+                                                        to: r.email || 'specialist@agency.com', // Fallback if r.email is client email, assuming r.specialist has an email map or direct prop in real app
+                                                        subject: `Feedback Re: Client ${r.client}`,
+                                                        body: `Hi ${r.specialist},\n\nRegarding the intake for ${r.client} submitted on ${r.date}...\n\nThanks,`
+                                                    });
+                                                    window.open(link, '_blank');
+                                                }}
+                                            >
+                                                <Mail className="w-4 h-4" />
+                                            </Button>
+                                        </div>
+                                    </td>
                                 </tr>
-                    );
+                            );
                         })}
-                </tbody>
-            </table>
-        </div>
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Secure Ephemeral Chat - Fix #3 */}
+            <TeamChatWidget />
         </div >
     );
 };

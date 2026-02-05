@@ -1,11 +1,31 @@
-# Document Management Feature - Research Findings
-## Created: 2026-02-03
+# Red Team Assessment Findings
 
-## Key Discoveries
--
+## Security & Vulnerabilities
 
-## Open Questions
--
+| Finding ID | Severity | Description | Status |
+| :--- | :--- | :--- | :--- |
+| RT-SEC-001 | TBD | Initial Scan Pending | Open |
 
-## Resources
--
+## Privacy & Data Protection
+
+*No findings yet.*
+
+## AI Governance & Safety
+
+*No findings yet.*
+
+## Compliance & Regulatory Risk
+
+*No findings yet.*
+
+## Reliability & Failure Modes
+
+*No findings yet.*
+
+## Maintainability & Scalability
+
+*No findings yet.*
+
+## UX / Human Error Risk
+
+*No findings yet.*

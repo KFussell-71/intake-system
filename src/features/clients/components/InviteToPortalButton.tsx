@@ -10,6 +10,7 @@ interface InviteToPortalButtonProps {
     clientEmail?: string;
     hasActiveAccess?: boolean;
     expiresAt?: string;
+    iconOnly?: boolean;
 }
 
 /**
@@ -23,7 +24,8 @@ export default function InviteToPortalButton({
     clientName,
     clientEmail,
     hasActiveAccess = false,
-    expiresAt
+    expiresAt,
+    iconOnly = false
 }: InviteToPortalButtonProps) {
     const [showModal, setShowModal] = useState(false);
     const [email, setEmail] = useState(clientEmail || '');
@@ -140,13 +142,20 @@ export default function InviteToPortalButton({
     return (
         <>
             <button
-                onClick={() => setShowModal(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-sm font-medium rounded-lg transition-all shadow-lg shadow-emerald-500/20"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setShowModal(true);
+                }}
+                className={iconOnly
+                    ? "p-2 bg-slate-50 dark:bg-white/5 rounded-xl hover:bg-emerald-500/10 hover:text-emerald-500 transition-all"
+                    : "inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-sm font-medium rounded-lg transition-all shadow-lg shadow-emerald-500/20"
+                }
+                title={iconOnly ? `Invite ${clientName} to Portal` : undefined}
             >
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                Invite to Portal
+                {!iconOnly && "Invite to Portal"}
             </button>
 
             {/* Modal */}
@@ -189,8 +198,8 @@ export default function InviteToPortalButton({
 
                             {message && (
                                 <div className={`p-3 rounded-lg ${message.type === 'success'
-                                        ? 'bg-emerald-500/10 border border-emerald-500/20'
-                                        : 'bg-red-500/10 border border-red-500/20'
+                                    ? 'bg-emerald-500/10 border border-emerald-500/20'
+                                    : 'bg-red-500/10 border border-red-500/20'
                                     }`}>
                                     <p className={`text-sm ${message.type === 'success' ? 'text-emerald-300' : 'text-red-300'
                                         }`}>

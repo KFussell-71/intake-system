@@ -110,10 +110,10 @@ function validateAIOutput(output: string, clientName: string): { valid: boolean;
     return { valid: true };
 }
 
-export async function runDorAgent(data: IntakeBundle): Promise<string> {
+export async function runDorAgent(data: IntakeBundle, preparerName: string = "Employment Specialist"): Promise<string> {
     const LOCKED_SYSTEM_PROMPT = `
 # SYSTEM ROLE:
-You are James Jones, an Employment Specialist at New Beginning Outreach, writing on behalf of the California Department of Rehabilitation (DOR).
+You are ${preparerName}, an Employment Specialist at New Beginning Outreach, writing on behalf of the California Department of Rehabilitation (DOR).
 
 # CRITICAL INSTRUCTION:
 You must generate a COMPLETE, FULLY-WRITTEN Employment Services Intake Report with full sentences, detailed narratives, and professional prose. This is NOT a template with placeholders - every section must contain actual written content based on the provided data.
@@ -132,7 +132,7 @@ You must generate a COMPLETE, FULLY-WRITTEN Employment Services Intake Report wi
 
 **Report Date:** [Format as MM/DD/YYYY]
 
-**Report Prepared By:** James Jones, Employment Specialist
+**Report Prepared By:** ${preparerName}, Employment Specialist
 
 **Overview of Intake Process**
 Write: "Participant [Name] successfully completed the Employment Services Intake on [Date]. The intake process was designed to assess [his/her] current employment situation, review relevant documentation, and develop an Individual Service Plan (ISP) tailored to [his/her] job search needs and employment goals."
@@ -229,7 +229,7 @@ Work Attire
 Uniforms
 Master Application
 
-**James Jones**
+**${preparerName}**
 **Employment Specialist**
 **New Beginning Outreach**
 
@@ -275,15 +275,21 @@ Master Application
     Status: ${sanitizeForPrompt(data.intake.status)}
     Specialist: ${sanitizeForPrompt(data.intake.employment_specialist)}
     
+    CLINICAL RATIONALE (Case Manager's Judgment):
+    ${sanitizeForPrompt(data.intake.details?.counselorRationale)}
+    
     EMPLOYMENT HISTORY:
     ${data.employment_history.map(h => `- ${sanitizeForPrompt(h.job_title)} at ${sanitizeForPrompt(h.employer)}`).join('\n    ')}
     
     ISP GOALS:
-    ${data.isp_goals.map(g => `- ${sanitizeForPrompt(g.goal_type)} (${sanitizeForPrompt(g.status)})`).join('\n    ')}
+    ${data.isp_goals.map(g => `- ${sanitizeForPrompt(g.goal_type)} (${sanitizeForPrompt(g.status)}) [Rationale: ${sanitizeForPrompt((g as any).counselor_rationale)}]`).join('\n    ')}
     
     SUPPORT SERVICES:
     ${data.supportive_services.map(s => `- ${sanitizeForPrompt(s.service_type)}: ${sanitizeForPrompt(s.description)}`).join('\n    ')}
     
+    INSTRUCTION FOR CONCLUSION:
+    You MUST synthesize the Case Manager's Clinical Rationale provided above into the final narrative. Do not just repeat it; integrate it with the client's goals to show WHY the plan is appropriate.
+
     OUTPUT: Structured Markdown matching DOR.ES template exactly. No preamble.
   `;
 
@@ -301,7 +307,7 @@ Master Application
         const { GoogleGenerativeAI } = await import("@google/generative-ai");
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({
-            model: "gemini-2.5-pro",
+            model: "gemini-1.5-pro",
         });
 
         const result = await model.generateContent({

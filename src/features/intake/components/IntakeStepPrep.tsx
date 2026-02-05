@@ -5,6 +5,7 @@ import { FormCheckbox } from './FormCheckbox';
 import { IntakeFormData } from '../types/intake';
 import { PreparationReadinessSection } from './PreparationReadinessSection';
 import { WeeklyCheckInSection } from './WeeklyCheckInSection';
+import { CounselorRationaleField } from './CounselorRationaleField';
 
 interface Props {
     formData: IntakeFormData;
@@ -70,6 +71,14 @@ export const IntakeStepPrep: React.FC<Props> = ({ formData, onChange }) => {
             <hr className="border-slate-100 dark:border-white/5" />
 
             <PreparationReadinessSection formData={formData} onChange={onChange} />
+
+            <CounselorRationaleField
+                label="Preparation Assessment"
+                name="counselorObservations"
+                value={formData.counselorObservations || ''}
+                onChange={onChange as any}
+                placeholder="Document professional assessment of client's readiness for employment based on class participation and preparation quality..."
+            />
         </div>
     );
 };

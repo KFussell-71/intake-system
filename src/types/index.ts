@@ -1,7 +1,9 @@
 export type Profile = {
     id: string;
     username: string;
-    role: 'staff' | 'admin';
+    full_name?: string;
+    email?: string;
+    role: 'admin' | 'supervisor' | 'specialist' | 'intake_worker';
 };
 
 export type Client = {

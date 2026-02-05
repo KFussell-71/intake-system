@@ -1,46 +1,39 @@
-# Feature 4: Document Management - Task Plan
+# Red Team Assessment Plan: DOR Intake System [COMPLETE]
 
-## Overview
+## Objective
 
-- **Goal**: Enable efficient document handling (Upload, Storage, Preview) linked to Clients.
-- **Success Criteria**:
-  - Users can upload PDFs/Images to a secure Storage Bucket.
-  - Uploads are linked to `documents` table records.
-  - Users can preview PDFs within the app without downloading.
-  - Security: RLS enforces access (Staff only see assigned clients' docs).
-- **Constraints**:
-  - Supabase Storage requires "Storage Policies" (distinct from Table RLS).
-  - Mock environment must simulate storage actions (`upload`, `createSignedUrl`).
+Aggressively identify weaknesses, vulnerabilities, compliance gaps, and architectural risks in the Department of Rehabilitation (DOR) Employment Services platform.
 
 ## Phases
 
-### Phase 1: Storage & Backend Verification
+### Phase 1: Reconnaissance & Surface Mapping
 
-- Status: not_started
-- Tasks:
-  - [ ] Verify `documents` table schema (done?).
-  - [ ] Create `storage_policies.sql` migration for "documents" bucket.
-  - [ ] Verify `documentService.ts` supports storage operations.
-  - [ ] Update `mock.ts` to simulate file uploads.
-- Output: Backend ready for binary data.
+- [x] Map the application architecture (Frontend, Backend, Database, AI layers).
+- [x] Identify entry points (Public/Authenticated APIs).
+- [x] Inventory high-value targets (PII, PHI, Admin controls).
 
-### Phase 2: UI Implementation
+### Phase 2: Security & Privacy Deep Dive
 
-- Status: complete
-- Tasks:
-  - [ ] Create `FileUploadZone` component (Drag & Drop).
-  - [ ] Create `DocumentPreview` modal (PDF Viewer).
-  - [ ] Integrate into Client Profile -> Documents Tab.
-- Output: Functional Document UI.
+- [x] **Supabase RLS Audit**: Verified RLS coverage and discovered RPC bypasses.
+- [x] **AI Prompt Analysis**: Evaluated `runDorAgent` and found role spoofing.
+- [x] **Secrets Hunt**: No hardcoded keys found in scan, but PII leakage in logs identified.
+- [x] **PDF Pipeline Review**: Identified XSS-to-SSRF in Puppeteer rendering.
 
-## Decision Log
+### Phase 3: Reliability & Compliance Review
 
-| Date | Decision | Alternatives | Rationale |
-|------|----------|--------------|-----------|
-| | | | |
+- [x] **Race Condition Check**: Confirmed non-atomic transactions in bulk actions.
+- [x] **Audit Trail Integrity**: Found missing triggers on `profiles` and redundant staff-read access.
+- [x] **PII Safety**: Confirmed SSN exposure in broad `SELECT` queries.
 
-## Error Log
+### Phase 4: Maintainability & Scaling Assessment
 
-| Attempt | Error | Resolution |
-|---------|-------|------------|
-| | | |
+- [x] Technical debt in mixed Supabase/Repository patterns identified.
+
+### Phase 5: Reporting
+
+- [x] Generated Red Team Assessment Report.
+
+## Session Log
+
+- 2026-02-04: Task initialized.
+- 2026-02-04: Holistic audit completed. Final report generated.

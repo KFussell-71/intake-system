@@ -3,6 +3,7 @@ import { Target } from 'lucide-react';
 import { ElegantInput, ElegantTextarea } from '@/components/ui/ElegantInput';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { IntakeFormData } from '../types/intake';
+import { CounselorRationaleField } from './CounselorRationaleField';
 
 interface Props {
     formData: IntakeFormData;
@@ -17,6 +18,23 @@ export const IntakeStepGoals: React.FC<Props> = ({ formData, onChange, errors = 
                 <Target className="w-6 h-6 text-primary" />
                 Individual Service Plan (ISP)
             </h2>
+
+            <GlassCard className="p-6 mt-6 border border-white/20">
+                <div className="flex items-center justify-between mb-6">
+                    <h4 className="font-semibold text-slate-800 dark:text-slate-100 uppercase tracking-wider text-sm">Eligibility Determination</h4>
+                    <select
+                        name="eligibilityDetermination"
+                        value={formData.eligibilityDetermination}
+                        onChange={onChange}
+                        className="bg-white dark:bg-slate-800 border-none ring-1 ring-slate-200 dark:ring-white/10 rounded-lg text-sm px-4 py-2 focus:ring-primary outline-none"
+                    >
+                        <option value="pending">Pending Review</option>
+                        <option value="eligible">Eligible for Program</option>
+                        <option value="ineligible">Ineligible / Referral Out</option>
+                    </select>
+                </div>
+            </GlassCard>
+
             <ElegantTextarea
                 label="Primary Employment Goals"
                 name="employmentGoals"
@@ -87,7 +105,6 @@ export const IntakeStepGoals: React.FC<Props> = ({ formData, onChange, errors = 
                                     key={num}
                                     type="button"
                                     onClick={() => {
-                                        // Mock event for number input
                                         const event = {
                                             target: {
                                                 name: 'readinessScale',
@@ -108,13 +125,17 @@ export const IntakeStepGoals: React.FC<Props> = ({ formData, onChange, errors = 
                                 </button>
                             ))}
                         </div>
-                        <p className="text-xs text-slate-500 mt-2 flex justify-between w-full max-w-[440px]">
-                            <span>Not Ready</span>
-                            <span>Extremely Ready</span>
-                        </p>
                     </div>
                 </div>
             </GlassCard>
+
+            <CounselorRationaleField
+                label="Career Plan Analysis"
+                name="counselorObservations"
+                value={formData.counselorObservations || ''}
+                onChange={onChange as any}
+                placeholder="Document your professional assessment of the client's goals and how they align with their identified strengths/barriers..."
+            />
 
             <GlassCard className="p-6 mt-6 border border-white/20">
                 <div className="flex items-center justify-between mb-6">
@@ -134,12 +155,9 @@ export const IntakeStepGoals: React.FC<Props> = ({ formData, onChange, errors = 
                 <div className="space-y-8">
                     {(formData.ispGoals || []).map((goal, index) => (
                         <div key={index} className="pl-4 border-l-2 border-slate-100 dark:border-white/5 space-y-4">
-                            <div className="flex items-center gap-2 mb-2">
-                                <span className="bg-slate-900 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">Goal {index + 1}</span>
-                            </div>
                             <ElegantInput
                                 id={`goal-title-${index}`}
-                                label="Goal Title"
+                                label={`Goal ${index + 1}`}
                                 placeholder="State the goal (e.g., Update Resume)"
                                 value={goal.goal}
                                 onChange={(e) => {
@@ -153,7 +171,7 @@ export const IntakeStepGoals: React.FC<Props> = ({ formData, onChange, errors = 
                             <ElegantTextarea
                                 id={`goal-steps-${index}`}
                                 label="Action Steps"
-                                placeholder="Action steps..."
+                                placeholder="Steps to achieve..."
                                 value={goal.actionSteps}
                                 onChange={(e) => {
                                     const updated = [...(formData.ispGoals || [])];
@@ -163,38 +181,6 @@ export const IntakeStepGoals: React.FC<Props> = ({ formData, onChange, errors = 
                                 className="w-full bg-slate-50/50 dark:bg-white/5 rounded p-3 text-sm min-h-[60px] resize-none focus:outline-none focus:ring-1 focus:ring-primary"
                                 enableDictation
                             />
-                            <div className="flex flex-wrap gap-4 items-center">
-                                <div className="flex flex-col gap-1">
-                                    <span className="text-[10px] uppercase font-bold text-slate-400">Responsible</span>
-                                    <select
-                                        value={goal.responsibleParty}
-                                        onChange={(e) => {
-                                            const updated = [...(formData.ispGoals || [])];
-                                            updated[index].responsibleParty = e.target.value as any;
-                                            onChange({ target: { name: 'ispGoals', value: updated } } as any);
-                                        }}
-                                        className="text-xs bg-transparent border-none focus:ring-0 p-0 text-primary font-semibold"
-                                    >
-                                        <option value="">Select...</option>
-                                        <option value="Participant">Participant</option>
-                                        <option value="Case Manager">Case Manager</option>
-                                        <option value="Both">Both</option>
-                                    </select>
-                                </div>
-                                <div className="flex flex-col gap-1">
-                                    <span className="text-[10px] uppercase font-bold text-slate-400">Target Date</span>
-                                    <input
-                                        type="date"
-                                        value={goal.targetDate}
-                                        onChange={(e) => {
-                                            const updated = [...(formData.ispGoals || [])];
-                                            updated[index].targetDate = e.target.value;
-                                            onChange({ target: { name: 'ispGoals', value: updated } } as any);
-                                        }}
-                                        className="text-xs bg-transparent border-none focus:ring-0 p-0 text-slate-700 dark:text-slate-300"
-                                    />
-                                </div>
-                            </div>
                         </div>
                     ))}
                 </div>

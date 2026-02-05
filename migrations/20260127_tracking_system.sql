@@ -45,9 +45,91 @@ CREATE TABLE IF NOT EXISTS retention_contacts (
 ALTER TABLE employment_prep ENABLE ROW LEVEL SECURITY;
 ALTER TABLE retention_contacts ENABLE ROW LEVEL SECURITY;
 
--- Policies
-CREATE POLICY "Staff can do everything" ON employment_prep FOR ALL TO authenticated USING (true);
-CREATE POLICY "Staff can do everything" ON retention_contacts FOR ALL TO authenticated USING (true);
+-- SECURITY REMEDIATION: FINDING 4 - Scoped RLS Policies
+-- Ensures only assigned workers or supervisors can access client prep data
+CREATE POLICY "Staff can view assigned employment_prep" ON employment_prep 
+FOR SELECT TO authenticated 
+USING (
+    EXISTS (
+        SELECT 1 FROM client_assignments 
+        WHERE client_id = employment_prep.client_id 
+        AND assigned_worker_id = auth.uid()
+        AND active = true
+    )
+    OR EXISTS (
+        SELECT 1 FROM profiles 
+        WHERE id = auth.uid() AND role IN ('supervisor', 'admin')
+    )
+);
+
+CREATE POLICY "Staff can manage assigned employment_prep" ON employment_prep 
+FOR ALL TO authenticated 
+USING (
+    EXISTS (
+        SELECT 1 FROM client_assignments 
+        WHERE client_id = employment_prep.client_id 
+        AND assigned_worker_id = auth.uid()
+        AND active = true
+    )
+    OR EXISTS (
+        SELECT 1 FROM profiles 
+        WHERE id = auth.uid() AND role IN ('supervisor', 'admin')
+    )
+)
+WITH CHECK (
+    EXISTS (
+        SELECT 1 FROM client_assignments 
+        WHERE client_id = employment_prep.client_id 
+        AND assigned_worker_id = auth.uid()
+        AND active = true
+    )
+    OR EXISTS (
+        SELECT 1 FROM profiles 
+        WHERE id = auth.uid() AND role IN ('supervisor', 'admin')
+    )
+);
+
+CREATE POLICY "Staff can view assigned retention_contacts" ON retention_contacts 
+FOR SELECT TO authenticated 
+USING (
+    EXISTS (
+        SELECT 1 FROM client_assignments 
+        WHERE client_id = retention_contacts.client_id 
+        AND assigned_worker_id = auth.uid()
+        AND active = true
+    )
+    OR EXISTS (
+        SELECT 1 FROM profiles 
+        WHERE id = auth.uid() AND role IN ('supervisor', 'admin')
+    )
+);
+
+CREATE POLICY "Staff can manage assigned retention_contacts" ON retention_contacts 
+FOR ALL TO authenticated 
+USING (
+    EXISTS (
+        SELECT 1 FROM client_assignments 
+        WHERE client_id = retention_contacts.client_id 
+        AND assigned_worker_id = auth.uid()
+        AND active = true
+    )
+    OR EXISTS (
+        SELECT 1 FROM profiles 
+        WHERE id = auth.uid() AND role IN ('supervisor', 'admin')
+    )
+)
+WITH CHECK (
+    EXISTS (
+        SELECT 1 FROM client_assignments 
+        WHERE client_id = retention_contacts.client_id 
+        AND assigned_worker_id = auth.uid()
+        AND active = true
+    )
+    OR EXISTS (
+        SELECT 1 FROM profiles 
+        WHERE id = auth.uid() AND role IN ('supervisor', 'admin')
+    )
+);
 
 -- Add audit triggers for new tables
 CREATE TRIGGER audit_employment_prep_change

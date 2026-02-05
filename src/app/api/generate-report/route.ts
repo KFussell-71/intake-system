@@ -70,14 +70,14 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const { clientId } = await req.json();
+        const { clientId, previewData } = await req.json();
 
         // SECURITY: Input Validation
-        if (!clientId) {
-            return NextResponse.json({ error: 'Missing clientId' }, { status: 400 });
+        if (!clientId && !previewData) {
+            return NextResponse.json({ error: 'Missing clientId or previewData' }, { status: 400 });
         }
 
-        if (!isValidUUID(clientId)) {
+        if (clientId && !isValidUUID(clientId)) {
             return NextResponse.json(
                 { error: 'Invalid clientId format - must be a valid UUID' },
                 { status: 400 }
@@ -107,91 +107,151 @@ export async function POST(req: NextRequest) {
         const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
         const supabase = createClient(supabaseUrl, supabaseKey);
 
-        // SECURITY: Access Control - Verify user can access this client
-        const { data: accessCheck, error: accessError } = await supabase
-            .from('client_assignments')
-            .select('id')
-            .eq('client_id', clientId)
-            .eq('assigned_worker_id', authz.userId)
-            .eq('active', true)
-            .single();
+        let bundle: IntakeBundle | null = null;
 
-        // If not assigned, check if user is supervisor/admin
-        if (accessError || !accessCheck) {
-            if (authz.role !== 'supervisor' && authz.role !== 'admin') {
-                // SECURITY: Audit failed access attempt
+        if (previewData) {
+            // PREVIEW MODE: Construct pseudo-bundle from draft data
+            // We map the form state to the bundle structure expected by the Agent
+            bundle = {
+                client: {
+                    id: 'preview-id',
+                    name: previewData.clientName || 'DRAFT CLIENT',
+                    first_name: previewData.clientName?.split(' ')[0] || 'DRAFT',
+                    last_name: previewData.clientName?.split(' ').slice(1).join(' ') || 'CLIENT',
+                    phone: previewData.phone,
+                    email: previewData.email,
+                    address: previewData.address,
+                    ssn_last_four: previewData.ssnLastFour || 'XXXX'
+                },
+                intake: {
+                    id: 'preview-intake-id',
+                    intake_date: new Date().toISOString(),
+                    report_date: previewData.reportDate || new Date().toISOString(),
+                    status: 'DRAFT_PREVIEW',
+                    details: previewData,
+                    employment_specialist: 'Preview User' // Placeholder, will be overwritten by preparerName
+                },
+                employment_history: [], // Todo: If form has this, map it
+                isp_goals: (previewData.ispGoals || []).map((g: any) => ({
+                    id: 'preview-goal-' + Math.random(),
+                    goal_type: g.goal,
+                    status: 'proposed',
+                    // Note: counselor_rationale is in details, or we can map it here if the agent expects it on the goal
+                    counselor_rationale: g.counselorRationale
+                })),
+                supportive_services: [
+                    previewData.resumeComplete && { id: 's1', service_type: 'Resume Development', description: 'Assistance with resume', status: 'requested' },
+                    previewData.interviewSkills && { id: 's2', service_type: 'Interview Prep', description: 'Mock interviews', status: 'requested' },
+                    previewData.transportationAssistance && { id: 's3', service_type: 'Transportation', description: 'Bus pass/gas card', status: 'requested' }
+                ].filter(Boolean) as any[],
+                documents: [],
+                follow_up: { notes: 'Preview Mode' }
+            } as any;
+
+        } else {
+            // STANDARD MODE: Fetch from DB
+
+            // SECURITY: Access Control - Verify user can access this client
+            const { data: accessCheck, error: accessError } = await supabase
+                .from('client_assignments')
+                .select('id')
+                .eq('client_id', clientId)
+                .eq('assigned_worker_id', authz.userId)
+                .eq('active', true)
+                .single();
+
+            // If not assigned, check if user is supervisor/admin
+            if (accessError || !accessCheck) {
+                if (authz.role !== 'supervisor' && authz.role !== 'admin') {
+                    // SECURITY: Audit failed access attempt
+                    await supabase.from('audit_logs').insert({
+                        user_id: authz.userId,
+                        action: 'generate_report_denied',
+                        resource_type: 'client',
+                        resource_id: clientId,
+                        metadata: { reason: 'not_assigned', role: authz.role },
+                        ip_address: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip'),
+                        user_agent: req.headers.get('user-agent')
+                    });
+
+                    return NextResponse.json(
+                        { error: 'Access denied. You are not assigned to this client.' },
+                        { status: 403 }
+                    );
+                }
+            }
+
+            // SECURITY: Audit successful access
+            await supabase.from('audit_logs').insert({
+                user_id: authz.userId,
+                action: 'generate_report_started',
+                resource_type: 'client',
+                resource_id: clientId,
+                metadata: { role: authz.role },
+                ip_address: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip'),
+                user_agent: req.headers.get('user-agent')
+            });
+
+            // 1. Fetch Client Bundle via RPC (Authoritative Source)
+            const { data: rpcData, error } = await supabase.rpc('get_client_intake_bundle', {
+                p_client_id: clientId
+            });
+
+            if (error) {
                 await supabase.from('audit_logs').insert({
                     user_id: authz.userId,
-                    action: 'generate_report_denied',
+                    action: 'generate_report_failed',
                     resource_type: 'client',
                     resource_id: clientId,
-                    metadata: { reason: 'not_assigned', role: authz.role },
-                    ip_address: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip'),
+                    metadata: { error: error.message },
+                    ip_address: req.headers.get('x-forwarded-for'),
                     user_agent: req.headers.get('user-agent')
                 });
+                throw new Error(`RPC Error: ${error.message}`);
+            }
 
-                return NextResponse.json(
-                    { error: 'Access denied. You are not assigned to this client.' },
-                    { status: 403 }
-                );
+            if (!rpcData) return NextResponse.json({ error: 'Client bundle not found' }, { status: 404 });
+
+            bundle = rpcData as IntakeBundle;
+
+            // 2. Compliance Gate (Validation) - Only for final reports
+            const validation = validateIntakeBundle(bundle);
+            if (!validation.valid) {
+                return NextResponse.json({
+                    error: 'Cannot generate report. Incomplete DOR record.',
+                    missingFields: validation.missing
+                }, { status: 422 });
             }
         }
 
-        // SECURITY: Audit successful access
-        await supabase.from('audit_logs').insert({
-            user_id: authz.userId,
-            action: 'generate_report_started',
-            resource_type: 'client',
-            resource_id: clientId,
-            metadata: { role: authz.role },
-            ip_address: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip'),
-            user_agent: req.headers.get('user-agent')
-        });
+        // 3. Fetch Preparer Identity (BLUE TEAM REMEDIATION: RT-AI-001)
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('username')
+            .eq('id', authz.userId)
+            .single();
 
-        // 1. Fetch Client Bundle via RPC (Authoritative Source)
-        const { data: bundle, error } = await supabase.rpc('get_client_intake_bundle', {
-            p_client_id: clientId
-        });
+        const preparerName = profile?.username || 'Employment Specialist';
 
-        if (error) {
-            await supabase.from('audit_logs').insert({
-                user_id: authz.userId,
-                action: 'generate_report_failed',
-                resource_type: 'client',
-                resource_id: clientId,
-                metadata: { error: error.message },
-                ip_address: req.headers.get('x-forwarded-for'),
-                user_agent: req.headers.get('user-agent')
-            });
-            throw new Error(`RPC Error: ${error.message}`);
-        }
+        // 4. Run AI Agent (Locked Prompt)
+        const markdown = await runDorAgent(bundle as IntakeBundle, preparerName);
 
-        if (!bundle) {
-            return NextResponse.json({ error: 'Client bundle not found' }, { status: 404 });
-        }
-
-        // 2. Compliance Gate (Validation)
-        const validation = validateIntakeBundle(bundle as IntakeBundle);
-        if (!validation.valid) {
-            return NextResponse.json({
-                error: 'Cannot generate report. Incomplete DOR record.',
-                missingFields: validation.missing
-            }, { status: 422 });
-        }
-
-        // 3. Run AI Agent (Locked Prompt)
-        const markdown = await runDorAgent(bundle as IntakeBundle);
+        // If preview, prepend Warning
+        const finalMarkdown = previewData
+            ? `# ⚠️ DRAFT PREVIEW - NOT FILED ⚠️\n\n${markdown}`
+            : markdown;
 
         // SECURITY: Audit successful generation
         await supabase.from('audit_logs').insert({
             user_id: authz.userId,
-            action: 'generate_report_completed',
+            action: previewData ? 'generate_preview_completed' : 'generate_report_completed',
             resource_type: 'client',
-            resource_id: clientId,
+            resource_id: clientId || 'preview',
             metadata: {
                 role: authz.role,
                 report_length: markdown.length,
-                rate_limit_remaining: rateLimit.remaining
+                rate_limit_remaining: rateLimit.remaining,
+                is_preview: !!previewData
             },
             ip_address: req.headers.get('x-forwarded-for'),
             user_agent: req.headers.get('user-agent')
@@ -199,7 +259,7 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({
             success: true,
-            markdown,
+            markdown: finalMarkdown,
             bundle,
             rateLimit: {
                 remaining: rateLimit.remaining,

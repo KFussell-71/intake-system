@@ -33,8 +33,60 @@ export class IntakeService {
 
     async submitNewIntake(data: any) {
         // Business logic: Any transformations or validation before saving
-        return await this.repo.createClientWithIntakeRPC(data);
+        const result = await this.repo.createClientWithIntakeRPC(data);
+
+        // After success, save the initial version for event-sourcing
+        if (result && result.intake_id) {
+            await this.saveIntakeVersion(result.intake_id, data, "Initial Submission");
+        }
+
+        return result;
     }
+
+    /**
+     * SME Fix #2: Draft States & Event-Sourcing
+     * Saves progress to the main intake record AND creates a versioned snapshot.
+     */
+    async saveIntakeProgress(intakeId: string, data: any, editComment?: string) {
+        // 1. Update the main record (The current "Truth")
+        const { error: updateError } = await supabase
+            .from('intakes')
+            .update({
+                data,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', intakeId);
+
+        if (updateError) throw updateError;
+
+        // 2. Create a versioned snapshot for the audit trail
+        return await this.saveIntakeVersion(intakeId, data, editComment || "Progressive Save");
+    }
+
+    private async saveIntakeVersion(intakeId: string, data: any, summary?: string) {
+        const { data: { user } } = await supabase.auth.getUser();
+
+        const { data: version, error } = await supabase
+            .from('intake_versions')
+            .insert({
+                intake_id: intakeId,
+                data,
+                created_by: user?.id,
+                change_summary: summary
+            })
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Error saving intake version:', error);
+            // We don't necessarily want to block the user if versioning fails, 
+            // but for SME Audit Defensibility, we should consider it critical.
+            throw error;
+        }
+
+        return version;
+    }
+
 
     async getIntakeAssessment(intakeId: string) {
         const { data, error } = await supabase

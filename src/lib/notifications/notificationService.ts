@@ -42,6 +42,22 @@ export async function createNotification(params: {
         .select()
         .single();
 
+    // SECURITY REMEDIATION: FINDING 5 - Missing Audit Logging
+    // Log notification creation for accountability and compliance (SOC 2)
+    if (data && !error) {
+        await supabase.from('audit_logs').insert({
+            user_id: params.userId, // Targeted user
+            action: 'notification_created',
+            resource_type: 'notification',
+            resource_id: data.id,
+            metadata: {
+                type: params.type,
+                title: params.title,
+                metadata: params.metadata
+            }
+        });
+    }
+
     return { data, error };
 }
 

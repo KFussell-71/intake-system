@@ -21,6 +21,40 @@ export class DashboardRepository {
         }
         return data || [];
     }
+    async getDashboardStats(): Promise<DashboardStats> {
+        const [myWorkload, recentActivity, intakeTrends, staffWorkload] = await Promise.all([
+            this.getMyWorkload(),
+            this.getRecentActivity(5),
+            this.getIntakeTrends(),
+            this.getStaffWorkload()
+        ]);
+
+        return {
+            myWorkload,
+            recentActivity,
+            intakeTrends,
+            staffWorkload
+        };
+    }
+
+    async getIntakeTrends(days: number = 30): Promise<IntakeTrend[]> {
+        const { data, error } = await supabase.rpc('get_intake_trends', { days_count: days });
+        if (error) {
+            console.error('Error fetching trends:', error);
+            // Return empty array on error to prevent crash
+            return [];
+        }
+        return data || [];
+    }
+
+    async getStaffWorkload(): Promise<StaffWorkload[]> {
+        const { data, error } = await supabase.rpc('get_staff_workload');
+        if (error) {
+            console.error('Error fetching staff workload:', error);
+            return [];
+        }
+        return data || [];
+    }
 }
 
 export const dashboardRepository = new DashboardRepository();

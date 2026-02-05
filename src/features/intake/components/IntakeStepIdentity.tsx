@@ -4,6 +4,8 @@ import { ElegantInput } from '@/components/ui/ElegantInput';
 import { IntakeFormData } from '../types/intake';
 import { DocumentVerificationSection } from './DocumentVerificationSection';
 
+import { CounselorRationaleField } from './CounselorRationaleField';
+
 interface Props {
     formData: IntakeFormData;
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
@@ -117,6 +119,16 @@ export const IntakeStepIdentity: React.FC<Props> = ({ formData, onChange, errors
             <hr className="border-slate-100 dark:border-white/5" />
 
             <DocumentVerificationSection formData={formData} onChange={onChange} />
+
+            <div className="pt-4">
+                <CounselorRationaleField
+                    label="Identity Verification"
+                    name="counselorObservations"
+                    value={formData.counselorObservations || ''}
+                    onChange={onChange as any}
+                    placeholder="Describe evidence of identity and any discrepancies observed during documentation review..."
+                />
+            </div>
         </div>
     );
 };

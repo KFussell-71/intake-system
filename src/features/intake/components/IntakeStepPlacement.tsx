@@ -2,6 +2,7 @@ import React from 'react';
 import { Briefcase } from 'lucide-react';
 import { ElegantInput, ElegantTextarea } from '@/components/ui/ElegantInput';
 import { IntakeFormData } from '../types/intake';
+import { CounselorRationaleField } from './CounselorRationaleField';
 
 interface Props {
     formData: IntakeFormData;
@@ -81,6 +82,14 @@ export const IntakeStepPlacement: React.FC<Props> = ({ formData, onChange }) => 
                 placeholder="Describe benefits, commute details, etc..."
                 rows={3}
                 enableDictation
+            />
+
+            <CounselorRationaleField
+                label="Placement Suitability Analysis"
+                name="counselorObservations"
+                value={formData.counselorObservations || ''}
+                onChange={onChange as any}
+                placeholder="Document clinical assessment of the placement's suitability, any anticipated workplace barriers, and the reasoning for this specific job match..."
             />
         </div>
     );

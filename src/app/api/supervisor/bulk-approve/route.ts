@@ -3,7 +3,8 @@ import { bulkApproveReports } from '@/lib/supervisor/supervisorActions';
 import {
     verifyAuthorization,
     verifyOrigin,
-    validateUUIDs
+    validateUUIDs,
+    createSupabaseServerClient
 } from '@/lib/auth/authHelpersServer';
 
 /**
@@ -69,6 +70,26 @@ export async function POST(request: NextRequest) {
                     invalidIds: validation.invalidIds
                 },
                 { status: 400 }
+            );
+        }
+
+        // SECURITY: Check for Conflict of Interest (Cannot approve own work)
+        // Fetch the creator (prepared_by) for all requested intakes
+        const { data: reports, error: checkError } = await (await createSupabaseServerClient())
+            .from('intakes')
+            .select('prepared_by')
+            .in('id', intakeIds);
+
+        if (checkError) {
+            console.error('Conflict check failed:', checkError);
+            return NextResponse.json({ error: 'Integrity check failed' }, { status: 500 });
+        }
+
+        const hasConflict = reports?.some((r: { prepared_by: string }) => r.prepared_by === authz.userId);
+        if (hasConflict) {
+            return NextResponse.json(
+                { error: 'Conflict of Interest: You cannot approve reports you prepared herself' },
+                { status: 403 }
             );
         }
 

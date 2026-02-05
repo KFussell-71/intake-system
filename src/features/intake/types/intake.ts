@@ -92,6 +92,16 @@ export interface IntakeFormData {
         responsibleParty: 'Participant' | 'Case Manager' | 'Both' | '';
         targetDate: string;
     }[];
+    // Clinical Assessment & Rationale (SME Fix #3)
+    counselorObservations: string; // Separate from client self-report
+    clinicalRationale: string;    // Clinical justification for barriers/goals
+    eligibilityDetermination: 'eligible' | 'ineligible' | 'pending';
+
+    // Performance & Audit tracking
+    sessionStartedAt: string;
+    lastSavedAt: string;
+    edit_comment?: string;
+    status: 'draft' | 'submitted' | 'awaiting_review' | 'approved' | 'rejected';
 }
 
 export type IntakeStep = 'Identity' | 'Evaluation' | 'Goals' | 'Prep' | 'Placement' | 'Review';

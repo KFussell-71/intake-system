@@ -39,10 +39,43 @@ export async function uploadDocument(params: {
     userId: string;
 }): Promise<{ data?: Document; error?: any }> {
     try {
-        // Validate file size
+        // SECURITY REMEDIATION: FINDING 7 - Document Validation
+        // 1. Validate file size
         if (params.file.size > MAX_FILE_SIZE) {
             return { error: 'File size exceeds 10MB limit' };
         }
+
+        // 2. Validate MIME type
+        const allowedMimeTypes = [
+            'application/pdf',
+            'image/jpeg',
+            'image/png',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ];
+        if (!allowedMimeTypes.includes(params.file.type)) {
+            return { error: 'File type not allowed. Only PDF, JPG, PNG, and Word docs are permitted.' };
+        }
+
+        // 3. Validate file extension matches MIME type
+        const extension = params.file.name.split('.').pop()?.toLowerCase();
+        const mimeToExt: Record<string, string[]> = {
+            'application/pdf': ['pdf'],
+            'image/jpeg': ['jpg', 'jpeg'],
+            'image/png': ['png'],
+            'application/msword': ['doc'],
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['docx']
+        };
+
+        const validExtensions = mimeToExt[params.file.type] || [];
+        if (!extension || !validExtensions.includes(extension)) {
+            return { error: `File extension mismatch - .${extension} is not valid for ${params.file.type}` };
+        }
+
+        // 4. (Placeholder) Virus Scanning
+        // In production, send file to a scanning service (e.g., ClamAV API)
+        // const isClean = await virusScanner.scan(params.file);
+        // if (!isClean) return { error: 'File failed security scan' };
 
         // Generate unique filename
         const timestamp = Date.now();
