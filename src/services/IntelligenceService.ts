@@ -31,14 +31,7 @@ export class IntelligenceService {
             });
         }
 
-        // 2. Eligibility Inconsistency
-        if (data.eligibilityDetermination === 'ineligible') {
-            score += 30;
-            insights.push({
-                type: 'warning',
-                message: 'Ineligibility determination requires supervisor oversight.'
-            });
-        }
+        // 2. Eligibility Inconsistency (Removed: logic moved to Counselor Assessment)
 
         // 3. Stale Draft Check
         if (data.status === 'draft' && data.lastSavedAt) {

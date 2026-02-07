@@ -19,22 +19,6 @@ export const IntakeStepGoals: React.FC<Props> = ({ formData, onChange, errors = 
                 Individual Service Plan (ISP)
             </h2>
 
-            <GlassCard className="p-6 mt-6 border border-white/20">
-                <div className="flex items-center justify-between mb-6">
-                    <h4 className="font-semibold text-slate-800 dark:text-slate-100 uppercase tracking-wider text-sm">Eligibility Determination</h4>
-                    <select
-                        name="eligibilityDetermination"
-                        value={formData.eligibilityDetermination}
-                        onChange={onChange}
-                        className="bg-white dark:bg-slate-800 border-none ring-1 ring-slate-200 dark:ring-white/10 rounded-lg text-sm px-4 py-2 focus:ring-primary outline-none"
-                    >
-                        <option value="pending">Pending Review</option>
-                        <option value="eligible">Eligible for Program</option>
-                        <option value="ineligible">Ineligible / Referral Out</option>
-                    </select>
-                </div>
-            </GlassCard>
-
             <ElegantTextarea
                 label="Primary Employment Goals"
                 name="employmentGoals"

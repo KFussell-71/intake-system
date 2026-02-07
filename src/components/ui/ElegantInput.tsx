@@ -48,6 +48,7 @@ export const ElegantInput = ({ label, error, icon, className = '', id: providedI
                         ${icon ? 'pl-11' : ''}
                         ${error ? 'border-red-500 focus:ring-red-500/30' : ''}
                         ${enableDictation ? 'pr-12' : ''}
+                        ${props.readOnly ? 'bg-slate-100 dark:bg-slate-800 cursor-not-allowed opacity-80' : ''}
                         ${className}
                     `}
                     {...props}
@@ -106,6 +107,7 @@ export const ElegantTextarea = ({ label, error, className = '', id: providedId, 
                     focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent 
                     transition-all duration-200 resize-none
                     ${error ? 'border-red-500 focus:ring-red-500/30' : ''}
+                    ${props.readOnly ? 'bg-slate-100 dark:bg-slate-800 cursor-not-allowed opacity-80' : ''}
                     ${className}
                 `}
                 {...props}

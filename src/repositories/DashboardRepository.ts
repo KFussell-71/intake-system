@@ -55,6 +55,40 @@ export class DashboardRepository {
         }
         return data || [];
     }
+
+    async getMonthlyIntakes(): Promise<{ name: string; intakes: number }[]> {
+        const { data, error } = await supabase
+            .from('intakes')
+            .select('created_at')
+            .order('created_at', { ascending: true });
+
+        if (error) {
+            console.error(error);
+            return [];
+        }
+
+        const stats: Record<string, number> = {};
+        data?.forEach(i => {
+            const month = new Date(i.created_at).toLocaleString('default', { month: 'short' });
+            stats[month] = (stats[month] || 0) + 1;
+        });
+
+        return Object.entries(stats).map(([name, intakes]) => ({ name, intakes }));
+    }
+
+    async getRiskProfiling(): Promise<{ name: string; value: number }[]> {
+        // Mock for now as Phase 37 Aggregation Table isn't ready
+        // Using real counts where possible
+        const { count: low } = await supabase.from('intake_assessments').select('id', { count: 'exact', head: true }).lt('ai_risk_score', 50);
+        const { count: med } = await supabase.from('intake_assessments').select('id', { count: 'exact', head: true }).gte('ai_risk_score', 50).lt('ai_risk_score', 75);
+        const { count: high } = await supabase.from('intake_assessments').select('id', { count: 'exact', head: true }).gte('ai_risk_score', 75);
+
+        return [
+            { name: 'Low Risk', value: low || 0 },
+            { name: 'Medium Risk', value: med || 0 },
+            { name: 'High Risk', value: high || 0 },
+        ];
+    }
 }
 
 export const dashboardRepository = new DashboardRepository();

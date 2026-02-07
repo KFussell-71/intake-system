@@ -12,11 +12,14 @@ const REQUIRED_SECTIONS = [
     "Signature Block"
 ];
 
+// SECURITY BLUE TEAM: XSS Prevention
+import DOMPurify from 'isomorphic-dompurify';
+
 export async function generatePDF(markdown: string): Promise<Blob> {
-    // 1. Deterministic Contract Validation
+    // 1. Deterministic Contract Validation for Compliance
     for (const section of REQUIRED_SECTIONS) {
         if (!markdown.toLowerCase().includes(section.toLowerCase())) {
-            throw new Error(`State Compliance Failure: Missing required section "${section}" in the generated report.`);
+            throw new Error(`State Compliance Failure: Missing required section "${section}"`);
         }
     }
 
@@ -66,7 +69,11 @@ export async function generatePDF(markdown: string): Promise<Blob> {
     `;
     document.head.appendChild(style);
 
-    container.innerHTML = simpleMarkdownToHtml(markdown);
+    // SECURITY: Sanitize HTML against XSS before injection
+    const rawHtml = simpleMarkdownToHtml(markdown);
+    const cleanHtml = DOMPurify.sanitize(rawHtml);
+    container.innerHTML = cleanHtml;
+
     document.body.appendChild(container);
 
     try {

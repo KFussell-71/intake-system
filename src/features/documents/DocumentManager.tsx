@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Upload, Loader2, AlertCircle } from 'lucide-react';
+import { Upload, Loader2, AlertCircle, PenTool } from 'lucide-react';
 import { DocumentList } from './DocumentList';
 import { DocumentService } from '@/services/DocumentService';
 import { ActionButton } from '@/components/ui/ActionButton';
 import { createClient } from '@/lib/supabase';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { SignaturePad } from '@/components/ui/SignaturePad';
 
 interface DocumentManagerProps {
     clientId: string;
@@ -16,6 +18,8 @@ export function DocumentManager({ clientId }: DocumentManagerProps) {
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState('');
+    const [showSignaturePad, setShowSignaturePad] = useState(false);
+    const [signatureData, setSignatureData] = useState('');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const loadDocuments = async () => {
@@ -49,7 +53,6 @@ export function DocumentManager({ clientId }: DocumentManagerProps) {
             setUploading(true);
             setError('');
 
-            // Get current user (simple check, better in context)
             const supabase = createClient();
             const { data: { user } } = await supabase.auth.getUser();
 
@@ -63,6 +66,35 @@ export function DocumentManager({ clientId }: DocumentManagerProps) {
         } finally {
             setUploading(false);
             if (fileInputRef.current) fileInputRef.current.value = '';
+        }
+    };
+
+    const handleSignatureSave = async () => {
+        if (!signatureData) return;
+
+        try {
+            setUploading(true);
+            setError('');
+
+            // Convert Base64 using fetch
+            const res = await fetch(signatureData);
+            const blob = await res.blob();
+            const file = new File([blob], `signature_${new Date().toISOString()}.png`, { type: 'image/png' });
+
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (!user) throw new Error('Not authenticated');
+
+            await DocumentService.uploadDocument(clientId, file, user.id);
+            await loadDocuments();
+            setShowSignaturePad(false);
+            setSignatureData(''); // Reset
+        } catch (err: any) {
+            console.error(err);
+            setError(err.message || 'Signature upload failed');
+        } finally {
+            setUploading(false);
         }
     };
 
@@ -81,7 +113,7 @@ export function DocumentManager({ clientId }: DocumentManagerProps) {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <h3 className="text-lg font-bold text-slate-800 dark:text-white">Client Documents</h3>
-                <div className="relative">
+                <div className="flex gap-2 items-center relative">
                     <input
                         type="file"
                         ref={fileInputRef}
@@ -89,6 +121,15 @@ export function DocumentManager({ clientId }: DocumentManagerProps) {
                         className="hidden"
                         accept="application/pdf,image/*,.doc,.docx"
                     />
+                    <ActionButton
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => setShowSignaturePad(true)}
+                        isLoading={uploading}
+                        icon={<PenTool className="w-4 h-4" />}
+                    >
+                        Sign
+                    </ActionButton>
                     <ActionButton
                         size="sm"
                         onClick={() => fileInputRef.current?.click()}
@@ -100,6 +141,7 @@ export function DocumentManager({ clientId }: DocumentManagerProps) {
                 </div>
             </div>
 
+            {/* ... Error & Loading ... */}
             {error && (
                 <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg flex items-center gap-2">
                     <AlertCircle className="w-4 h-4" />
@@ -114,6 +156,23 @@ export function DocumentManager({ clientId }: DocumentManagerProps) {
             ) : (
                 <DocumentList documents={documents} onDelete={handleDelete} />
             )}
+
+            {/* Signature Dialog */}
+            <Dialog open={showSignaturePad} onOpenChange={setShowSignaturePad}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Capture Signature</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                        <SignaturePad onSignatureChange={setSignatureData} />
+                        <div className="flex justify-end space-x-2">
+                            <ActionButton onClick={handleSignatureSave} isLoading={uploading} disabled={!signatureData}>
+                                Save Signature
+                            </ActionButton>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

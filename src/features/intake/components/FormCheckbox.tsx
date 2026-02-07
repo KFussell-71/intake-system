@@ -8,11 +8,12 @@ interface FormCheckboxProps {
     checked: boolean;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     error?: string;
+    disabled?: boolean;
 }
 
-export const FormCheckbox: React.FC<FormCheckboxProps> = ({ label, name, checked, onChange, error }) => {
+export const FormCheckbox: React.FC<FormCheckboxProps> = ({ label, name, checked, onChange, error, disabled = false }) => {
     return (
-        <div className="space-y-1">
+        <div className={`space-y-1 ${disabled ? 'opacity-50 pointer-events-none' : ''}`}>
             <label className={`
                 flex items-center gap-3 p-4 rounded-2xl cursor-pointer transition-all border
                 ${checked
@@ -31,6 +32,7 @@ export const FormCheckbox: React.FC<FormCheckboxProps> = ({ label, name, checked
                     name={name}
                     checked={checked}
                     onChange={onChange}
+                    disabled={disabled}
                     className="hidden"
                 />
                 <span className="text-sm font-bold tracking-tight">{label}</span>

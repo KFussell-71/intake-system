@@ -3,8 +3,13 @@ import { User as UserIcon } from 'lucide-react';
 import { ElegantInput } from '@/components/ui/ElegantInput';
 import { IntakeFormData } from '../types/intake';
 import { DocumentVerificationSection } from './DocumentVerificationSection';
-
 import { CounselorRationaleField } from './CounselorRationaleField';
+
+// Sections
+import { DemographicsSection } from './sections/DemographicsSection';
+import { EmergencyContactSection } from './sections/EmergencyContactSection';
+import { FinancialInfoSection } from './sections/FinancialInfoSection';
+import { CurrentIssueSection } from './sections/CurrentIssueSection';
 
 interface Props {
     formData: IntakeFormData;
@@ -14,11 +19,13 @@ interface Props {
 
 export const IntakeStepIdentity: React.FC<Props> = ({ formData, onChange, errors = {} }) => {
     return (
-        <div className="space-y-6">
+        <div className="space-y-8">
             <h2 className="text-2xl font-bold flex items-center gap-2">
                 <UserIcon className="w-6 h-6 text-primary" />
                 Identity & Basic Info
             </h2>
+
+            {/* Core Identity (Sticky/Top) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <ElegantInput
                     label="Full Name"
@@ -29,6 +36,16 @@ export const IntakeStepIdentity: React.FC<Props> = ({ formData, onChange, errors
                     placeholder="First Last"
                     enableDictation
                     error={errors.clientName}
+                />
+                <ElegantInput
+                    label="Last 4 of SSN"
+                    name="ssnLastFour"
+                    value={formData.ssnLastFour}
+                    onChange={onChange}
+                    placeholder="1234"
+                    maxLength={4}
+                    required
+                    error={errors.ssnLastFour}
                 />
                 <ElegantInput
                     label="Phone Number"
@@ -48,27 +65,35 @@ export const IntakeStepIdentity: React.FC<Props> = ({ formData, onChange, errors
                     placeholder="client@example.com"
                     error={errors.email}
                 />
-                <ElegantInput
-                    label="Physical Address"
-                    name="address"
-                    value={formData.address}
-                    onChange={onChange}
-                    placeholder="Street, City, Zip"
-                    enableDictation
-                    error={errors.address}
-                />
-                <ElegantInput
-                    label="Last 4 of SSN"
-                    name="ssnLastFour"
-                    value={formData.ssnLastFour}
-                    onChange={onChange}
-                    placeholder="1234"
-                    maxLength={4}
-                    required
-                    error={errors.ssnLastFour}
-                />
+                <div className="md:col-span-2">
+                    <ElegantInput
+                        label="Physical Address"
+                        name="address"
+                        value={formData.address}
+                        onChange={onChange}
+                        placeholder="Street, City, Zip"
+                        enableDictation
+                        error={errors.address}
+                    />
+                </div>
             </div>
+
             <hr className="border-slate-100 dark:border-white/5" />
+
+            {/* Demographics */}
+            <DemographicsSection formData={formData} onChange={onChange} />
+
+            {/* Emergency Contact */}
+            <EmergencyContactSection formData={formData} onChange={onChange} />
+
+            {/* Financial Info */}
+            <FinancialInfoSection formData={formData} onChange={onChange} />
+
+            {/* Current Issue */}
+            <CurrentIssueSection formData={formData} onChange={onChange} />
+
+            <hr className="border-slate-100 dark:border-white/5" />
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <ElegantInput
                     label="Intake Date"

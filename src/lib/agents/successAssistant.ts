@@ -1,8 +1,7 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+// SECURITY BLUE TEAM: AI Proxy Implementation
+// Removed direct GoogleGenerativeAI import to prevent key exposure
 import { IntakeFormData } from '../../features/intake/types/intake';
 import { SearchService, SearchResult } from '../services/SearchService';
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export interface SuccessSuggestion {
     category: 'career' | 'resource' | 'training';
@@ -13,22 +12,25 @@ export interface SuccessSuggestion {
 }
 
 export async function generateSuccessSuggestions(intakeData: IntakeFormData): Promise<SuccessSuggestion[]> {
-    if (!process.env.GEMINI_API_KEY) {
-        return [];
-    }
+    // 1. Perform Real-Time Grounding Search (Server-side compatible or client-side safe?)
+    // Assuming SearchService is safe for now, but wrapping it.
 
-    // 1. Perform Real-Time Grounding Search
+    // Construct the prompt manually since we are passing it to the proxy
     const city = intakeData.address?.split(',')[0] || 'San Diego';
     const searchQuery = `entry level jobs and community resources in ${city} ${intakeData.employmentGoals}`;
 
+    // Note: In a full refactor, SearchService should probably be called by the proxy too!
+    // But per instructions "Do not rewrite entire system", we fix the direct API exposure first.
     let searchContext: SearchResult[] = [];
     try {
         searchContext = await SearchService.search(searchQuery);
     } catch (e) {
-        console.error('Search grounding failed, falling back to knowledge base', e);
+        console.error('Search grounding failed', e);
     }
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
+    const groundContext = searchContext.length > 0
+        ? searchContext.map(s => `- ${s.title}: ${s.snippet} (Source: ${s.link})`).join('\n')
+        : "No live results available. Use your internal knowledge of social services.";
 
     const prompt = `
     You are the "New Beginning Success Architect". 
@@ -43,9 +45,7 @@ export async function generateSuccessSuggestions(intakeData: IntakeFormData): Pr
     - Barriers: ${intakeData.transportationAssistance ? 'Needs Transportation' : ''} ${intakeData.childcareAssistance ? 'Needs Childcare' : ''}
     
     ### LIVE WEB SEARCH CONTEXT (GROUNDING):
-    ${searchContext.length > 0
-            ? searchContext.map(s => `- ${s.title}: ${s.snippet} (Source: ${s.link})`).join('\n')
-            : "No live results available. Use your internal knowledge of social services."}
+    ${groundContext}
     
     ### INSTRUCTIONS:
     1. Use the "LIVE WEB SEARCH CONTEXT" to provide real, active links to job boards, training centers, or housing resources if available.
@@ -58,10 +58,29 @@ export async function generateSuccessSuggestions(intakeData: IntakeFormData): Pr
     `;
 
     try {
-        const result = await model.generateContent(prompt);
-        const text = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
-        const jsonMatch = text.match(/\[[\s\S]*\]/);
+        // SECURITY: Call secure proxy
+        const response = await fetch('/api/ai/gemini', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                prompt,
+                model: 'gemini-1.5-pro', // Using consistent model
+                temperature: 0.4 // Slightly more creative than compliance
+            })
+        });
+
+        if (!response.ok) {
+            console.error('AI Proxy Error:', response.status);
+            return [];
+        }
+
+        const data = await response.json();
+        const text = data.text || '';
+        const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim();
+        const jsonMatch = cleanText.match(/\[[\s\S]*\]/);
+
         return jsonMatch ? JSON.parse(jsonMatch[0]) : [];
+
     } catch (error) {
         console.error('AI Success Suggestion Error:', error);
         return [];

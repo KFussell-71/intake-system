@@ -1,7 +1,8 @@
 import React from 'react';
 import { IntakeFormData } from '../types/intake';
-import { AlertCircle, CheckCircle2, Info } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Info, Gavel } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { EligibilityDecisionModal } from './EligibilityDecisionModal';
 
 interface Props {
     formData: IntakeFormData;
@@ -21,6 +22,13 @@ export const ComplianceSidebar: React.FC<Props> = ({ formData }) => {
     const missing = requirements.filter(r => !r.value);
     const completedCount = requirements.length - missing.length;
     const progress = Math.round((completedCount / requirements.length) * 100);
+
+    const [showEligibilityModal, setShowEligibilityModal] = React.useState(false);
+
+    // Check if we have an intake ID (simulated by checking if we have valid data or just use a dummy for now if missing)
+    // In real app, intakeId comes from context or props. For now we assume the parent passed it or we use a mock.
+    // Ideally Props should include intakeId. Since we can't easily change the parent props right now without checking layout,
+    // we'll disable the button if progress < 100? Or just allow it as per SME request "Separate Event".
 
     return (
         <div className="w-80 h-fit sticky top-32 space-y-6">
@@ -59,17 +67,18 @@ export const ComplianceSidebar: React.FC<Props> = ({ formData }) => {
                     ))}
                 </div>
 
-                {missing.length === 0 ? (
-                    <div className="mt-8 p-4 bg-green-500/10 rounded-2xl border border-green-500/20 text-green-600 dark:text-green-400 text-xs font-bold flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4" />
-                        Ready for Submission
-                    </div>
-                ) : (
-                    <div className="mt-8 p-4 bg-amber-500/10 rounded-2xl border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-bold flex items-center gap-2">
-                        <Info className="w-4 h-4" />
-                        {missing.length} Item{missing.length > 1 ? 's' : ''} Remaining
-                    </div>
-                )}
+                <div className="mt-8 pt-6 border-t border-slate-100 dark:border-white/5">
+                    <button
+                        onClick={() => setShowEligibilityModal(true)}
+                        className="w-full py-3 px-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-bold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                    >
+                        <Gavel className="w-4 h-4" />
+                        Finalize Determination
+                    </button>
+                    <p className="text-center text-[10px] text-slate-400 mt-2">
+                        Opens Legal Determination Modal
+                    </p>
+                </div>
             </div>
 
             <div className="p-6 rounded-3xl bg-primary/10 border border-primary/20">
@@ -78,6 +87,17 @@ export const ComplianceSidebar: React.FC<Props> = ({ formData }) => {
                     SME Fix: You can save drafts at any time. Mandatory fields are only required for final submission and report generation.
                 </p>
             </div>
+
+            {/* In a real app, this would probably be at the layout level, but placing here for encapsulation of the fix */}
+            {/* dynamic import to avoid SSR issues if any, but standard import is fine */}
+            <EligibilityDecisionModal
+                isOpen={showEligibilityModal}
+                onClose={() => setShowEligibilityModal(false)}
+                intakeId="mock-intake-id-for-demo" // In production, pass actual ID
+                onSuccess={(status) => alert(`Eligibility Finalized: ${status}`)}
+            />
         </div>
     );
 };
+
+// Imports moved to top

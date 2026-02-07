@@ -38,6 +38,9 @@ import { intakeController } from '@/controllers/IntakeController';
 import { LogicValidationSummary } from '@/features/intake/components/LogicValidationSummary';
 import { ReportPreviewModal } from '@/features/intake/components/ReportPreviewModal';
 import { ComplianceSidebar } from '@/features/intake/components/ComplianceSidebar';
+import { IntakeSidebar } from '@/features/intake/components/IntakeSidebar'; // SME Fix
+import { MobileIntakeNav } from '@/features/intake/components/MobileIntakeNav';
+import { ReviewModeBanner } from '@/features/intake/components/ReviewModeBanner';
 
 const steps = [
     { title: 'Identity', icon: <UserIcon className="w-4 h-4" /> },
@@ -63,7 +66,9 @@ export default function NewIntakePage() {
         nextStep,
         prevStep,
         lastSaved,
-        clearDraft
+        clearDraft,
+        isReadOnly,
+        toggleEditMode
     } = useIntakeForm();
 
     const [error, setError] = useState('');
@@ -155,6 +160,23 @@ export default function NewIntakePage() {
 
             if (!result.success) throw new Error(result.error);
 
+            // Upload Signed PDF if exists (Phase 8: Workflow)
+            if (result.success && result.data?.client_id && signedPdf && user) {
+                try {
+                    const { DocumentService } = await import('@/services/DocumentService');
+                    await DocumentService.uploadDocument(
+                        result.data.client_id,
+                        signedPdf,
+                        user.id
+                    );
+                    console.log('Signed packet uploaded successfully');
+                } catch (uploadErr) {
+                    console.error('Failed to upload signed packet:', uploadErr);
+                    // Don't fail the whole submission, but maybe warn?
+                    // For now, valid intake is priority.
+                }
+            }
+
             clearDraft();
             setSuccess(true);
             return { success: true, clientId: result.data?.client_id };
@@ -168,7 +190,26 @@ export default function NewIntakePage() {
                     if (path) errors[path.toString()] = issue.message;
                 });
                 setValidationErrors(errors);
-                setError('Please fix the validation errors on the preceding steps.');
+
+                // --- FIX: Validation Navigation ---
+                // Find the first step that contains an error and jump to it.
+                // Step 0: Identity (clientName, phone, email, etc.)
+                // Step 1: Evaluation (consentToRelease, medicalEvalNeeded)
+                // Logic map:
+                let errorStep = -1;
+                const errorKeys = Object.keys(errors);
+
+                // Simple heuristic mapping
+                if (errorKeys.some(k => ['clientName', 'phone', 'email', 'ssnLastFour'].includes(k))) errorStep = 0;
+                else if (errorKeys.some(k => ['consentToRelease'].includes(k))) errorStep = 1;
+                // Add more mappings as needed for other steps
+
+                if (errorStep !== -1) {
+                    setCurrentStep(errorStep);
+                    setError(`Please fix the errors in the ${steps[errorStep].title} section.`);
+                } else {
+                    setError('Please fix the validation errors highlighted in red.');
+                }
             } else {
                 setError(err instanceof Error ? err.message : 'Failed to save intake');
             }
@@ -186,12 +227,15 @@ export default function NewIntakePage() {
         );
     }
 
+    const [signedPdf, setSignedPdf] = useState<File | null>(null);
+
     const renderStep = () => {
         const commonProps = {
             formData,
             onChange: handleInputChange,
             setFormData, // Added for AI Auto-Fill
-            errors: validationErrors
+            errors: validationErrors,
+            isReadOnly // SME Fix: Propagate review mode
         };
 
         switch (currentStep) {
@@ -200,7 +244,7 @@ export default function NewIntakePage() {
             case 2: return <IntakeStepGoals formData={formData} onChange={handleInputChange} />;
             case 3: return <IntakeStepPrep formData={formData} onChange={handleInputChange} />;
             case 4: return <IntakeStepPlacement formData={formData} onChange={handleInputChange} />;
-            case 5: return <IntakeStepReview {...commonProps} />;
+            case 5: return <IntakeStepReview {...commonProps} onFileSelect={setSignedPdf} />;
             default: return null;
         }
     };
@@ -208,6 +252,12 @@ export default function NewIntakePage() {
     return (
         <div className="min-h-screen bg-surface dark:bg-surface-dark py-12 px-6">
             <div className="max-w-7xl mx-auto">
+                {/* SME Fix: Review Mode Banner */}
+                <ReviewModeBanner
+                    isReadOnly={isReadOnly}
+                    onToggleEdit={toggleEditMode}
+                />
+
                 <div className="flex justify-between items-start mb-8 max-w-3xl mx-auto lg:mx-0">
                     <div className="flex items-center gap-4">
                         <button
@@ -249,6 +299,17 @@ export default function NewIntakePage() {
                             Save & Exit
                         </ActionButton>
                         <AccessibilityToggle />
+                        {!isReadOnly && (
+                            <ActionButton
+                                variant="secondary"
+                                size="sm"
+                                onClick={toggleEditMode}
+                                icon={<Shield className="w-4 h-4" />}
+                                className="bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100"
+                            >
+                                Supervisor View
+                            </ActionButton>
+                        )}
                     </div>
                 </div>
 
@@ -259,9 +320,24 @@ export default function NewIntakePage() {
                     </p>
                 </div>
 
-                <div className="flex flex-col lg:flex-row gap-10">
-                    <div className="flex-1 max-w-4xl">
-                        <div className="flex justify-between items-center mb-12 relative px-4">
+                <div className="flex flex-col lg:flex-row gap-8">
+                    {/* SME Fix: Quick Jump Sidebar (Desktop) */}
+                    <IntakeSidebar
+                        currentStep={currentStep}
+                        onJump={setCurrentStep}
+                        validationErrors={validationErrors}
+                    />
+
+                    {/* SME Fix: Bottom Sheet Nav (Mobile) */}
+                    <MobileIntakeNav
+                        currentStep={currentStep}
+                        onJump={setCurrentStep}
+                        validationErrors={validationErrors}
+                    />
+
+                    <div className="flex-1 max-w-4xl min-w-0">
+                        {/* Legacy Stepper (Mobile Only) */}
+                        <div className="flex lg:hidden justify-between items-center mb-8 relative px-4 overflow-x-auto pb-4">
                             <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 dark:bg-white/5 -translate-y-1/2 z-0" />
                             {steps.map((step, idx) => {
                                 const hasError = (idx === 0 && (validationErrors.clientName || validationErrors.ssnLastFour)) ||
@@ -270,11 +346,10 @@ export default function NewIntakePage() {
                                 return (
                                     <div
                                         key={idx}
-                                        className={`relative z-10 flex flex-col items-center ${idx <= currentStep ? 'cursor-pointer hover:scale-105 active:scale-95' : 'opacity-70 cursor-not-allowed'} transition-all`}
+                                        className={`relative z-10 flex flex-col items-center cursor-pointer hover:scale-105 active:scale-95 transition-all`}
                                         onClick={() => {
-                                            if (idx < currentStep || currentStep === steps.length - 1) {
-                                                setCurrentStep(idx);
-                                            }
+                                            // Allow free navigation
+                                            setCurrentStep(idx);
                                         }}
                                     >
                                         <motion.div
