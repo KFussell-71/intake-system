@@ -1,24 +1,18 @@
-import { supabase } from '@/lib/supabase';
+import { BaseRepository } from './BaseRepository';
 import { DashboardStats, IntakeTrend, StaffWorkload, MyWorkload, ActivityFeedItem } from '@/types/dashboard';
 
-export class DashboardRepository {
+export class DashboardRepository extends BaseRepository {
 
     async getMyWorkload(): Promise<MyWorkload | null> {
-        const { data, error } = await supabase.rpc('get_my_workload');
-        if (error) {
-            console.error('Error fetching my workload:', error);
-            return null;
-        }
+        const { data, error } = await this.db.rpc('get_my_workload');
+        if (error) this.handleError(error, 'getMyWorkload');
         // RPC returns an array of one object
         return data && data.length > 0 ? data[0] : null;
     }
 
     async getRecentActivity(limit: number = 20): Promise<ActivityFeedItem[]> {
-        const { data, error } = await supabase.rpc('get_recent_activity_feed', { limit_count: limit });
-        if (error) {
-            console.error('Error fetching activity feed:', error);
-            return [];
-        }
+        const { data, error } = await this.db.rpc('get_recent_activity_feed', { limit_count: limit });
+        if (error) this.handleError(error, 'getRecentActivity');
         return data || [];
     }
     async getDashboardStats(): Promise<DashboardStats> {
@@ -38,34 +32,24 @@ export class DashboardRepository {
     }
 
     async getIntakeTrends(days: number = 30): Promise<IntakeTrend[]> {
-        const { data, error } = await supabase.rpc('get_intake_trends', { days_count: days });
-        if (error) {
-            console.error('Error fetching trends:', error);
-            // Return empty array on error to prevent crash
-            return [];
-        }
+        const { data, error } = await this.db.rpc('get_intake_trends', { days_count: days });
+        if (error) this.handleError(error, 'getIntakeTrends');
         return data || [];
     }
 
     async getStaffWorkload(): Promise<StaffWorkload[]> {
-        const { data, error } = await supabase.rpc('get_staff_workload');
-        if (error) {
-            console.error('Error fetching staff workload:', error);
-            return [];
-        }
+        const { data, error } = await this.db.rpc('get_staff_workload');
+        if (error) this.handleError(error, 'getStaffWorkload');
         return data || [];
     }
 
     async getMonthlyIntakes(): Promise<{ name: string; intakes: number }[]> {
-        const { data, error } = await supabase
+        const { data, error } = await this.db
             .from('intakes')
             .select('created_at')
             .order('created_at', { ascending: true });
 
-        if (error) {
-            console.error(error);
-            return [];
-        }
+        if (error) this.handleError(error, 'getMonthlyIntakes');
 
         const stats: Record<string, number> = {};
         data?.forEach(i => {
@@ -79,9 +63,9 @@ export class DashboardRepository {
     async getRiskProfiling(): Promise<{ name: string; value: number }[]> {
         // Mock for now as Phase 37 Aggregation Table isn't ready
         // Using real counts where possible
-        const { count: low } = await supabase.from('intake_assessments').select('id', { count: 'exact', head: true }).lt('ai_risk_score', 50);
-        const { count: med } = await supabase.from('intake_assessments').select('id', { count: 'exact', head: true }).gte('ai_risk_score', 50).lt('ai_risk_score', 75);
-        const { count: high } = await supabase.from('intake_assessments').select('id', { count: 'exact', head: true }).gte('ai_risk_score', 75);
+        const { count: low } = await this.db.from('intake_assessments').select('id', { count: 'exact', head: true }).lt('ai_risk_score', 50);
+        const { count: med } = await this.db.from('intake_assessments').select('id', { count: 'exact', head: true }).gte('ai_risk_score', 50).lt('ai_risk_score', 75);
+        const { count: high } = await this.db.from('intake_assessments').select('id', { count: 'exact', head: true }).gte('ai_risk_score', 75);
 
         return [
             { name: 'Low Risk', value: low || 0 },

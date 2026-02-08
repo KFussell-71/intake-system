@@ -6,6 +6,31 @@ const withPWA = withPWAInit({
     disable: process.env.NODE_ENV === 'development',
     register: true,
     skipWaiting: true,
+    reloadOnOnline: true,
+    runtimeCaching: [
+        {
+            urlPattern: /^\/(intake|directory|dashboard)/,
+            handler: 'NetworkFirst',
+            options: {
+                cacheName: 'pages-cache',
+                expiration: {
+                    maxEntries: 50,
+                    maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+                },
+            },
+        },
+        {
+            urlPattern: /\.(?:png|jpg|jpeg|svg|webp|avif)$/,
+            handler: 'CacheFirst',
+            options: {
+                cacheName: 'image-cache',
+                expiration: {
+                    maxEntries: 100,
+                    maxAgeSeconds: 30 * 24 * 60 * 60,
+                },
+            },
+        },
+    ],
 });
 
 const nextConfig = {
@@ -28,6 +53,37 @@ const nextConfig = {
     // Experimental features for better performance
     experimental: {
         optimizePackageImports: ['lucide-react', 'recharts'],
+    },
+
+    // SECURITY: Defense-in-Depth Headers
+    async headers() {
+        return [
+            {
+                source: '/(.*)',
+                headers: [
+                    {
+                        key: 'X-Frame-Options',
+                        value: 'DENY',
+                    },
+                    {
+                        key: 'X-Content-Type-Options',
+                        value: 'nosniff',
+                    },
+                    {
+                        key: 'Referrer-Policy',
+                        value: 'strict-origin-when-cross-origin',
+                    },
+                    {
+                        key: 'Permissions-Policy',
+                        value: 'camera=(), microphone=(), geolocation=()',
+                    },
+                    {
+                        key: 'Content-Security-Policy',
+                        value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; font-src 'self'; connect-src 'self' https://*.supabase.co https://*.googleapis.com;",
+                    }
+                ],
+            },
+        ];
     },
 };
 

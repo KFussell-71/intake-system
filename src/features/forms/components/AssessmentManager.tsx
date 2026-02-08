@@ -9,18 +9,19 @@ import { FORM_REGISTRY } from '../registry';
 import { Card } from '@/components/ui/card';
 import { Plus, FileText, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
+import { AssessmentSubmission, FormResponseData } from '../types';
 
 export function AssessmentManager({ clientId }: { clientId: string }) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedFormId, setSelectedFormId] = useState<string>('');
-    const [completedForms, setCompletedForms] = useState<any[]>([]); // Mock state for MVP
+    const [completedForms, setCompletedForms] = useState<AssessmentSubmission[]>([]); // Mock state for MVP
 
     const handleCreate = () => {
         setSelectedFormId('');
         setIsDialogOpen(true);
     };
 
-    const handleSubmit = async (data: any) => {
+    const handleSubmit = async (data: FormResponseData) => {
         // In a real app, save to DB
         console.log('Form Data:', data);
 

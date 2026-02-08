@@ -1,41 +1,32 @@
 import { intakeService, IntakeService } from '../services/IntakeService';
 import { validateIntakeLogic } from '@/lib/agents/complianceAgent';
 import { generateSuccessSuggestions } from '@/lib/agents/successAssistant';
-import { supabase } from '@/lib/supabase';
+import type { IntakeFormData } from '@/features/intake/types/intake';
+import type { IntakeAssessment } from '../repositories/IntakeRepository';
 
 export class IntakeController {
     constructor(private readonly service: IntakeService = intakeService) { }
 
-    async runComplianceCheck(data: any) {
-        return await validateIntakeLogic(data);
+    async runComplianceCheck(data: Partial<IntakeFormData>) {
+        return await validateIntakeLogic(data as any);
     }
 
-    async getSuccessSuggestions(data: any) {
-        return await generateSuccessSuggestions(data);
+    async getSuccessSuggestions(data: Partial<IntakeFormData>) {
+        return await generateSuccessSuggestions(data as any);
     }
 
     async getAssessment(intakeId: string) {
         return await this.service.getIntakeAssessment(intakeId);
     }
 
-    async saveAssessment(assessment: any) {
+    async saveAssessment(assessment: Partial<IntakeAssessment>) {
         return await this.service.saveAssessment(assessment);
     }
 
-    async saveDraft(data: any, intakeId?: string) {
+    async saveDraft(data: Partial<IntakeFormData>, intakeId?: string) {
         try {
-            // Use the new RPC to save draft
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) throw new Error('User not authenticated');
-
-            const { data: result, error } = await supabase.rpc('save_intake_draft', {
-                p_intake_id: intakeId || null,
-                p_client_id: null, // Let backend logic handle client creation/linking
-                p_intake_data: data,
-                p_user_id: user.id
-            });
-
-            if (error) throw error;
+            // This now calls the service which handles auth and repo RPC
+            const result = await this.service.saveIntakeProgress(intakeId || '', data, "Draft Save");
             return { success: true, data: result };
         } catch (error) {
             console.error('Draft save error:', error);
@@ -45,35 +36,18 @@ export class IntakeController {
 
     async loadLatestDraft() {
         try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return { success: false, error: 'User not authenticated' };
-
-            const { data: result, error } = await supabase.rpc('get_latest_user_draft', {
-                p_user_id: user.id
-            });
-
-            if (error) throw error;
-
-            if (result && result.found) {
-                return { success: true, data: result };
-            } else {
-                return { success: true, data: null };
-            }
-
+            // We'll add this to the service
+            const result = await this.service.loadLatestDraft();
+            return { success: true, data: result };
         } catch (error) {
             console.error('Draft load error:', error);
             return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
         }
     }
 
-    async handleIntakeSubmission(formData: any) {
+    async handleIntakeSubmission(formData: IntakeFormData) {
         try {
-            // First submit via service
             const result = await this.service.submitNewIntake(formData);
-
-            // If successful, we should verify the intake record status is updated
-            // The service likely creates a new record or updates existing.
-            // For now, we trust the service structure
             return { success: true, data: result };
         } catch (error) {
             console.error('Intake submission error:', error);
@@ -84,31 +58,26 @@ export class IntakeController {
         }
     }
 
-    async saveIntakeProgress(intakeId: string, data: any, editComment?: string) {
-        return this.saveDraft(data, intakeId);
+    async saveIntakeProgress(intakeId: string, data: Partial<IntakeFormData>, editComment?: string) {
+        try {
+            const result = await this.service.saveIntakeProgress(intakeId, data, editComment);
+            return { success: true, data: result };
+        } catch (error) {
+            return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+        }
     }
 
     async finalizeEligibility(intakeId: string, eligibility: { decision: string, rationale: string }) {
         try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) throw new Error('User not authenticated');
-
-            // In a real implementation, this would call a specific RPC or update table
-            // For now, we simulate the event and update the status
-            const status = eligibility.decision === 'eligible' ? 'approved' : 'rejected';
-
-            const { error } = await supabase
-                .from('intakes')
-                .update({
-                    status: status,
-                    // Hypothetical columns as per plan
-                    eligibility_status: eligibility.decision,
-                    eligibility_rationale: eligibility.rationale,
-                    eligibility_date: new Date().toISOString()
-                })
-                .eq('intake_id', intakeId);
-
-            if (error) throw error;
+            // This should probably be a service method for "Finalize Assessment"
+            // For now, updating via saveAssessment logic
+            await this.service.saveAssessment({
+                intake_id: intakeId,
+                eligibility_status: eligibility.decision as any,
+                eligibility_rationale: eligibility.rationale,
+                finalized_at: new Date().toISOString(),
+                is_locked: true
+            });
             return { success: true };
         } catch (error) {
             console.error('Eligibility finalization error:', error);

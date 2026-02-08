@@ -36,6 +36,7 @@ import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { ErrorBoundary } from "@/components/providers/ErrorBoundary";
 import { PWARegister } from "@/components/providers/PWARegister";
 import { GlobalSearchDialog } from "@/components/search/GlobalSearchDialog";
+import { NetworkStatus } from "@/components/ui/NetworkStatus";
 
 export default function RootLayout({
     children,
@@ -51,6 +52,7 @@ export default function RootLayout({
                     enableSystem
                     disableTransitionOnChange
                 >
+                    <NetworkStatus />
                     <GlobalSearchDialog />
                     <PWARegister />
                     <ErrorBoundary>

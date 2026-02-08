@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { BaseRepository } from './BaseRepository';
 
 export interface ReadinessScore {
     date: string;
@@ -14,14 +14,15 @@ export interface ReportStats {
     readinessTrend: ReadinessScore[];
 }
 
-export class ReportRepository {
+export class ReportRepository extends BaseRepository {
     async getReadinessTrend(): Promise<ReadinessScore[]> {
-        const { data: intakes, error } = await supabase
+        const { data: intakes, error } = await this.db
             .from('intakes')
             .select('created_at, data')
             .order('created_at', { ascending: true });
 
-        if (error || !intakes) return [];
+        if (error) this.handleError(error, 'getReadinessTrend');
+        if (!intakes) return [];
 
         // Aggregate by month and calculate average readiness score
         // For now, let's assume 'readiness_score' is a field or we calculate it from prep flags
@@ -59,11 +60,12 @@ export class ReportRepository {
     }
 
     async getMonthlyIntakeVolume(): Promise<number[]> {
-        const { data, error } = await supabase
+        const { data, error } = await this.db
             .from('intakes')
             .select('created_at');
 
-        if (error || !data) return [0, 0, 0, 0, 0, 0];
+        if (error) this.handleError(error, 'getMonthlyIntakeVolume');
+        if (!data) return [0, 0, 0, 0, 0, 0];
 
         const counts = new Array(6).fill(0);
         const now = new Date();
@@ -81,11 +83,12 @@ export class ReportRepository {
 
     async getDemographics(): Promise<{ employed: number; unemployed: number }> {
         // This is a placeholder for real demographic logic once we have employment_status in data
-        const { data, error } = await supabase
+        const { data, error } = await this.db
             .from('intakes')
             .select('data');
 
-        if (error || !data) return { employed: 0, unemployed: 0 };
+        if (error) this.handleError(error, 'getDemographics');
+        if (!data) return { employed: 0, unemployed: 0 };
 
         let employed = 0;
         let unemployed = 0;
@@ -102,11 +105,12 @@ export class ReportRepository {
     }
 
     async getPlacementOutcomes(): Promise<{ name: string; value: number }[]> {
-        const { data, error } = await supabase
+        const { data, error } = await this.db
             .from('job_placements')
             .select('title');
 
-        if (error || !data) return [];
+        if (error) this.handleError(error, 'getPlacementOutcomes');
+        if (!data) return [];
 
         const distributions: Record<string, number> = {};
         data.forEach(item => {

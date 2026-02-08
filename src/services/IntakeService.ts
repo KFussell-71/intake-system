@@ -1,164 +1,130 @@
 import { clientRepository, ClientRepository } from '../repositories/ClientRepository';
-import { supabase } from '@/lib/supabase/client';
+import { intakeRepository, IntakeRepository, IntakeAssessment, SupervisionNote } from '../repositories/IntakeRepository';
+import type { IntakeFormData } from '@/features/intake/types/intake';
+import { supabase } from '@/lib/supabase';
+import { saveSyncTask } from '@/lib/offline/db';
+import { IntakeWorkflowService } from '@/domain/services/IntakeWorkflowService';
+import { IntakeEntity } from '@/domain/entities/ClientAggregate';
 
-export interface IntakeAssessment {
-    id?: string;
-    intake_id: string;
-    counselor_id?: string;
-    verified_barriers: string[];
-    clinical_narrative: string;
-    recommended_priority_level: number;
-    eligibility_status: 'pending' | 'eligible' | 'ineligible';
-    eligibility_rationale: string;
-    verification_evidence?: Record<string, any>; // Golden Thread
-    is_locked?: boolean;
-    finalized_at?: string;
-    ai_discrepancy_notes?: string;
-    ai_risk_score?: number;
-    updated_at?: string;
-}
-
-export interface SupervisionNote {
-    id: string;
-    intake_id: string;
-    supervisor_id: string;
-    note_type: 'approval' | 'rejection' | 'correction_request' | 'flag';
-    content: string;
-    required_actions: string[];
-    created_at: string;
-}
+export { type IntakeAssessment, type SupervisionNote };
 
 export class IntakeService {
-    constructor(private readonly repo: ClientRepository = clientRepository) { }
+    constructor(
+        private readonly repo: ClientRepository = clientRepository,
+        private readonly intakeRepo: IntakeRepository = intakeRepository
+    ) { }
 
-    async submitNewIntake(data: any) {
-        // Business logic: Any transformations or validation before saving
-        const result = await this.repo.createClientWithIntakeRPC(data);
+    private isOffline() {
+        return typeof navigator !== 'undefined' && !navigator.onLine;
+    }
 
-        // After success, save the initial version for event-sourcing
-        if (result && result.intake_id) {
-            await this.saveIntakeVersion(result.intake_id, data, "Initial Submission");
+    async submitNewIntake(data: IntakeFormData) {
+        if (this.isOffline()) {
+            await saveSyncTask({ type: 'INTAKE_CREATE', data });
+            return { success: true, offline: true };
         }
 
-        return result;
+        try {
+            const result = await this.repo.createClientWithIntakeRPC({
+                p_name: data.clientName,
+                p_phone: data.phone,
+                p_email: data.email,
+                p_address: data.address,
+                p_ssn_last_four: data.ssnLastFour,
+                p_report_date: data.reportDate,
+                p_completion_date: data.completionDate,
+                p_intake_data: data
+            });
+
+            if (result && result.intake_id) {
+                const { data: { user } } = await supabase.auth.getUser();
+                await this.intakeRepo.saveIntakeProgressAtomic(
+                    result.intake_id,
+                    data,
+                    "Initial Submission",
+                    user?.id || ''
+                );
+            }
+            return result;
+        } catch (error) {
+            console.warn('Network submit failed, saving to offline queue:', error);
+            await saveSyncTask({ type: 'INTAKE_CREATE', data });
+            return { success: true, offline: true };
+        }
     }
 
-    /**
-     * SME Fix #2: Draft States & Event-Sourcing
-     * Saves progress to the main intake record AND creates a versioned snapshot.
-     */
-    async saveIntakeProgress(intakeId: string, data: any, editComment?: string) {
-        // 1. Update the main record (The current "Truth")
-        const { error: updateError } = await supabase
-            .from('intakes')
-            .update({
-                data,
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', intakeId);
+    async saveIntakeProgress(intakeId: string, data: Partial<IntakeFormData>, editComment?: string) {
+        if (this.isOffline()) {
+            await saveSyncTask({ type: 'INTAKE_UPDATE', data: { intakeId, data, summary: editComment } });
+            return { success: true, offline: true };
+        }
 
-        if (updateError) throw updateError;
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error('User not authenticated');
 
-        // 2. Create a versioned snapshot for the audit trail
-        return await this.saveIntakeVersion(intakeId, data, editComment || "Progressive Save");
+            // DDD: Load and orchestrate
+            const raw = await this.intakeRepo.getIntakeById(intakeId);
+            const entity = new IntakeEntity(intakeId, raw.data, raw.status);
+
+            await IntakeWorkflowService.saveProgress(entity, data, editComment || "Progressive Save", user.id);
+
+            return await this.intakeRepo.saveIntakeProgressAtomic(
+                intakeId,
+                entity.data,
+                editComment || "Progressive Save",
+                user.id
+            );
+        } catch (error: any) {
+            console.warn('Network save failed, saving to offline queue:', error);
+            await saveSyncTask({ type: 'INTAKE_UPDATE', data: { intakeId, data, summary: editComment } });
+            return { success: true, offline: true };
+        }
     }
 
-    private async saveIntakeVersion(intakeId: string, data: any, summary?: string) {
+    async loadLatestDraft() {
         const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('User not authenticated');
 
-        const { data: version, error } = await supabase
-            .from('intake_versions')
-            .insert({
-                intake_id: intakeId,
-                data,
-                created_by: user?.id,
-                change_summary: summary
-            })
-            .select()
-            .single();
-
-        if (error) {
-            console.error('Error saving intake version:', error);
-            // We don't necessarily want to block the user if versioning fails, 
-            // but for SME Audit Defensibility, we should consider it critical.
-            throw error;
-        }
-
-        return version;
+        return await this.intakeRepo.getLatestUserDraft(user.id);
     }
-
 
     async getIntakeAssessment(intakeId: string) {
-        const { data, error } = await supabase
-            .from('intake_assessments')
-            .select('*')
-            .eq('intake_id', intakeId)
-            .single();
-
-        if (error && error.code !== 'PGRST116') { // Ignore 406 Not Found
-            console.error('Error fetching assessment:', error);
-            throw error;
-        }
-
-        return data as IntakeAssessment | null;
+        return await this.intakeRepo.getAssessment(intakeId);
     }
 
     async saveAssessment(assessment: Partial<IntakeAssessment>) {
         if (!assessment.intake_id) throw new Error("Intake ID required");
 
-        // Upsert based on intake_id constraint (assuming logical 1:1)
-        // Note: Our schema PK is ID, but application logic treats it 1:1
-        // We first check if one exists
+        if (this.isOffline()) {
+            await saveSyncTask({ type: 'ASSESSMENT_UPSERT', data: assessment });
+            return { success: true, offline: true };
+        }
 
-        const existing = await this.getIntakeAssessment(assessment.intake_id);
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error('User not authenticated');
 
-        if (existing) {
-            // Check if locked
-            if (existing.is_locked) {
-                throw new Error("Assessment is locked and cannot be modified.");
-            }
-
-            const { data, error } = await supabase
-                .from('intake_assessments')
-                .update(assessment)
-                .eq('id', existing.id)
-                .select()
-                .single();
-            if (error) throw error;
-            return data;
-        } else {
-            const { data, error } = await supabase
-                .from('intake_assessments')
-                .insert(assessment)
-                .select()
-                .single();
-            if (error) throw error;
-            return data;
+            return await this.intakeRepo.upsertAssessmentAtomic(
+                assessment.intake_id,
+                assessment,
+                user.id
+            );
+        } catch (error) {
+            console.warn('Network assessment save failed, saving to offline queue:', error);
+            await saveSyncTask({ type: 'ASSESSMENT_UPSERT', data: assessment });
+            return { success: true, offline: true };
         }
     }
 
     // --- Phase 36: Supervision ---
 
     async addSupervisionNote(note: Omit<SupervisionNote, 'id' | 'created_at'>) {
-        const { data, error } = await supabase
-            .from('intake_supervision_notes')
-            .insert(note)
-            .select()
-            .single();
-
-        if (error) throw error;
-        return data;
+        return await this.intakeRepo.addSupervisionNote(note);
     }
 
     async getSupervisionHistory(intakeId: string) {
-        const { data, error } = await supabase
-            .from('intake_supervision_notes')
-            .select('*')
-            .eq('intake_id', intakeId)
-            .order('created_at', { ascending: false });
-
-        if (error) throw error;
-        return data as SupervisionNote[];
+        return await this.intakeRepo.getSupervisionHistory(intakeId);
     }
 }
 

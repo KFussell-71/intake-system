@@ -3,11 +3,18 @@
 import { clientRepository } from "@/repositories/ClientRepository";
 import { revalidatePath } from "next/cache";
 
+import { CaseNoteType } from "@/features/cases/types";
+
 export async function saveCaseNoteAction(prevState: any, formData: FormData) {
     const clientId = formData.get('client_id') as string;
     const authorId = formData.get('author_id') as string;
     const content = formData.get('content') as string;
-    const type = formData.get('type') as any;
+    // Validate type against allowed values
+    const rawType = formData.get('type') as string;
+    const type: CaseNoteType = ['general', 'clinical', 'incident', 'administrative'].includes(rawType)
+        ? rawType as CaseNoteType
+        : 'general';
+
 
     if (!clientId || !authorId || !content) {
         return { success: false, message: 'Missing required fields' };

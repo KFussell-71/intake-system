@@ -10,28 +10,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Loader2 } from 'lucide-react';
 
-export interface FormField {
-    name: string;
-    label: string;
-    type: 'text' | 'number' | 'select' | 'radio' | 'textarea' | 'email' | 'tel' | 'date' | 'password';
-    options?: { label: string; value: string }[];
-    required?: boolean;
-    helperText?: string;
-    placeholder?: string;
-}
-
-export interface FormSchema {
-    id: string;
-    title: string;
-    description?: string;
-    fields: FormField[];
-}
+import { FormSchema, FormField, FormResponseData } from '../types';
 
 interface SchemaFormProps {
     schema: FormSchema;
-    onSubmit: (data: Record<string, any>) => Promise<void>;
+    onSubmit: (data: FormResponseData) => Promise<void>;
     onCancel?: () => void;
-    initialData?: Record<string, any>;
+    initialData?: FormResponseData;
     submitLabel?: string;
 }
 

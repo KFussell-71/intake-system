@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase';
-import { DocumentRepository } from '@/repositories/DocumentRepository';
+import { documentRepository } from '@/repositories/DocumentRepository';
 import { v4 as uuidv4 } from 'uuid';
 
 export class DocumentService {
@@ -20,7 +20,7 @@ export class DocumentService {
         if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`);
 
         // 2. Create DB Record
-        return DocumentRepository.create({
+        return documentRepository.create({
             client_id: clientId,
             name: file.name,
             url: fileName,
@@ -31,7 +31,7 @@ export class DocumentService {
     }
 
     static async getClientDocuments(clientId: string) {
-        const docs = await DocumentRepository.getByClient(clientId);
+        const docs = await documentRepository.getByClient(clientId);
         const supabase = createClient();
 
         // Generate Signed URLs for secure viewing
@@ -60,6 +60,6 @@ export class DocumentService {
         if (storageError) console.error('Storage delete warning:', storageError);
 
         // 2. Delete from DB
-        await DocumentRepository.delete(id);
+        await documentRepository.delete(id);
     }
 }
