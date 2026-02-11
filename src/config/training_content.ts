@@ -7,6 +7,7 @@ export const TRAINING_CONTENT = {
             title: 'Understanding the Pulse',
             icon: 'Activity',
             description: 'How to read the real-time metrics at the top of your dashboard.',
+            videoUrl: 'https://example.com/videos/pulse-tour',
             steps: [
                 'The "Avg. Approval Time" shows your team\'s velocity.',
                 'The "Critical Risks" card highlights AI-flagged safety issues.',
@@ -18,6 +19,7 @@ export const TRAINING_CONTENT = {
             title: 'Using Bulk Actions',
             icon: 'Layers',
             description: 'How to approve multiple reports at once.',
+            videoUrl: 'https://example.com/videos/bulk-actions',
             steps: [
                 'Click the checkboxes on the left side of the table.',
                 'A toolbar will appear at the top of the screen.',
@@ -51,6 +53,14 @@ export const TRAINING_CONTENT = {
         }
     ],
     faq: [
+        {
+            question: "How do I assign a client to a specific worker?",
+            answer: "In the Review Queue, click the blue 'Assign' button next to any client. A dialog will appear allowing you to select a primary or secondary specialist and add any relevant notes."
+        },
+        {
+            question: "Where did the Google Calendar go?",
+            answer: "We have transitioned to a native Dashboard Calendar. This allows for better integration with client assignments and internal deadlines. You can still access your Google Calendar via the 'Open Full Calendar' link if needed."
+        },
         {
             question: "Why can't I click 'Approve' on some reports?",
             answer: "This usually happens for two reasons: 1) It is your own report (Conflict of Interest), or 2) The report status has changed since you loaded the page."

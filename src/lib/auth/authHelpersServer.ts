@@ -76,8 +76,23 @@ export async function createSupabaseServerClient() {
 export async function verifyAuthentication() {
     const cookieStore = await cookies(); // Await cookies()
 
-    // REMOVED: Mock Auth Bypass (Red Team Finding: RT-SEC-002)
-    // We strictly require real Supabase authentication even in Dev to prevent accidental drift or production leaks.
+    // RESTORED: Mock Auth for Local Development (Explicit Opt-In)
+    const isMockAuthAllowed = process.env.NODE_ENV === 'development' &&
+        (process.env.NEXT_PUBLIC_ALLOW_MOCK_AUTH === 'true' || process.env.ALLOW_MOCK_AUTH === 'true');
+
+    if (isMockAuthAllowed) {
+        // Check for mock session cookie or default to mock user if in dev
+        const mockSession = cookieStore.get('mock_session')?.value;
+        if (mockSession || true) { // Always allow in strict mock mode
+            return {
+                authenticated: true,
+                userId: 'mock-user-id',
+                error: undefined
+            };
+        }
+    }
+
+    // We strictly require real Supabase authentication in Production.
 
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,

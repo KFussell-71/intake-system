@@ -18,8 +18,19 @@ export const ModernizedIntakeStepIdentity: React.FC<Props> = ({ intakeId, onComp
     // For this MVP refactor, let's use a local state buffer.
     const [formData, setFormData] = React.useState(data);
 
+    // Only sync from upstream data if we haven't modified it locally yet, 
+    // or if it's a genuine remote update (not just a post-save refresh that might be stale/racey).
+    // For this fix, we'll only sync if formData is null (initial load).
+    // A more robust solution would track `lastServerUpdate` timestamp.
     useEffect(() => {
-        if (data) setFormData(data);
+        if (data && !formData) {
+            setFormData(data);
+        } else if (data && formData) {
+            // Optional: Check if server data is actually newer/different enough to overwrite?
+            // For now, to stop the "disappearing" bug, we strictly avoid overwriting 
+            // user input with potential stale fetch results triggered by saveIdentity.
+            // We trust our local optimistic state more during the session.
+        }
     }, [data]);
 
     if (loading || !formData) {
@@ -28,7 +39,7 @@ export const ModernizedIntakeStepIdentity: React.FC<Props> = ({ intakeId, onComp
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData(prev => prev ? ({ ...prev, [name]: value }) : null);
+        setFormData(prev => prev ? ({ ...prev, [name]: value }) : { [name]: value } as any);
     };
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {

@@ -20,6 +20,8 @@ import Link from 'next/link';
 import { ReturnForRevisionDialog } from '@/features/supervisor/components/ReturnForRevisionDialog';
 import { BulkActionsToolbar } from '@/features/supervisor/components/BulkActionsToolbar';
 import { approveReport } from '@/lib/supervisor/supervisorReports';
+import { WorkerAssignmentDialog } from '@/features/supervisor/components/WorkerAssignmentDialog';
+import { UserPlus } from 'lucide-react';
 
 interface PendingReport {
     id: string;
@@ -41,6 +43,10 @@ export default function ReviewQueuePage() {
     // Return for Revision Dialog State
     const [returnDialogOpen, setReturnDialogOpen] = useState(false);
     const [selectedReportForReturn, setSelectedReportForReturn] = useState<PendingReport | null>(null);
+
+    // Assignment Dialog State
+    const [assignmentOpen, setAssignmentOpen] = useState(false);
+    const [activeAssignment, setActiveAssignment] = useState<{ id: string; name: string } | null>(null);
 
     useEffect(() => {
         fetchReports();
@@ -91,6 +97,11 @@ export default function ReviewQueuePage() {
     const handleReturnComplete = () => {
         fetchReports();
         setSelectedReports(new Set());
+    };
+
+    const handleAssignClick = (report: PendingReport) => {
+        setActiveAssignment({ id: report.client_id, name: report.client_name });
+        setAssignmentOpen(true);
     };
 
     // Bulk Actions
@@ -271,8 +282,18 @@ export default function ReviewQueuePage() {
                                                 </ActionButton>
                                             </div>
 
-                                            {/* Return Button */}
-                                            <div className="mt-3">
+                                            {/* Resource Management & Assignment */}
+                                            <div className="mt-3 grid grid-cols-2 gap-3">
+                                                <ActionButton
+                                                    onClick={() => handleAssignClick(report)}
+                                                    size="sm"
+                                                    fullWidth
+                                                    variant="secondary"
+                                                    className="border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+                                                    icon={<UserPlus className="w-4 h-4" />}
+                                                >
+                                                    Assign
+                                                </ActionButton>
                                                 <ActionButton
                                                     onClick={() => handleReturnClick(report)}
                                                     size="sm"
@@ -280,7 +301,7 @@ export default function ReviewQueuePage() {
                                                     className="border-orange-300 text-orange-600 hover:bg-orange-50"
                                                     icon={<XCircle className="w-4 h-4" />}
                                                 >
-                                                    Return for Revision
+                                                    Reject
                                                 </ActionButton>
                                             </div>
                                         </GlassCard>
@@ -312,6 +333,17 @@ export default function ReviewQueuePage() {
                     intakeId={selectedReportForReturn.id}
                     clientName={selectedReportForReturn.client_name}
                     onReturnComplete={handleReturnComplete}
+                />
+            )}
+
+            {/* Worker Assignment Dialog */}
+            {activeAssignment && (
+                <WorkerAssignmentDialog
+                    open={assignmentOpen}
+                    onClose={() => setAssignmentOpen(false)}
+                    clientId={activeAssignment.id}
+                    clientName={activeAssignment.name}
+                    onAssignmentComplete={fetchReports}
                 />
             )}
         </div>

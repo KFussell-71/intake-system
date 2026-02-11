@@ -24,6 +24,11 @@ import { TeamManagementWidget } from './TeamManagementWidget';
 import { PredictiveRiskRadar } from './PredictiveRiskRadar';
 import { IntelligenceService } from '@/services/IntelligenceService';
 import { ReviewQueueTable } from './ReviewQueueTable';
+import { DashboardCalendar } from './DashboardCalendar';
+import { DemographicsChart } from '@/features/reports/components/DemographicsChart';
+import { WorkerAssignmentDialog } from './WorkerAssignmentDialog';
+import { reportRepository } from '@/repositories/ReportRepository';
+import { dashboardRepository } from '@/repositories/DashboardRepository';
 
 import InviteToPortalButton from '@/features/clients/components/InviteToPortalButton';
 import { useRouter } from 'next/navigation';
@@ -50,6 +55,11 @@ export const SupervisorDashboard: React.FC = () => {
         { factor: 'Follow-ups', value: 0, fullMark: 100 },
     ]);
     const [priorityIndex, setPriorityIndex] = React.useState(0);
+    const [demographics, setDemographics] = React.useState({ employed: 0, unemployed: 0 });
+
+    // Assignment Dialog State
+    const [assignmentOpen, setAssignmentOpen] = React.useState(false);
+    const [activeAssignment, setActiveAssignment] = React.useState<{ id: string; name: string } | null>(null);
 
     const fetchDashboardData = async () => {
         // 0. Get Current User for Conflict Check
@@ -106,8 +116,17 @@ export const SupervisorDashboard: React.FC = () => {
             });
 
             setReviews(formattedReviews);
+
+            // Fetch Real Stats from Repository
+            const [avgTime, demoData] = await Promise.all([
+                reportRepository.getAverageApprovalTime(),
+                reportRepository.getDemographics()
+            ]);
+
+            setDemographics(demoData);
             setPulseStats(prev => ({
                 ...prev,
+                avgApprovalTime: avgTime,
                 criticalMismatches: riskCount,
                 slaBreaches: slaCount
             }));
@@ -182,6 +201,11 @@ export const SupervisorDashboard: React.FC = () => {
         } finally {
             setIsBulkProcessing(false);
         }
+    };
+
+    const handleOpenAssignment = (id: string, name: string) => {
+        setActiveAssignment({ id, name });
+        setAssignmentOpen(true);
     };
 
     if (loading) return <div className="p-12 text-center animate-pulse">Loading Command Center...</div>;
@@ -263,32 +287,9 @@ export const SupervisorDashboard: React.FC = () => {
                             <SystemDeadlinesWidget />
                         </div>
 
-                        {/* Google Calendar Embed (Read-Only Visibility) */}
-                        <div className="lg:col-span-2 h-full bg-white dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
-                            <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50">
-                                <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg" alt="GCal" className="w-4 h-4" />
-                                    Team Calendar
-                                </h3>
-                                <Button variant="ghost" size="sm" className="text-xs text-slate-400" onClick={() => window.open('https://calendar.google.com', '_blank')}>
-                                    Open Full Calendar
-                                </Button>
-                            </div>
-                            <div className="flex-1 bg-slate-50 relative group">
-                                {/* Placeholder for Iframe - In prod, this src comes from user settings */}
-                                <iframe
-                                    src="https://calendar.google.com/calendar/embed?src=en.usa%23holiday%40group.v.calendar.google.com&ctz=America%2FNew_York"
-                                    style={{ border: 0 }}
-                                    width="100%"
-                                    height="100%"
-                                    frameBorder="0"
-                                    scrolling="no"
-                                    className="grayscale group-hover:grayscale-0 transition-all duration-500 opacity-80 group-hover:opacity-100"
-                                ></iframe>
-                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-slate-900/5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <span className="bg-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">Live Google View</span>
-                                </div>
-                            </div>
+                        {/* Shared Dashboard Calendar - REPLACED Google Iframe */}
+                        <div className="lg:col-span-2 h-full">
+                            <DashboardCalendar />
                         </div>
 
                         <div className="grid grid-cols-12 gap-6">
@@ -302,6 +303,7 @@ export const SupervisorDashboard: React.FC = () => {
                         currentUserId={currentUserId}
                         onToggleSelection={toggleSelection}
                         onToggleSelectAll={toggleSelectAll}
+                        onAssign={handleOpenAssignment}
                     />
 
                     {/* Secure Ephemeral Chat - Fix #3 */}
@@ -312,9 +314,25 @@ export const SupervisorDashboard: React.FC = () => {
                 </TabsContent>
 
                 <TabsContent value="analytics" className="space-y-6">
-                    <OutcomesDashboard />
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <DemographicsChart data={demographics} />
+                        <div className="md:col-span-2">
+                            <OutcomesDashboard />
+                        </div>
+                    </div>
                 </TabsContent>
             </Tabs>
+
+            {/* Float assignment dialog */}
+            {activeAssignment && (
+                <WorkerAssignmentDialog
+                    open={assignmentOpen}
+                    onClose={() => setAssignmentOpen(false)}
+                    clientId={activeAssignment.id}
+                    clientName={activeAssignment.name}
+                    onAssignmentComplete={fetchDashboardData}
+                />
+            )}
         </div >
     );
 };

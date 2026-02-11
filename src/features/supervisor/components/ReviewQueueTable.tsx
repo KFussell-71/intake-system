@@ -13,6 +13,7 @@ interface ReviewQueueTableProps {
     currentUserId: string | null;
     onToggleSelection: (id: string) => void;
     onToggleSelectAll: (checked: boolean) => void;
+    onAssign: (clientId: string, clientName: string) => void;
 }
 
 export const ReviewQueueTable: React.FC<ReviewQueueTableProps> = ({
@@ -20,7 +21,8 @@ export const ReviewQueueTable: React.FC<ReviewQueueTableProps> = ({
     selectedIds,
     currentUserId,
     onToggleSelection,
-    onToggleSelectAll
+    onToggleSelectAll,
+    onAssign
 }) => {
     const router = useRouter();
 
@@ -109,9 +111,19 @@ export const ReviewQueueTable: React.FC<ReviewQueueTableProps> = ({
                                         {isSelfApproval ? (
                                             <span className="text-xs text-slate-400 italic mr-2" title="Cannot approve own work">Conflict of Interest</span>
                                         ) : (
-                                            <Button size="sm" variant="ghost" className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50" onClick={() => router.push(`/supervisor/review-queue?id=${r.id}`)}>
-                                                <CheckCircle className="w-4 h-4 mr-1" /> Approve
-                                            </Button>
+                                            <div className="flex gap-2">
+                                                <Button
+                                                    size="sm"
+                                                    variant="ghost"
+                                                    className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
+                                                    onClick={() => onAssign(r.clientId, r.client)}
+                                                >
+                                                    Assign
+                                                </Button>
+                                                <Button size="sm" variant="ghost" className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50" onClick={() => router.push(`/supervisor/review-queue?id=${r.id}`)}>
+                                                    <CheckCircle className="w-4 h-4 mr-1" /> Approve
+                                                </Button>
+                                            </div>
                                         )}
                                         <Button
                                             size="sm"

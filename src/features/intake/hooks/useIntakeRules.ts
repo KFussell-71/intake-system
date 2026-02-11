@@ -1,16 +1,15 @@
 
 import { useEffect, useState, useMemo } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 import { IntakeRule, applyRules } from '@/lib/rules/ruleEngine';
-import { IntakeData } from '@/features/intake/types/intake';
+import { IntakeFormData } from '@/features/intake/types/intake';
 
-export function useIntakeRules(formData: IntakeData | null) {
+export function useIntakeRules(formData: IntakeFormData | null) {
     const [rules, setRules] = useState<IntakeRule[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchRules = async () => {
-            const supabase = createClient();
             const { data, error } = await supabase
                 .from('intake_rules')
                 .select('*')

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 import {
     Dialog,
     DialogContent,
@@ -42,7 +42,8 @@ export const AuditHistoryModal: React.FC<Props> = ({ intakeId, fieldPath, isOpen
 
         const fetchHistory = async () => {
             setLoading(true);
-            const supabase = createClient();
+            // supabase instance is already imported
+
 
             let query = supabase
                 .from('intake_events')

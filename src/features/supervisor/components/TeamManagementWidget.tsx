@@ -11,7 +11,8 @@ import { getTeamMembers, updateTeamMemberRole } from '@/actions/team-actions';
 import { InviteMemberDialog } from './InviteMemberDialog';
 import { Profile } from '@/types';
 import { toast } from 'sonner';
-import { Users, MoreHorizontal, ShieldCheck, UserCog } from 'lucide-react';
+import { Users, MoreHorizontal, ShieldCheck, UserCog, Briefcase, FileText } from 'lucide-react';
+import { dashboardRepository } from '@/repositories/DashboardRepository';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -22,14 +23,29 @@ import {
 
 export function TeamManagementWidget() {
     const [members, setMembers] = useState<Profile[]>([]);
+    const [workloads, setWorkloads] = useState<Record<string, { active: number, pending: number }>>({});
     const [loading, setLoading] = useState(true);
 
     const fetchMembers = async () => {
         try {
-            const data = await getTeamMembers();
-            setMembers(data);
+            const [memberData, workloadData] = await Promise.all([
+                getTeamMembers(),
+                dashboardRepository.getStaffWorkload()
+            ]);
+
+            setMembers(memberData);
+
+            // Map workload data to access by user id
+            const workloadMap: Record<string, { active: number, pending: number }> = {};
+            workloadData.forEach((w: any) => {
+                workloadMap[w.staff_id] = {
+                    active: w.active_count || 0,
+                    pending: w.pending_count || 0
+                };
+            });
+            setWorkloads(workloadMap);
         } catch (error) {
-            console.error('Failed to fetch members', error);
+            console.error('Failed to fetch members or workload', error);
         } finally {
             setLoading(false);
         }
@@ -82,6 +98,8 @@ export function TeamManagementWidget() {
                             <TableRow>
                                 <TableHead>Member</TableHead>
                                 <TableHead>Role</TableHead>
+                                <TableHead>Active Clients</TableHead>
+                                <TableHead>Pending Intakes</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -115,6 +133,22 @@ export function TeamManagementWidget() {
                                         <Badge variant={getRoleBadgeColor(member.role)}>
                                             {member.role.replace('_', ' ')}
                                         </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-2">
+                                            <Briefcase className="w-4 h-4 text-slate-400" />
+                                            <span className="font-mono font-bold text-indigo-700">
+                                                {workloads[member.id]?.active || 0}
+                                            </span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-2">
+                                            <FileText className="w-4 h-4 text-slate-400" />
+                                            <span className="font-mono font-bold text-orange-600">
+                                                {workloads[member.id]?.pending || 0}
+                                            </span>
+                                        </div>
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <DropdownMenu>

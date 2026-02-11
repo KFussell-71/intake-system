@@ -19,26 +19,35 @@ export function useIntake(intakeId: string) {
 
     useEffect(() => {
         const fetchIntakeSlices = async () => {
-            if (!intakeId) return;
+            if (!intakeId || intakeId === 'new') {
+                setLoading(false);
+                return;
+            }
 
             setLoading(true);
             try {
-                const [
-                    { data: baseIntake, error: baseError },
-                    { data: identity, error: identityError },
-                    { data: sections, error: sectionsError },
-                    { data: observations, error: obsError }
-                ] = await Promise.all([
+                // console.log('Fetching intake slices for:', intakeId);
+                const results = await Promise.all([
                     supabase.from('intakes').select('*').eq('id', intakeId).single(),
                     supabase.from('intake_identity').select('*').eq('intake_id', intakeId).single(),
                     supabase.from('intake_sections').select('*').eq('intake_id', intakeId),
                     supabase.from('observations').select('*').eq('intake_id', intakeId)
                 ]);
 
-                if (baseError) throw baseError;
+                const [
+                    { data: baseIntake, error: baseError },
+                    { data: identity, error: identityError },
+                    { data: sections, error: sectionsError },
+                    { data: observations, error: obsError }
+                ] = results;
+
+                if (baseError) {
+                    console.error('Base Intake Error:', baseError);
+                    throw baseError;
+                }
 
                 // Reconstruct legacy 'data' object for backward compatibility
-                const legacyData: any = { ...((baseIntake as any).data || {}) };
+                const legacyData: any = { ...(baseIntake?.data || {}) };
 
                 // Overlay Relational Truth (Strangle Pattern)
                 if (identity) {
@@ -92,15 +101,43 @@ export function useIntake(intakeId: string) {
         fetchIntakeSlices();
 
         // Subscriptions for relational updates
-        const channels = [
-            supabase.channel(`intake_base_${intakeId}`).on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'intakes', filter: `id=eq.${intakeId}` }, fetchIntakeSlices),
-            supabase.channel(`intake_identity_${intakeId}`).on('postgres_changes', { event: '*', schema: 'public', table: 'intake_identity', filter: `intake_id=eq.${intakeId}` }, fetchIntakeSlices),
-            supabase.channel(`intake_sections_${intakeId}`).on('postgres_changes', { event: '*', schema: 'public', table: 'intake_sections', filter: `intake_id=eq.${intakeId}` }, fetchIntakeSlices),
-            supabase.channel(`intake_obs_${intakeId}`).on('postgres_changes', { event: '*', schema: 'public', table: 'observations', filter: `intake_id=eq.${intakeId}` }, fetchIntakeSlices)
-        ].map(c => c.subscribe());
+        // Subscriptions for relational updates (Robust)
+        const channels: any[] = [];
+        try {
+            const tables = [
+                { table: 'intakes', filter: `id=eq.${intakeId}` },
+                { table: 'intake_identity', filter: `intake_id=eq.${intakeId}` },
+                { table: 'intake_sections', filter: `intake_id=eq.${intakeId}` },
+                { table: 'observations', filter: `intake_id=eq.${intakeId}` }
+            ];
 
-        return () => { channels.forEach(c => supabase.removeChannel(c)); };
+            tables.forEach(t => {
+                const channel = supabase
+                    .channel(`sub_${t.table}_${intakeId}`)
+                    .on('postgres_changes',
+                        { event: '*', schema: 'public', table: t.table, filter: t.filter },
+                        () => {
+                            // Debounce could be added here
+                            fetchIntakeSlices();
+                        }
+                    )
+                    .subscribe((status) => {
+                        if (status === 'CHANNEL_ERROR') {
+                            console.warn(`Realtime subscription error for ${t.table}`);
+                        }
+                    });
+                channels.push(channel);
+            });
+        } catch (e) {
+            console.warn('Realtime subscription failed (WebSocket unavailable?)', e);
+        }
+
+        return () => {
+            channels.forEach(c => {
+                if (c) supabase.removeChannel(c);
+            });
+        };
     }, [intakeId]);
 
-    return { intake, loading, error };
+    return { intake, loading, error: error || (loading === false && !intake ? 'Intake not found' : null) };
 }

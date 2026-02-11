@@ -9,6 +9,14 @@ interface MockState {
     documents: any[];
     intakes: any[];
     supervisor_actions: any[];
+    barriers: any[];
+    intake_barriers: any[];
+    intake_identity: any[];
+    intake_sections: any[];
+    observations: any[];
+    consent_documents: any[];
+    consent_signatures: any[];
+    clients: any[];
 }
 
 // --- Initial Seed Data (Demo Mode) ---
@@ -55,7 +63,23 @@ const SEED_BUNDLE = {
     follow_up: { next_meeting_date: '2026-02-02' }
 };
 
+const SEED_BARRIERS = [
+    { id: 1, key: 'transportation_car', display: 'Lack of reliable vehicle', category: 'transportation', active: true },
+    { id: 2, key: 'transportation_license', display: 'Suspended/No License', category: 'transportation', active: true },
+    { id: 3, key: 'transportation_public', display: 'No public transit access', category: 'transportation', active: true },
+    { id: 4, key: 'housing_homeless', display: 'Currently Homeless', category: 'housing', active: true },
+    { id: 5, key: 'housing_unstable', display: 'At risk of eviction', category: 'housing', active: true },
+    { id: 6, key: 'childcare_cost', display: 'Cannot afford childcare', category: 'family', active: true },
+    { id: 7, key: 'criminal_record_felony', display: 'Felony Conviction', category: 'legal', active: true },
+    { id: 8, key: 'health_mental', display: 'Untreated Mental Health', category: 'health', active: true },
+    { id: 9, key: 'health_physical', display: 'Physical Disability Limit', category: 'health', active: true },
+    { id: 10, key: 'education_ged', display: 'Lack of GED/Diploma', category: 'education', active: true },
+    { id: 11, key: 'tech_access', display: 'No computer/internet access', category: 'technology', active: true },
+    { id: 12, key: 'language_english', display: 'Limited English Proficiency', category: 'communication', active: true }
+];
+
 const SEED_WORKERS = [
+    { id: 'supervisor-id', username: 'Super Visor', email: 'supervisor@newbeginning.org', role: 'supervisor' },
     { id: 'worker-1', username: 'James Jones', email: 'james.jones@nbo.org', role: 'staff' },
     { id: 'worker-2', username: 'Sarah Smith', email: 'sarah.smith@nbo.org', role: 'staff' },
     { id: 'worker-3', username: 'Mike Johnson', email: 'mike.johnson@nbo.org', role: 'staff' },
@@ -107,7 +131,24 @@ class MockDataManager {
             client_assignments: [...SEED_ASSIGNMENTS],
             documents: [...SEED_BUNDLE.documents],
             intakes: [...SEED_INTAKES],
-            supervisor_actions: [...SEED_ACTIONS]
+            supervisor_actions: [...SEED_ACTIONS],
+            barriers: [...SEED_BARRIERS],
+            intake_barriers: [],
+            clients: [{ ...SEED_BUNDLE.client }],
+            intake_identity: [{
+                id: 'identity-1', intake_id: 'intake-awaiting-1',
+                first_name: 'Kyla', last_name: 'Stevenson',
+                date_of_birth: '1990-01-01', ssn_last_four: '1234',
+                phone: '555-0199', email: 'kyla.s@example.com',
+                address: '123 Main St', gender: 'Female', race: 'Other'
+            }],
+            intake_sections: [
+                { id: 's1', intake_id: 'intake-awaiting-1', section_name: 'identity', status: 'complete' },
+                { id: 's2', intake_id: 'intake-awaiting-1', section_name: 'medical', status: 'in_progress' }
+            ],
+            observations: [],
+            consent_documents: [],
+            consent_signatures: []
         };
     }
 
@@ -120,7 +161,15 @@ class MockDataManager {
             client_assignments: [],
             documents: [],
             intakes: [],
-            supervisor_actions: []
+            supervisor_actions: [],
+            barriers: [...SEED_BARRIERS], // Keep masters
+            intake_barriers: [],
+            intake_identity: [],
+            intake_sections: [],
+            observations: [],
+            consent_documents: [],
+            consent_signatures: [],
+            clients: []
         };
     }
 
@@ -135,7 +184,14 @@ class MockDataManager {
         if (table === 'profiles') return this.state.profiles;
         if (table === 'client_assignments') return this.state.client_assignments;
         if (table === 'supervisor_actions') return this.state.supervisor_actions;
-        if (table === 'clients') return this.state.client ? [this.state.client] : [];
+        if (table === 'clients') return this.state.clients;
+        if (table === 'barriers') return this.state.barriers || [];
+        if (table === 'intake_barriers') return this.state.intake_barriers || [];
+        if (table === 'observations') return this.state.observations || [];
+        if (table === 'intake_identity') return this.state.intake_identity || [];
+        if (table === 'intake_sections') return this.state.intake_sections || [];
+        if (table === 'consent_documents') return this.state.consent_documents || [];
+        if (table === 'consent_signatures') return this.state.consent_signatures || [];
         return [];
     }
 
@@ -150,8 +206,6 @@ const mockManager = new MockDataManager();
 
 // --- Supabase Client Implementation ---
 export const createMockSupabase = () => {
-    // console.warn('[MOCK] Creating Mock Supabase Client (Mode: ' + (mockManager.getTable('intakes').length > 0 ? 'Demo' : 'Clean') + ')');
-
     return {
         auth: {
             getUser: async () => ({ data: { user: SEED_USER }, error: null }),
@@ -162,10 +216,12 @@ export const createMockSupabase = () => {
                 if (email === 'supervisor@newbeginning.org') {
                     user.id = 'supervisor-id';
                     user.email = email;
-                    // We assume the app uses metadata or just email check for role, 
-                    // but let's add metadata just in case
                     (user as any).user_metadata = { role: 'supervisor' };
                 } else if (email === 'staff@newbeginning.org') {
+                    user.id = 'worker-1';
+                    user.email = email;
+                    (user as any).user_metadata = { role: 'staff' };
+                } else {
                     user.email = email;
                 }
 
@@ -177,58 +233,38 @@ export const createMockSupabase = () => {
             },
             getSession: async () => ({ data: { session: { access_token: 'mock-token', user: SEED_USER } }, error: null }),
         },
-        from: (table: string) => {
-            const queryBuilder: any = {
-                select: () => queryBuilder,
-                eq: () => queryBuilder,
-                gt: () => queryBuilder,
-                gte: () => queryBuilder,
-                lt: () => queryBuilder,
-                lte: () => queryBuilder,
-                neq: () => queryBuilder,
-                not: () => queryBuilder,
-                order: () => queryBuilder,
-                range: () => queryBuilder,
-                limit: () => queryBuilder,
-                single: async () => {
-                    const data = mockManager.getTable(table);
-                    return { data: data.length > 0 ? data[0] : null, error: null };
-                },
-                maybeSingle: async () => {
-                    const data = mockManager.getTable(table);
-                    return { data: data.length > 0 ? data[0] : null, error: null };
-                },
-                then: async (resolve: Function) => {
-                    const data = mockManager.getTable(table);
-                    // Mock counts for dashboard
-                    const count = data.length;
-                    resolve({ data, error: null, count });
-                },
-                insert: async (data: any) => {
-                    console.log(`[MOCK] Inserting into ${table}`, data);
-                    // In a real in-memory implementation we would push to mockManager.state[table]
-                    // For now, we simulate success for the UI verification
-                    return { data: { ...data, id: `new-${Date.now()}` }, error: null };
-                },
-                upsert: async (data: any) => {
-                    console.log(`[MOCK] Upserting into ${table}`, data);
-                    return { data: { ...data, id: `upsert-${Date.now()}` }, error: null };
-                },
-                update: async (data: any) => {
-                    console.log(`[MOCK] Updating ${table}`, data);
-                    return { data: { ...data }, error: null };
-                },
-                delete: async () => {
-                    console.log(`[MOCK] Deleting from ${table}`);
-                    return { data: null, error: null };
-                }
-            };
-            return queryBuilder;
-        },
         rpc: async (fn: string, args: any) => {
             console.log(`[MOCK] RPC Call: ${fn}`, args);
 
-            // --- NEW ADMIN FUNCTIONS ---
+            if (fn === 'create_client_intake') {
+                const clientId = crypto.randomUUID?.() || `00000000-0000-4000-8000-${Date.now().toString(16).padEnd(12, '0')}`;
+                const intakeId = crypto.randomUUID?.() || `00001111-0000-4000-8000-${Date.now().toString(16).padEnd(12, '0')}`;
+
+                const newClient = {
+                    id: clientId,
+                    name: args.p_name,
+                    phone: args.p_phone,
+                    email: args.p_email,
+                    address: args.p_address,
+                    ssn_last_four: args.p_ssn_last_four,
+                    created_at: new Date().toISOString()
+                };
+
+                const newIntake = {
+                    id: intakeId,
+                    client_id: clientId,
+                    report_date: args.p_report_date || new Date().toISOString().split('T')[0],
+                    status: 'draft',
+                    data: args.p_intake_data || {},
+                    created_at: new Date().toISOString()
+                };
+
+                mockManager.getTable('clients').push(newClient);
+                mockManager.getTable('intakes').push(newIntake);
+
+                return { data: { client_id: clientId, intake_id: intakeId, success: true }, error: null };
+            }
+
             if (fn === 'admin_set_mock_mode') {
                 if (args.mode === 'clean') mockManager.reset();
                 else mockManager.seed();
@@ -239,7 +275,6 @@ export const createMockSupabase = () => {
                 return { data: mockManager.getBundle(), error: null };
             }
 
-            // Dashboard Stat Counts - Return dynamic counts based on mockManager state
             if (fn === 'get_my_workload') {
                 const intakes = mockManager.getTable('intakes');
                 return {
@@ -253,28 +288,138 @@ export const createMockSupabase = () => {
 
             return { data: [], error: null };
         },
+        from: (table: string) => {
+            const queryBuilder: any = {
+                _filters: [] as { column: string, value: any }[],
+                select: () => queryBuilder,
+                eq: (column: string, value: any) => {
+                    queryBuilder._filters.push({ column, value });
+                    return queryBuilder;
+                },
+                gt: () => queryBuilder,
+                gte: () => queryBuilder,
+                lt: () => queryBuilder,
+                lte: () => queryBuilder,
+                neq: () => queryBuilder,
+                not: () => queryBuilder,
+                order: () => queryBuilder,
+                range: () => queryBuilder,
+                limit: () => queryBuilder,
+                single: async () => {
+                    let data = mockManager.getTable(table);
+                    if (queryBuilder._filters) {
+                        for (const filter of queryBuilder._filters) {
+                            data = data.filter(item => item[filter.column] === filter.value);
+                        }
+                    }
+                    return { data: data.length > 0 ? data[0] : null, error: null };
+                },
+                maybeSingle: async () => {
+                    let data = mockManager.getTable(table);
+                    if (queryBuilder._filters) {
+                        for (const filter of queryBuilder._filters) {
+                            data = data.filter(item => item[filter.column] === filter.value);
+                        }
+                    }
+                    return { data: data.length > 0 ? data[0] : null, error: null };
+                },
+                then: async (resolve: Function) => {
+                    let data = mockManager.getTable(table);
+                    if (queryBuilder._filters) {
+                        for (const filter of queryBuilder._filters) {
+                            data = data.filter(item => item[filter.column] === filter.value);
+                        }
+                    }
+                    const count = data.length;
+                    resolve({ data, error: null, count });
+                },
+                insert: (data: any) => {
+                    console.log(`[MOCK] Inserting into ${table}`, data);
+                    const newData = { ...data, id: data.id || `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` };
+                    const tableData = mockManager.getTable(table);
+                    if (tableData) tableData.push(newData);
+                    return {
+                        ...queryBuilder,
+                        select: () => ({
+                            ...queryBuilder,
+                            single: async () => ({ data: newData, error: null }),
+                            then: async (resolve: Function) => resolve({ data: [newData], error: null })
+                        }),
+                        then: async (resolve: Function) => resolve({ data: null, error: null })
+                    };
+                },
+                upsert: (data: any, options?: { onConflict?: string }) => {
+                    console.log(`[MOCK] Upserting into ${table}`, data, options);
+                    const tableData = mockManager.getTable(table);
+                    if (tableData) {
+                        const conflictKey = options?.onConflict || 'id';
+                        const existingIndex = tableData.findIndex(item => item[conflictKey] === data[conflictKey]);
+                        if (existingIndex >= 0) {
+                            tableData[existingIndex] = { ...tableData[existingIndex], ...data };
+                        } else {
+                            tableData.push({ ...data, id: data.id || `mock-${Date.now()}` });
+                        }
+                    }
+                    return {
+                        ...queryBuilder,
+                        select: () => ({
+                            ...queryBuilder,
+                            single: async () => ({ data: { ...data, id: data.id || `mock-${Date.now()}` }, error: null }),
+                            then: async (resolve: Function) => resolve({ data: [{ ...data, id: data.id || `mock-${Date.now()}` }], error: null })
+                        }),
+                        then: async (resolve: Function) => resolve({ data: null, error: null })
+                    };
+                },
+                update: (data: any) => {
+                    console.log(`[MOCK] Updating ${table}`, data);
+                    const tableData = mockManager.getTable(table);
+                    if (tableData && data.id) {
+                        const idx = tableData.findIndex(item => item.id === data.id);
+                        if (idx >= 0) tableData[idx] = { ...tableData[idx], ...data };
+                    }
+                    return {
+                        ...queryBuilder,
+                        eq: (col: string, val: any) => {
+                            if (col === 'id' && tableData) {
+                                const idx = tableData.findIndex(item => item.id === val);
+                                if (idx >= 0) tableData[idx] = { ...tableData[idx], ...data };
+                            }
+                            return queryBuilder;
+                        },
+                        select: () => ({
+                            ...queryBuilder,
+                            single: async () => ({ data, error: null }),
+                            then: async (resolve: Function) => resolve({ data: [data], error: null })
+                        }),
+                        then: async (resolve: Function) => resolve({ data: null, error: null })
+                    };
+                },
+                delete: async () => {
+                    console.log(`[MOCK] Deleting from ${table}`);
+                    return { data: null, error: null };
+                }
+            };
+            return queryBuilder;
+        },
         storage: {
             from: () => ({
                 upload: async () => ({ data: { path: 'mock-path' }, error: null }),
                 getPublicUrl: () => ({ data: { publicUrl: 'https://placehold.co/600x400' } })
             })
         },
-        channel: (name: string) => {
-            console.warn(`[MOCK] Creating realtime channel '${name}'`);
-            return {
-                on: () => ({
-                    subscribe: () => ({
-                        unsubscribe: () => console.log(`[MOCK] Unsubscribed from ${name}`)
-                    })
-                }),
-                subscribe: async (callback: any) => {
-                    console.log(`[MOCK] Subscribed to ${name}`);
-                    if (callback) callback('SUBSCRIBED');
-                    return { error: null };
-                },
-                unsubscribe: () => console.log(`[MOCK] Unsubscribed from ${name}`)
-            } as any;
-        },
+        channel: (name: string) => ({
+            on: () => ({
+                subscribe: () => ({
+                    unsubscribe: () => console.log(`[MOCK] Unsubscribed from ${name}`)
+                })
+            }),
+            subscribe: async (callback: any) => {
+                console.log(`[MOCK] Subscribed to ${name}`);
+                if (callback) callback('SUBSCRIBED');
+                return { error: null };
+            },
+            unsubscribe: () => console.log(`[MOCK] Unsubscribed from ${name}`)
+        } as any),
         removeChannel: async () => ({ error: null })
     } as unknown as SupabaseClient;
 };

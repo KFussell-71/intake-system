@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { CheckCircle2, Circle, Clock, AlertCircle, Plus } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 import { IntakeTask, updateTaskStatusAction, createTaskAction } from '@/app/actions/taskActions';
 import { Button } from '@/components/ui/button';
 import { ElegantInput } from '@/components/ui/ElegantInput';
@@ -19,7 +19,7 @@ export const IntakeTaskSidebar: React.FC<Props> = ({ intakeId, isOpen, onToggle 
     const [loading, setLoading] = useState(true);
     const [newItemTitle, setNewItemTitle] = useState('');
 
-    const supabase = createClient();
+    // Removed incorrect createClient call, using imported instance directly
 
     useEffect(() => {
         const fetchTasks = async () => {
@@ -35,15 +35,31 @@ export const IntakeTaskSidebar: React.FC<Props> = ({ intakeId, isOpen, onToggle 
 
         if (intakeId) fetchTasks();
 
-        // Realtime Subscription
-        const channel = supabase
-            .channel('intake_tasks_changes')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'intake_tasks', filter: `intake_id=eq.${intakeId}` },
-                () => fetchTasks()
-            )
-            .subscribe();
+        // Realtime Subscription (Robust)
+        let channel: any = null;
+        try {
+            channel = supabase
+                .channel('intake_tasks_changes')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'intake_tasks', filter: `intake_id=eq.${intakeId}` },
+                    (payload) => {
+                        console.log('Realtime task update:', payload);
+                        fetchTasks();
+                    }
+                )
+                .subscribe((status) => {
+                    if (status === 'SUBSCRIBED') {
+                        // console.log('Tasks subscription active');
+                    } else if (status === 'CHANNEL_ERROR') {
+                        console.warn('Realtime subscription error for tasks');
+                    }
+                });
+        } catch (e) {
+            console.warn('Realtime subscription failed (WebSocket unavailable?)', e);
+        }
 
-        return () => { supabase.removeChannel(channel); };
+        return () => {
+            if (channel) supabase.removeChannel(channel);
+        };
     }, [intakeId]);
 
     const handleToggleStatus = async (task: IntakeTask) => {

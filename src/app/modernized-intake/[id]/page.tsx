@@ -3,7 +3,9 @@ import { ModernizedIntakeWizard } from '@/features/intake/components/ModernizedI
 import { verifyAuthentication } from '@/lib/auth/authHelpersServer';
 import { redirect } from 'next/navigation';
 
-export default async function ModernizedIntakePage({ params }: { params: { id: string } }) {
+// Force rebuild: Fix params await
+export default async function ModernizedIntakePage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
     const auth = await verifyAuthentication();
     if (!auth.authenticated) {
         redirect('/login');
@@ -11,7 +13,7 @@ export default async function ModernizedIntakePage({ params }: { params: { id: s
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
-            <ModernizedIntakeWizard intakeId={params.id} />
+            <ModernizedIntakeWizard intakeId={id} />
         </div>
     );
 }

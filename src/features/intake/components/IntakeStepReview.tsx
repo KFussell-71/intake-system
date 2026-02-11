@@ -1,13 +1,13 @@
 import React from 'react';
-import { FileCheck, AlertCircle, Download, Upload } from 'lucide-react';
+import { FileCheck, AlertCircle, Download, Upload, Eye } from 'lucide-react';
 import { ElegantInput, ElegantTextarea } from '@/components/ui/ElegantInput';
 import { IdentityData, VocationalData, MedicalData, ClinicalData, IntakeMetadata } from '../types/intake';
 import { AISuccessSuggestions } from './AISuccessSuggestions';
 import { CounselorRationaleField } from './CounselorRationaleField';
-import { GlassCard } from '@/components/ui/GlassCard';
 import { AINarrativeComposer } from './AINarrativeComposer';
 import { AIIntegrityReview } from './AIIntegrityReview';
 import { ReferralPlanWidget } from './ReferralPlanWidget';
+import { ReportPreviewModal } from './ReportPreviewModal';
 
 interface Props {
     formData: IdentityData & VocationalData & MedicalData & ClinicalData & IntakeMetadata;
@@ -27,12 +27,15 @@ export const IntakeStepReview: React.FC<Props> = ({
     onFileSelect,
     intakeId
 }) => {
+    const [showPreview, setShowPreview] = React.useState(false);
+
     const handleAIDraftGenerated = (field: 'clinicalRationale' | 'notes', text: string) => {
         setFormData((prev: any) => ({
             ...prev,
             [field]: text
         }));
     };
+
     return (
         <div className="space-y-6">
             <h2 className="text-2xl font-bold flex items-center gap-2">
@@ -48,6 +51,13 @@ export const IntakeStepReview: React.FC<Props> = ({
                     status={formData.status || 'draft'}
                 />
             )}
+
+            <ReportPreviewModal
+                open={showPreview}
+                onOpenChange={setShowPreview}
+                formData={formData}
+                onSubmit={() => setShowPreview(false)}
+            />
 
             {Object.keys(errors).length > 0 && (
                 <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-red-600 dark:text-red-400">
@@ -102,7 +112,7 @@ export const IntakeStepReview: React.FC<Props> = ({
                     label="Final Clinical Rationale & Disposition"
                 />
                 <CounselorRationaleField
-                    label="" // Hidden as label is in Composer
+                    label=""
                     name="clinicalRationale"
                     value={formData.clinicalRationale || ''}
                     onChange={onChange as any}
@@ -117,10 +127,19 @@ export const IntakeStepReview: React.FC<Props> = ({
                     Signature & Finalization
                 </h3>
                 <p className="text-sm text-slate-500">
-                    Please download the compiled report, obtain the client&apos;s signature, and upload the signed packet before finalizing.
+                    Please preview the AI Report, then download the packet for signature.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                    <button
+                        type="button"
+                        onClick={() => setShowPreview(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors shadow-sm"
+                    >
+                        <Eye className="w-4 h-4" />
+                        Preview AI Draft Report
+                    </button>
+
                     <button
                         type="button"
                         onClick={async () => {
@@ -132,7 +151,7 @@ export const IntakeStepReview: React.FC<Props> = ({
                                 alert('Failed to generate report. Please try again.');
                             }
                         }}
-                        className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-indigo-600 dark:text-indigo-400"
+                        className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-slate-700 dark:text-slate-300"
                     >
                         <Download className="w-4 h-4" />
                         Download PDF Packet

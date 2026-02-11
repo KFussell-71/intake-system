@@ -82,26 +82,47 @@ export class ReportRepository extends BaseRepository {
     }
 
     async getDemographics(): Promise<{ employed: number; unemployed: number }> {
-        // This is a placeholder for real demographic logic once we have employment_status in data
+        // Pull demographics from the relational 'intake_identity' table 
+        // fallback to data JSON if needed
         const { data, error } = await this.db
-            .from('intakes')
-            .select('data');
+            .from('intake_identity')
+            .select('employment_status');
 
-        if (error) this.handleError(error, 'getDemographics');
-        if (!data) return { employed: 0, unemployed: 0 };
+        if (error) {
+            console.error('Error in getDemographics:', error);
+            // Fallback to data blob check (legacy)
+            const { data: legacyData } = await this.db.from('intakes').select('data');
+            let employed = 0;
+            let unemployed = 0;
+            legacyData?.forEach(item => {
+                if ((item.data as any).employmentStatus === 'employed') employed++;
+                else unemployed++;
+            });
+            return { employed, unemployed };
+        }
 
-        let employed = 0;
-        let unemployed = 0;
-
-        data.forEach(item => {
-            if ((item.data as any).employmentStatus === 'employed') {
-                employed++;
-            } else {
-                unemployed++;
-            }
-        });
+        let employed = data.filter(d => d.employment_status === 'employed').length;
+        let unemployed = data.filter(d => d.employment_status === 'unemployed').length;
 
         return { employed, unemployed };
+    }
+
+    async getAverageApprovalTime(): Promise<string> {
+        const { data, error } = await this.db
+            .from('intakes')
+            .select('created_at, updated_at')
+            .eq('status', 'approved');
+
+        if (error || !data || data.length === 0) return "0 Hours";
+
+        const times = data.map(i => {
+            const start = new Date(i.created_at).getTime();
+            const end = new Date(i.updated_at).getTime();
+            return (end - start) / (1000 * 60 * 60); // Hours
+        });
+
+        const avg = times.reduce((a, b) => a + b, 0) / times.length;
+        return `${avg.toFixed(1)} Hours`;
     }
 
     async getPlacementOutcomes(): Promise<{ name: string; value: number }[]> {

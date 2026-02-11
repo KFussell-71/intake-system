@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase/client';
 import { saveIdentityAction } from '@/app/actions/identityActions';
 import { IdentityData } from '@/features/intake/types/intake';
 
@@ -29,6 +29,37 @@ export function useIdentity(intakeId: string) {
                 .single();
 
             if (intakeError) throw intakeError;
+
+            if (!intake) {
+                // If this is a new intake, we might not have a record yet
+                if (intakeId !== 'new') {
+                    throw new Error('Intake not found');
+                }
+
+                // For 'new' intake, initialize with empty/default state
+                setData({
+                    clientName: '',
+                    ssnLastFour: '',
+                    phone: '',
+                    email: '',
+                    address: '',
+                    birthDate: '',
+                    gender: '',
+                    race: '',
+                    reportDate: new Date().toISOString().split('T')[0],
+                    completionDate: '',
+                    sectionStatus: 'not_started',
+                    relationshipStatus: '',
+                    preferredContactMethods: [],
+                    employmentStatus: '',
+                    emergencyContactName: '',
+                    emergencyContactPhone: '',
+                    emergencyContactRelation: '',
+                    referralSource: '',
+                    referralContact: ''
+                });
+                return;
+            }
 
             // 2. Fetch Section Status
             const { data: section } = await supabase
@@ -85,22 +116,39 @@ export function useIdentity(intakeId: string) {
         if (intakeId) fetchIdentity();
     }, [intakeId, fetchIdentity]);
 
-    const saveIdentity = async () => {
+    const saveIdentity = async (startData?: Partial<IdentityData>) => {
         if (!intakeId) return { success: false, error: 'No intake ID' };
         setSaving(true);
         try {
+            // Local merge if startData provided
+            const payload = { ...data, ...startData };
+
             const { saveIdentityAction } = await import('@/app/actions/identityActions');
+
             // SME: Map hook identity state to relational action params
             const result = await saveIdentityAction(intakeId, {
-                full_name: data?.clientName,
-                phone: data?.phone,
-                email: data?.email,
-                address: data?.address,
-                ssn_last_four: data?.ssnLastFour,
-                date_of_birth: data?.birthDate
+                // IdentityBasic
+                clientName: payload?.clientName,
+                phone: payload?.phone,
+                email: payload?.email,
+                address: payload?.address,
+                ssnLastFour: payload?.ssnLastFour,
+
+                // IdentityDemographics
+                birthDate: payload?.birthDate,
+                gender: payload?.gender,
+                race: payload?.race,
+
+                // Metadata
+                sectionStatus: payload?.sectionStatus || 'in_progress'
             } as any);
+
             if (result.success) {
                 // If the save was successful, refresh the data to get the latest from DB
+                // Or just update local state to avoid flicker?
+                if (startData) {
+                    setData(prev => prev ? ({ ...prev, ...startData }) : null);
+                }
                 await fetchIdentity();
             } else {
                 setError(result.error);

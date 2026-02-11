@@ -49,6 +49,19 @@ export const TrainingCenterDialog: React.FC = () => {
                                     </h3>
                                     <p className="text-slate-600 text-sm mb-4 min-h-[40px]">{guide.description}</p>
 
+                                    {guide.videoUrl && (
+                                        <div className="mb-4 p-3 bg-slate-900 rounded-lg flex items-center justify-between group/video overflow-hidden relative">
+                                            <div className="flex items-center gap-2 text-white">
+                                                <PlayCircle className="w-5 h-5 text-indigo-400 group-hover/video:scale-110 transition-transform" />
+                                                <span className="text-xs font-semibold">Watch Training Video</span>
+                                            </div>
+                                            <Button variant="ghost" size="sm" className="h-7 text-[10px] text-slate-400 hover:text-white hover:bg-white/10" onClick={(e) => { e.stopPropagation(); window.open(guide.videoUrl, '_blank'); }}>
+                                                Launch Player
+                                            </Button>
+                                            <div className="absolute inset-0 bg-indigo-500/10 opacity-0 group-hover/video:opacity-100 transition-opacity pointer-events-none" />
+                                        </div>
+                                    )}
+
                                     <div className="space-y-2 pl-2 border-l-2 border-indigo-100">
                                         {guide.steps.map((step, sIdx) => (
                                             <div key={sIdx} className="text-sm text-slate-700 flex items-start gap-2">

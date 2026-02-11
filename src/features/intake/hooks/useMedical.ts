@@ -26,6 +26,59 @@ export function useMedical(intakeId: string) {
 
             if (intakeError) throw intakeError;
 
+            if (!intake) {
+                if (intakeId !== 'new') throw new Error('Intake not found');
+                setData({
+                    consentToRelease: false,
+                    medicalEvalNeeded: false,
+                    psychEvalNeeded: false,
+                    medicalConditionCurrent: false,
+                    medicalConditionDescription: '',
+                    medicalPriorHistory: '',
+                    medicalMedsCurrent: false,
+                    medicalMedsDetails: '',
+                    primaryCarePhysician: '',
+                    primaryCarePhysicianContact: '',
+                    medicalComments: '',
+                    medicalEmploymentImpact: '',
+                    mhHistory: false,
+                    mhHistoryDetails: '',
+                    mhPriorCounseling: false,
+                    mhPriorCounselingDetails: '',
+                    mhPriorCounselingDates: '',
+                    mhPriorDiagnosis: false,
+                    mhPriorDiagnosisDetails: '',
+                    mhPriorHelpfulActivities: '',
+                    mhPriorMeds: false,
+                    mhPriorMedsDetails: '',
+                    tobaccoUse: false,
+                    tobaccoDuration: '',
+                    tobaccoQuitInterest: '',
+                    tobaccoProducts: [],
+                    tobaccoOther: '',
+                    alcoholHistory: false,
+                    alcoholCurrent: false,
+                    alcoholFrequency: '',
+                    alcoholQuitInterest: '',
+                    alcoholProducts: [],
+                    alcoholOther: '',
+                    alcoholPriorTx: false,
+                    alcoholPriorTxDetails: '',
+                    alcoholPriorTxDuration: '',
+                    drugHistory: false,
+                    drugCurrent: false,
+                    drugFrequency: '',
+                    drugQuitInterest: '',
+                    drugProducts: [],
+                    drugOther: '',
+                    drugPriorTx: false,
+                    drugPriorTxDetails: '',
+                    substanceComments: '',
+                    substanceEmploymentImpact: ''
+                });
+                return;
+            }
+
             // 2. Fetch Section Status
             const { data: section } = await supabase
                 .from('intake_sections')

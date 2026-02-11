@@ -1,5 +1,4 @@
-
-import { IntakeData } from '@/features/intake/types/intake';
+import { IntakeFormData } from '@/features/intake/types/intake';
 
 export interface RuleCondition {
     field: string;
@@ -22,7 +21,7 @@ export interface IntakeRule {
     active: boolean;
 }
 
-export function evaluateRule(rule: IntakeRule, data: IntakeData | any): boolean {
+export function evaluateRule(rule: IntakeRule, data: IntakeFormData | any): boolean {
     if (!rule.active) return false;
 
     const { field, op, value } = rule.condition_json;
@@ -51,7 +50,7 @@ function getNestedValue(obj: any, path: string): any {
     }, obj);
 }
 
-export function applyRules(rules: IntakeRule[], data: IntakeData | any) {
+export function applyRules(rules: IntakeRule[], data: IntakeFormData | any) {
     const effects = {
         hiddenSteps: new Set<string>(),
         requiredFields: new Set<string>(),

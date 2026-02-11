@@ -26,6 +26,50 @@ export function useEmployment(intakeId: string) {
 
             if (intakeError) throw intakeError;
 
+            if (!intake) {
+                if (intakeId !== 'new') throw new Error('Intake not found');
+                setData({
+                    employmentGoals: '',
+                    educationGoals: '',
+                    housingNeeds: '',
+                    educationLevel: '',
+                    employmentType: [],
+                    desiredJobTitles: '',
+                    targetPay: '',
+                    workExperienceSummary: '',
+                    transferableSkills: [],
+                    transferableSkillsOther: '',
+                    industryPreferences: [],
+                    industryOther: '',
+                    resumeComplete: false,
+                    interviewSkills: false,
+                    jobSearchAssistance: false,
+                    transportationAssistance: false,
+                    childcareAssistance: false,
+                    housingAssistance: false,
+                    placementDate: '',
+                    companyName: '',
+                    jobTitle: '',
+                    wage: '',
+                    hoursPerWeek: '',
+                    supervisorName: '',
+                    supervisorPhone: '',
+                    probationEnds: '',
+                    benefits: '',
+                    transportationType: '',
+                    commuteTime: '',
+                    class1Date: '',
+                    class2Date: '',
+                    class3Date: '',
+                    class4Date: '',
+                    masterAppComplete: false,
+                    jobSearchCommitmentCount: '',
+                    jobSearchCommitments: [],
+                    ispGoals: []
+                });
+                return;
+            }
+
             // 2. Fetch Section Status
             const { data: section } = await supabase
                 .from('intake_sections')

@@ -28,7 +28,21 @@ export default function LoginPage() {
             setError(result.error || 'Authentication failed');
             setLoading(false);
         } else {
-            router.push('/dashboard');
+            // Fetch role to determine where to send the user
+            const { supabase } = await import('@/lib/supabase');
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', result.user?.id)
+                .single();
+
+            const userRole = profile?.role || 'staff';
+
+            if (userRole === 'supervisor' || userRole === 'admin') {
+                router.push('/supervisor');
+            } else {
+                router.push('/dashboard');
+            }
         }
     };
 
