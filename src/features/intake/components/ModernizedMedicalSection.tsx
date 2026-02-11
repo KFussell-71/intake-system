@@ -117,6 +117,20 @@ export const ModernizedMedicalSection: React.FC<Props> = ({ intakeId }) => {
             <MedicalHistorySection formData={formData} onChange={handleDebouncedChange} />
             <MentalHealthHistorySection formData={formData} onChange={handleDebouncedChange} />
             <SubstanceUseSection formData={formData} onChange={handleDebouncedChange} />
+            <div className="flex justify-end pt-4 gap-4">
+                <button
+                    onClick={() => saveMedical({ sectionStatus: 'in_progress' } as any)} // or use saveDraft from hook if destructured
+                    className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-md transition-colors"
+                >
+                    Save as Draft
+                </button>
+                <button
+                    onClick={() => saveMedical({ sectionStatus: 'complete' } as any)}
+                    className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-md hover:shadow-lg transition-all"
+                >
+                    Mark Complete
+                </button>
+            </div>
         </div>
     );
 };

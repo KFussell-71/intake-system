@@ -10,7 +10,7 @@ interface Props {
 }
 
 export const ModernizedIntakeStepIdentity: React.FC<Props> = ({ intakeId, onComplete }) => {
-    const { data, loading, saving, error, saveIdentity } = useIdentity(intakeId);
+    const { data, loading, saving, error, saveIdentity, saveDraft } = useIdentity(intakeId);
 
     // Local state for form handling could be added if we want debounce, 
     // but for now we'll pipe directly to saveIdentity on blur or change? 
@@ -48,9 +48,9 @@ export const ModernizedIntakeStepIdentity: React.FC<Props> = ({ intakeId, onComp
             <div className="flex items-center gap-2 text-sm text-slate-500">
                 <span>Status:</span>
                 <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${formData.sectionStatus === 'complete' ? 'bg-green-100 text-green-700' :
-                        formData.sectionStatus === 'in_progress' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100'
+                    formData.sectionStatus === 'in_progress' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100'
                     }`}>
-                    {formData.sectionStatus.replace('_', ' ').toUpperCase()}
+                    {(formData.sectionStatus || 'not_started').replace('_', ' ').toUpperCase()}
                 </span>
                 {saving && <span className="text-xs animate-pulse text-primary">Saving...</span>}
             </div>
@@ -135,6 +135,15 @@ export const ModernizedIntakeStepIdentity: React.FC<Props> = ({ intakeId, onComp
             </div>
 
             <div className="flex justify-end pt-4">
+                <Button
+                    variant="ghost"
+                    onClick={() => saveDraft()}
+                    disabled={saving}
+                    className="mr-auto"
+                >
+                    Save as Draft
+                </Button>
+
                 <Button
                     onClick={() => {
                         saveIdentity({ sectionStatus: 'complete' });

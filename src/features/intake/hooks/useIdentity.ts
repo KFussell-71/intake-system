@@ -90,12 +90,19 @@ export function useIdentity(intakeId: string) {
         }
     };
 
+    const saveDraft = async () => {
+        // Just save current state as in_progress
+        const result = await saveIdentity({ ...data, sectionStatus: 'in_progress' } as any);
+        return result;
+    };
+
     return {
         data,
         loading,
         saving,
         error,
         saveIdentity,
+        saveDraft, // New
         refresh: fetchIdentity
     };
 }

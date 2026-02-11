@@ -5,6 +5,7 @@ import { ShieldCheck } from 'lucide-react';
 import { ConsentWorkflow } from './ConsentWorkflow';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import { useConsent } from '../hooks/useConsent';
 
 interface Props {
     intakeId: string;
@@ -12,6 +13,7 @@ interface Props {
 
 export const ModernizedConsentSection: React.FC<Props> = ({ intakeId }) => {
     const router = useRouter();
+    const { setSectionStatus } = useConsent(intakeId);
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
@@ -29,9 +31,23 @@ export const ModernizedConsentSection: React.FC<Props> = ({ intakeId }) => {
                 <ConsentWorkflow intakeId={intakeId} />
             </div>
 
-            <div className="flex justify-end pt-4">
-                <Button onClick={() => router.push('/dashboard')}>
-                    Finish Intake
+            <div className="flex justify-end pt-4 gap-4">
+                <Button
+                    variant="outline"
+                    onClick={() => {
+                        setSectionStatus('in_progress');
+                        router.push('/dashboard');
+                    }}
+                >
+                    Save as Draft & Exit
+                </Button>
+                <Button
+                    onClick={() => {
+                        setSectionStatus('complete');
+                        router.push('/dashboard');
+                    }}
+                >
+                    Mark Complete & Finish
                 </Button>
             </div>
         </div>

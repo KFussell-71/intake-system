@@ -14,11 +14,11 @@ export function useEmployment(intakeId: string) {
         try {
             setLoading(true);
 
-            // 1. Fetch Intake Data & Relational Employment Data
+            // 1. Fetch Relational Employment Data ONLY (Break the Monolith)
             const { data: intake, error: intakeError } = await supabase
                 .from('intakes')
                 .select(`
-                    data,
+                    id,
                     intake_employment(*)
                 `)
                 .eq('id', intakeId)
@@ -34,70 +34,67 @@ export function useEmployment(intakeId: string) {
                 .eq('section_name', 'employment')
                 .single();
 
-            const jsonData = intake.data as any || {};
             const relational = (intake as any).intake_employment;
 
             setSectionStatus(section?.status || 'not_started');
 
-            // 3. Merge Data (Priority: Relational -> JSONB)
+            // 3. Map Data (Strictly Relational)
             // Note: Arrays might be null in relational, need to fallback to empty array or JSONB
 
             let ispGoals = [];
             if (relational?.isp_goals) {
                 // It comes back as a JSON object/array already from Supabase client usually
                 ispGoals = relational.isp_goals;
-            } else if (jsonData.ispGoals) {
-                ispGoals = jsonData.ispGoals;
             }
 
             setData({
                 // Goals
-                employmentGoals: relational?.employment_goals || jsonData.employmentGoals || '',
-                educationGoals: relational?.education_goals || jsonData.educationGoals || '',
-                housingNeeds: relational?.housing_needs || jsonData.housingNeeds || '',
+                employmentGoals: relational?.employment_goals || '',
+                educationGoals: relational?.education_goals || '',
+                housingNeeds: relational?.housing_needs || '',
 
                 // History & Skills
-                educationLevel: relational?.education_level || jsonData.educationLevel || '',
-                employmentType: relational?.employment_type || jsonData.employmentType || [],
-                desiredJobTitles: relational?.desired_job_titles || jsonData.desiredJobTitles || '',
-                targetPay: relational?.target_pay || jsonData.targetPay || '',
-                workExperienceSummary: relational?.work_experience_summary || jsonData.workExperienceSummary || '',
-                transferableSkills: relational?.transferable_skills || jsonData.transferableSkills || [],
-                transferableSkillsOther: relational?.transferable_skills_other || jsonData.transferableSkillsOther || '',
-                industryPreferences: relational?.industry_preferences || jsonData.industryPreferences || [],
-                industryOther: relational?.industry_other || jsonData.industryOther || '',
+                educationLevel: relational?.education_level || '',
+                employmentType: relational?.employment_type || [],
+                desiredJobTitles: relational?.desired_job_titles || '',
+                targetPay: relational?.target_pay || '',
+                workExperienceSummary: relational?.work_experience_summary || '',
+                transferableSkills: relational?.transferable_skills || [],
+                transferableSkillsOther: relational?.transferable_skills_other || '',
+                industryPreferences: relational?.industry_preferences || [],
+                industryOther: relational?.industry_other || '',
 
                 // Readiness & Barriers
-                resumeComplete: relational?.resume_complete ?? jsonData.resumeComplete ?? false,
-                interviewSkills: relational?.interview_skills ?? jsonData.interviewSkills ?? false,
-                jobSearchAssistance: relational?.job_search_assistance ?? jsonData.jobSearchAssistance ?? false,
-                transportationAssistance: relational?.transportation_assistance ?? jsonData.transportationAssistance ?? false,
-                childcareAssistance: relational?.childcare_assistance ?? jsonData.childcareAssistance ?? false,
-                housingAssistance: relational?.housing_assistance ?? jsonData.housingAssistance ?? false,
+                resumeComplete: relational?.resume_complete ?? false,
+                interviewSkills: relational?.interview_skills ?? false,
+                jobSearchAssistance: relational?.job_search_assistance ?? false,
+                transportationAssistance: relational?.transportation_assistance ?? false,
+                childcareAssistance: relational?.childcare_assistance ?? false,
+                housingAssistance: relational?.housing_assistance ?? false,
 
                 // Placement
-                placementDate: relational?.placement_date || jsonData.placementDate || '',
-                companyName: relational?.company_name || jsonData.companyName || '',
-                jobTitle: relational?.job_title || jsonData.jobTitle || '',
-                wage: relational?.wage || jsonData.wage || '',
-                hoursPerWeek: relational?.hours_per_week || jsonData.hoursPerWeek || '',
-                supervisorName: relational?.supervisor_name || jsonData.supervisorName || '',
-                supervisorPhone: relational?.supervisor_phone || jsonData.supervisorPhone || '',
-                probationEnds: relational?.probation_ends || jsonData.probationEnds || '',
-                benefits: relational?.benefits || jsonData.benefits || '',
-                transportationType: relational?.transportation_type || jsonData.transportationType || '',
-                commuteTime: relational?.commute_time || jsonData.commuteTime || '',
+                placementDate: relational?.placement_date || '',
+                companyName: relational?.company_name || '',
+                jobTitle: relational?.job_title || '',
+                wage: relational?.wage || '',
+                hoursPerWeek: relational?.hours_per_week || '',
+                supervisorName: relational?.supervisor_name || '',
+                supervisorPhone: relational?.supervisor_phone || '',
+                probationEnds: relational?.probation_ends || '',
+                benefits: relational?.benefits || '',
+                transportationType: relational?.transportation_type || '', // 'bus' | 'car' | 'other' | ''
+                commuteTime: relational?.commute_time || '',
 
                 // Prep
-                class1Date: relational?.class1_date || jsonData.class1Date || '',
-                class2Date: relational?.class2_date || jsonData.class2Date || '',
-                class3Date: relational?.class3_date || jsonData.class3Date || '',
-                class4Date: relational?.class4_date || jsonData.class4Date || '',
-                masterAppComplete: relational?.master_app_complete ?? jsonData.masterAppComplete ?? false,
+                class1Date: relational?.class1_date || '',
+                class2Date: relational?.class2_date || '',
+                class3Date: relational?.class3_date || '',
+                class4Date: relational?.class4_date || '',
+                masterAppComplete: relational?.master_app_complete ?? false,
 
                 // Job Search
-                jobSearchCommitmentCount: relational?.job_search_commitment_count || jsonData.jobSearchCommitmentCount || '',
-                jobSearchCommitments: relational?.job_search_commitments || jsonData.jobSearchCommitments || [],
+                jobSearchCommitmentCount: relational?.job_search_commitment_count || '',
+                jobSearchCommitments: relational?.job_search_commitments || [],
 
                 // ISP
                 ispGoals: ispGoals
@@ -136,6 +133,11 @@ export function useEmployment(intakeId: string) {
         }
     };
 
+    const saveDraft = async () => {
+        const result = await saveEmployment({ sectionStatus: 'in_progress' } as any);
+        return result;
+    };
+
     return {
         data,
         loading,
@@ -143,6 +145,7 @@ export function useEmployment(intakeId: string) {
         error,
         sectionStatus,
         saveEmployment,
+        saveDraft,
         refresh: fetchEmployment
     };
 }

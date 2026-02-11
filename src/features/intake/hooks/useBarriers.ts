@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { addIntakeBarrierAction, removeIntakeBarrierAction } from '@/app/actions/modernizedIntakeActions';
+import { addIntakeBarrierAction, removeIntakeBarrierAction, updateIntakeSection } from '@/app/actions/modernizedIntakeActions';
 
 export interface Barrier {
     id: number;
@@ -91,6 +91,20 @@ export function useBarriers(intakeId: string) {
         return acc;
     }, {} as Record<string, Barrier[]>);
 
+    const setSectionStatus = async (status: 'in_progress' | 'complete') => {
+        try {
+            setLoading(true); // Re-use loading or add saving state
+            await updateIntakeSection(intakeId, 'barriers', status);
+            return { success: true };
+        } catch (err: any) {
+            console.error('Error updating status:', err);
+            setError("Failed to update status. Please try again.");
+            return { success: false, error: err.message };
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return {
         allBarriers,
         selectedBarriers,
@@ -99,6 +113,7 @@ export function useBarriers(intakeId: string) {
         updating,
         error,
         toggleBarrier,
+        setSectionStatus, // New
         refresh: fetchData
     };
 }

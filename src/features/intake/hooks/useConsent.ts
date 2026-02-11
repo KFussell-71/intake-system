@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { createConsentDocumentAction, signConsentAction } from '@/app/actions/modernizedIntakeActions';
+import { createConsentDocumentAction, signConsentAction, updateIntakeSection } from '@/app/actions/modernizedIntakeActions';
 
 export interface ConsentDocument {
     id: string;
@@ -92,6 +92,17 @@ export function useConsent(intakeId: string) {
         }
     };
 
+    const setSectionStatus = async (status: 'in_progress' | 'complete') => {
+        try {
+            // Re-use loading or add saving state
+            await updateIntakeSection(intakeId, 'consent', status);
+            return { success: true };
+        } catch (err: any) {
+            console.error('Error updating status:', err);
+            return { success: false, error: err.message };
+        }
+    };
+
     return {
         document,
         signatures,
@@ -99,6 +110,7 @@ export function useConsent(intakeId: string) {
         error,
         createConsent,
         signConsent,
+        setSectionStatus,
         refresh: fetchConsent
     };
 }

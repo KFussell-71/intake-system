@@ -16,7 +16,8 @@ export const ModernizedBarriersSection: React.FC<Props> = ({ intakeId }) => {
         loading,
         error,
         updating,
-        toggleBarrier
+        toggleBarrier,
+        setSectionStatus
     } = useBarriers(intakeId);
 
     const [filter, setFilter] = useState('');
@@ -92,6 +93,21 @@ export const ModernizedBarriersSection: React.FC<Props> = ({ intakeId }) => {
                     No barriers identified yet.
                 </div>
             )}
+
+            <div className="flex justify-end pt-4 gap-4 border-t border-slate-200 dark:border-slate-800">
+                <button
+                    onClick={() => setSectionStatus('in_progress')}
+                    className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-md transition-colors"
+                >
+                    Save as Draft
+                </button>
+                <button
+                    onClick={() => setSectionStatus('complete')}
+                    className="px-4 py-2 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-md hover:shadow-lg transition-all"
+                >
+                    Mark Complete
+                </button>
+            </div>
         </div>
     );
 };

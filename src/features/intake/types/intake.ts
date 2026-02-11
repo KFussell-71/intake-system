@@ -84,7 +84,9 @@ export interface VocationalCurriculum {
     }[];
 }
 
-export type VocationalData = VocationalGoals & VocationalHistory & VocationalReadiness & VocationalPlacement & VocationalCurriculum;
+export type VocationalData = VocationalGoals & VocationalHistory & VocationalReadiness & VocationalPlacement & VocationalCurriculum & {
+    sectionStatus?: 'not_started' | 'in_progress' | 'complete';
+};
 
 
 // 3. MEDICAL & PSYCHOSOCIAL HISTORY
@@ -146,7 +148,9 @@ export interface MedicalSubstanceUse {
     substanceEmploymentImpact: string;
 }
 
-export type MedicalData = MedicalGeneral & MedicalMentalHealth & MedicalSubstanceUse;
+export type MedicalData = MedicalGeneral & MedicalMentalHealth & MedicalSubstanceUse & {
+    sectionStatus?: 'not_started' | 'in_progress' | 'complete';
+};
 
 
 // 4. CLINICAL ASSESSMENT (Counselor View)

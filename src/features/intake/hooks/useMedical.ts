@@ -14,11 +14,11 @@ export function useMedical(intakeId: string) {
         try {
             setLoading(true);
 
-            // 1. Fetch Intake Data & Relational Medical Data
+            // 1. Fetch Relational Medical Data ONLY (Break the Monolith)
             const { data: intake, error: intakeError } = await supabase
                 .from('intakes')
                 .select(`
-                    data,
+                    id,
                     intake_medical(*)
                 `)
                 .eq('id', intakeId)
@@ -34,71 +34,72 @@ export function useMedical(intakeId: string) {
                 .eq('section_name', 'medical')
                 .single();
 
-            const jsonData = intake.data as any || {};
             const relational = (intake as any).intake_medical;
 
             setSectionStatus(section?.status || 'not_started');
 
-            // 3. Merge Data (Priority: Relational -> JSONB)
+            // 3. Map Data (Strictly Relational)
+            // Note: If you have not run the migration script, this will be empty.
+            // We assume Sprint 2 migration has occurred.
             setData({
-                // Consent (Still legacy or handled by ConsentWorkflow, but part of type)
-                consentToRelease: jsonData.consentToRelease || false,
+                // Consent (handled by ConsentWorkflow)
+                consentToRelease: false, // Deprecated in favor of Consent Document
 
                 // Clinical Evals
-                medicalEvalNeeded: relational?.medical_eval_needed ?? jsonData.medicalEvalNeeded ?? false,
-                psychEvalNeeded: relational?.psych_eval_needed ?? jsonData.psychEvalNeeded ?? false,
+                medicalEvalNeeded: relational?.medical_eval_needed ?? false,
+                psychEvalNeeded: relational?.psych_eval_needed ?? false,
 
                 // General Health
-                medicalConditionCurrent: relational?.medical_condition_current ?? jsonData.medicalConditionCurrent ?? false,
-                medicalConditionDescription: relational?.medical_condition_description || jsonData.medicalConditionDescription || '',
-                medicalPriorHistory: relational?.medical_prior_history || jsonData.medicalPriorHistory || '',
-                medicalMedsCurrent: relational?.medical_meds_current ?? jsonData.medicalMedsCurrent ?? false,
-                medicalMedsDetails: relational?.medical_meds_details || jsonData.medicalMedsDetails || '',
-                primaryCarePhysician: relational?.primary_care_physician || jsonData.primaryCarePhysician || '',
-                primaryCarePhysicianContact: relational?.primary_care_physician_contact || jsonData.primaryCarePhysicianContact || '',
-                medicalComments: relational?.medical_comments || jsonData.medicalComments || '',
-                medicalEmploymentImpact: relational?.medical_employment_impact || jsonData.medicalEmploymentImpact || '',
+                medicalConditionCurrent: relational?.medical_condition_current ?? false,
+                medicalConditionDescription: relational?.medical_condition_description || '',
+                medicalPriorHistory: relational?.medical_prior_history || '',
+                medicalMedsCurrent: relational?.medical_meds_current ?? false,
+                medicalMedsDetails: relational?.medical_meds_details || '',
+                primaryCarePhysician: relational?.primary_care_physician || '',
+                primaryCarePhysicianContact: relational?.primary_care_physician_contact || '',
+                medicalComments: relational?.medical_comments || '',
+                medicalEmploymentImpact: relational?.medical_employment_impact || '',
 
                 // Mental Health
-                mhHistory: relational?.mh_history ?? jsonData.mhHistory ?? false,
-                mhHistoryDetails: relational?.mh_history_details || jsonData.mhHistoryDetails || '',
-                mhPriorCounseling: relational?.mh_prior_counseling ?? jsonData.mhPriorCounseling ?? false,
-                mhPriorCounselingDetails: relational?.mh_prior_counseling_details || jsonData.mhPriorCounselingDetails || '',
-                mhPriorCounselingDates: relational?.mh_prior_counseling_dates || jsonData.mhPriorCounselingDates || '',
-                mhPriorDiagnosis: relational?.mh_prior_diagnosis ?? jsonData.mhPriorDiagnosis ?? false,
-                mhPriorDiagnosisDetails: relational?.mh_prior_diagnosis_details || jsonData.mhPriorDiagnosisDetails || '',
-                mhPriorHelpfulActivities: relational?.mh_prior_helpful_activities || jsonData.mhPriorHelpfulActivities || '',
-                mhPriorMeds: relational?.mh_prior_meds ?? jsonData.mhPriorMeds ?? false,
-                mhPriorMedsDetails: relational?.mh_prior_meds_details || jsonData.mhPriorMedsDetails || '',
+                mhHistory: relational?.mh_history ?? false,
+                mhHistoryDetails: relational?.mh_history_details || '',
+                mhPriorCounseling: relational?.mh_prior_counseling ?? false,
+                mhPriorCounselingDetails: relational?.mh_prior_counseling_details || '',
+                mhPriorCounselingDates: relational?.mh_prior_counseling_dates || '',
+                mhPriorDiagnosis: relational?.mh_prior_diagnosis ?? false,
+                mhPriorDiagnosisDetails: relational?.mh_prior_diagnosis_details || '',
+                mhPriorHelpfulActivities: relational?.mh_prior_helpful_activities || '',
+                mhPriorMeds: relational?.mh_prior_meds ?? false,
+                mhPriorMedsDetails: relational?.mh_prior_meds_details || '',
 
                 // Substance Use
-                tobaccoUse: relational?.tobacco_use ?? jsonData.tobaccoUse ?? false,
-                tobaccoDuration: relational?.tobacco_duration || jsonData.tobaccoDuration || '',
-                tobaccoQuitInterest: relational?.tobacco_quit_interest || jsonData.tobaccoQuitInterest || '',
-                tobaccoProducts: relational?.tobacco_products || jsonData.tobaccoProducts || [],
-                tobaccoOther: relational?.tobacco_other || jsonData.tobaccoOther || '',
+                tobaccoUse: relational?.tobacco_use ?? false,
+                tobaccoDuration: relational?.tobacco_duration || '',
+                tobaccoQuitInterest: relational?.tobacco_quit_interest || '',
+                tobaccoProducts: relational?.tobacco_products || [],
+                tobaccoOther: relational?.tobacco_other || '',
 
-                alcoholHistory: relational?.alcohol_history ?? jsonData.alcoholHistory ?? false,
-                alcoholCurrent: relational?.alcohol_current ?? jsonData.alcoholCurrent ?? false,
-                alcoholFrequency: relational?.alcohol_frequency || jsonData.alcoholFrequency || '',
-                alcoholQuitInterest: relational?.alcohol_quit_interest || jsonData.alcoholQuitInterest || '',
-                alcoholProducts: relational?.alcohol_products || jsonData.alcoholProducts || [],
-                alcoholOther: relational?.alcohol_other || jsonData.alcoholOther || '',
-                alcoholPriorTx: relational?.alcohol_prior_tx ?? jsonData.alcoholPriorTx ?? false,
-                alcoholPriorTxDetails: relational?.alcohol_prior_tx_details || jsonData.alcoholPriorTxDetails || '',
-                alcoholPriorTxDuration: relational?.alcohol_prior_tx_duration || jsonData.alcoholPriorTxDuration || '',
+                alcoholHistory: relational?.alcohol_history ?? false,
+                alcoholCurrent: relational?.alcohol_current ?? false,
+                alcoholFrequency: relational?.alcohol_frequency || '',
+                alcoholQuitInterest: relational?.alcohol_quit_interest || '',
+                alcoholProducts: relational?.alcohol_products || [],
+                alcoholOther: relational?.alcohol_other || '',
+                alcoholPriorTx: relational?.alcohol_prior_tx ?? false,
+                alcoholPriorTxDetails: relational?.alcohol_prior_tx_details || '',
+                alcoholPriorTxDuration: relational?.alcohol_prior_tx_duration || '',
 
-                drugHistory: relational?.drug_history ?? jsonData.drugHistory ?? false,
-                drugCurrent: relational?.drug_current ?? jsonData.drugCurrent ?? false,
-                drugFrequency: relational?.drug_frequency || jsonData.drugFrequency || '',
-                drugQuitInterest: relational?.drug_quit_interest || jsonData.drugQuitInterest || '',
-                drugProducts: relational?.drug_products || jsonData.drugProducts || [],
-                drugOther: relational?.drug_other || jsonData.drugOther || '',
-                drugPriorTx: relational?.drug_prior_tx ?? jsonData.drugPriorTx ?? false,
-                drugPriorTxDetails: relational?.drug_prior_tx_details || jsonData.drugPriorTxDetails || '',
+                drugHistory: relational?.drug_history ?? false,
+                drugCurrent: relational?.drug_current ?? false,
+                drugFrequency: relational?.drug_frequency || '',
+                drugQuitInterest: relational?.drug_quit_interest || '',
+                drugProducts: relational?.drug_products || [],
+                drugOther: relational?.drug_other || '',
+                drugPriorTx: relational?.drug_prior_tx ?? false,
+                drugPriorTxDetails: relational?.drug_prior_tx_details || '',
 
-                substanceComments: relational?.substance_comments || jsonData.substanceComments || '',
-                substanceEmploymentImpact: relational?.substance_employment_impact || jsonData.substanceEmploymentImpact || ''
+                substanceComments: relational?.substance_comments || '',
+                substanceEmploymentImpact: relational?.substance_employment_impact || ''
             });
 
         } catch (err: any) {
@@ -135,6 +136,11 @@ export function useMedical(intakeId: string) {
         }
     };
 
+    const saveDraft = async () => {
+        const result = await saveMedical({ sectionStatus: 'in_progress' } as any);
+        return result;
+    };
+
     return {
         data,
         loading,
@@ -142,6 +148,7 @@ export function useMedical(intakeId: string) {
         error,
         sectionStatus,
         saveMedical,
+        saveDraft,
         refresh: fetchMedical
     };
 }

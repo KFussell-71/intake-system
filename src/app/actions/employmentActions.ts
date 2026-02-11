@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { verifyAuthentication } from '@/lib/auth/authHelpersServer';
 import { VocationalData } from '@/features/intake/types/intake';
 import { revalidatePath } from 'next/cache';
+import { validateSection } from '@/lib/validation/intakeValidation';
 
 /**
  * Saves Employment, Education, and Vocational Goal data.
@@ -16,6 +17,12 @@ export async function saveEmploymentAction(intakeId: string, data: Partial<Vocat
     }
 
     const supabase = await createClient();
+
+    // 0. Validation Middleware (Server Authority)
+    const validation = validateSection('employment', data);
+    if (!validation.success) {
+        return { success: false, error: `Validation Failed: ${validation.error}` };
+    }
 
     try {
         // 1. Relational Write
@@ -104,13 +111,23 @@ export async function saveEmploymentAction(intakeId: string, data: Partial<Vocat
         });
 
         // 4. Update Section Status
-        await supabase.from('intake_sections').upsert({
-            intake_id: intakeId,
-            section_name: 'employment',
-            status: 'in_progress',
-            last_updated_by: userId,
-            updated_at: new Date().toISOString()
-        }, { onConflict: 'intake_id,section_name' });
+        if (data.sectionStatus) {
+            await supabase.from('intake_sections').upsert({
+                intake_id: intakeId,
+                section_name: 'employment',
+                status: data.sectionStatus,
+                last_updated_by: userId,
+                updated_at: new Date().toISOString()
+            }, { onConflict: 'intake_id,section_name' });
+        } else {
+            await supabase.from('intake_sections').upsert({
+                intake_id: intakeId,
+                section_name: 'employment',
+                status: 'in_progress',
+                last_updated_by: userId,
+                updated_at: new Date().toISOString()
+            }, { onConflict: 'intake_id,section_name' });
+        }
 
         revalidatePath(`/intake/${intakeId}`);
         revalidatePath(`/modernized-intake/${intakeId}`);

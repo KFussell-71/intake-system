@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { verifyAuthentication } from '@/lib/auth/authHelpersServer';
 import { MedicalData } from '@/features/intake/types/intake';
 import { revalidatePath } from 'next/cache';
+import { validateSection } from '@/lib/validation/intakeValidation';
 
 /**
  * Saves Medical, Mental Health, and Substance Use data.
@@ -19,6 +20,15 @@ export async function saveMedicalAction(intakeId: string, data: Partial<MedicalD
     }
 
     const supabase = await createClient();
+
+    // 0. Validation Middleware (Server Authority)
+    const validation = validateSection('medical', data);
+    if (!validation.success) {
+        return { success: false, error: `Validation Failed: ${validation.error}` };
+    }
+
+    // Use validated data if needed, or just proceed with original partial
+    // const safeData = validation.data;
 
     try {
         // 1. Relational Write (The Future)
@@ -114,13 +124,23 @@ export async function saveMedicalAction(intakeId: string, data: Partial<MedicalD
         });
 
         // 4. Update Section Status
-        await supabase.from('intake_sections').upsert({
-            intake_id: intakeId,
-            section_name: 'medical',
-            status: 'in_progress', // Logic to determine 'complete' can be added later
-            last_updated_by: userId,
-            updated_at: new Date().toISOString()
-        }, { onConflict: 'intake_id,section_name' });
+        if (data.sectionStatus) {
+            await supabase.from('intake_sections').upsert({
+                intake_id: intakeId,
+                section_name: 'medical',
+                status: data.sectionStatus,
+                last_updated_by: userId,
+                updated_at: new Date().toISOString()
+            }, { onConflict: 'intake_id,section_name' });
+        } else {
+            await supabase.from('intake_sections').upsert({
+                intake_id: intakeId,
+                section_name: 'medical',
+                status: 'in_progress',
+                last_updated_by: userId,
+                updated_at: new Date().toISOString()
+            }, { onConflict: 'intake_id,section_name' });
+        }
 
         revalidatePath(`/intake/${intakeId}`);
         revalidatePath(`/modernized-intake/${intakeId}`);

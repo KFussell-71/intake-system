@@ -16,17 +16,20 @@ import { useRouter } from 'next/navigation';
 import { useIntake } from '../hooks/useIntake';
 import { useIntakeRules } from '../hooks/useIntakeRules';
 
+import { IntakeDashboard } from './IntakeDashboard';
+
 interface Props {
     intakeId: string;
 }
 
-type Step = 'identity' | 'medical' | 'employment' | 'barriers' | 'observations' | 'consent';
+type Step = 'dashboard' | 'identity' | 'medical' | 'employment' | 'barriers' | 'observations' | 'consent';
 
 const ALL_STEPS: Step[] = ['identity', 'medical', 'employment', 'barriers', 'observations', 'consent'];
 
 export const ModernizedIntakeWizard: React.FC<Props> = ({ intakeId }) => {
     const router = useRouter();
-    const [step, setStep] = useState<Step>('identity');
+    // Default to 'dashboard' for non-linear flow
+    const [step, setStep] = useState<Step>('dashboard');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isAuditOpen, setIsAuditOpen] = useState(false);
 
@@ -37,28 +40,22 @@ export const ModernizedIntakeWizard: React.FC<Props> = ({ intakeId }) => {
     // Compute Visible Steps
     const visibleSteps = ALL_STEPS.filter(s => !hiddenSteps.has(s));
 
-    // Effect: If current step becomes hidden, move to next visible
+    // Effect: If current step becomes hidden, move to dashboard
     useEffect(() => {
-        if (hiddenSteps.has(step)) {
-            const currentIndex = ALL_STEPS.indexOf(step);
-            // Find next visible
-            const nextVisible = ALL_STEPS.slice(currentIndex).find(s => !hiddenSteps.has(s));
-            if (nextVisible) setStep(nextVisible);
-            else {
-                // Fallback to previous
-                const prevVisible = ALL_STEPS.slice(0, currentIndex).reverse().find(s => !hiddenSteps.has(s));
-                if (prevVisible) setStep(prevVisible);
-            }
+        if (step !== 'dashboard' && hiddenSteps.has(step)) {
+            setStep('dashboard');
         }
     }, [hiddenSteps, step]);
 
 
     const renderStep = () => {
-        if (loading) return <div className="p-8 text-center">Loading Intake Context...</div>;
+        if (loading) return <div className="p-8 text-center animate-pulse">Loading Intake Context...</div>;
 
         switch (step) {
+            case 'dashboard':
+                return <IntakeDashboard intakeId={intakeId} onNavigate={(s) => setStep(s as Step)} />;
             case 'identity':
-                return <ModernizedIntakeStepIdentity intakeId={intakeId} onComplete={() => handleNext()} />;
+                return <ModernizedIntakeStepIdentity intakeId={intakeId} onComplete={() => setStep('dashboard')} />;
             case 'medical':
                 return <ModernizedMedicalSection intakeId={intakeId} />;
             case 'employment':
@@ -76,6 +73,7 @@ export const ModernizedIntakeWizard: React.FC<Props> = ({ intakeId }) => {
 
     const getStepTitle = () => {
         switch (step) {
+            case 'dashboard': return 'Dashboard';
             case 'identity': return 'Client Identity';
             case 'medical': return 'Medical & Psychosocial';
             case 'employment': return 'Employment & Vocational';
@@ -86,26 +84,30 @@ export const ModernizedIntakeWizard: React.FC<Props> = ({ intakeId }) => {
     };
 
     const handleNext = () => {
-        const currentIndex = visibleSteps.indexOf(step);
+        const currentIndex = visibleSteps.indexOf(step as any);
         if (currentIndex < visibleSteps.length - 1) {
             setStep(visibleSteps[currentIndex + 1]);
+        } else {
+            setStep('dashboard');
         }
     };
 
     const handleBack = () => {
-        const currentIndex = visibleSteps.indexOf(step);
+        const currentIndex = visibleSteps.indexOf(step as any);
         if (currentIndex > 0) {
             setStep(visibleSteps[currentIndex - 1]);
+        } else {
+            setStep('dashboard');
         }
     };
 
     return (
-        <div className="max-w-4xl mx-auto p-4 space-y-6 relative">
+        <div className="max-w-6xl mx-auto p-4 space-y-6 relative">
             {/* Header / Nav */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <Button variant="ghost" onClick={() => router.back()}>
-                        <ArrowLeft className="w-4 h-4 mr-2" /> Back
+                    <Button variant="ghost" onClick={() => step === 'dashboard' ? router.back() : setStep('dashboard')}>
+                        <ArrowLeft className="w-4 h-4 mr-2" /> {step === 'dashboard' ? 'Back' : 'Dashboard'}
                     </Button>
                     <Button
                         variant={isSidebarOpen ? "secondary" : "ghost"}
@@ -131,47 +133,50 @@ export const ModernizedIntakeWizard: React.FC<Props> = ({ intakeId }) => {
                 </div>
             </div>
 
-            {/* Stepper */}
-            <div className="flex gap-2 mb-8">
-                {visibleSteps.map((s, idx) => (
-                    <button
-                        key={s}
-                        onClick={() => setStep(s)}
-                        className={`flex-1 h-1.5 rounded-full transition-all ${s === step ? 'bg-primary scale-100' :
-                            (visibleSteps.indexOf(step) > idx) ? 'bg-primary/40' : 'bg-slate-200 dark:bg-slate-800'
-                            }`}
-                        title={s}
-                    />
-                ))}
-            </div>
+            {/* Stepper - Only show if NOT dashboard */}
+            {step !== 'dashboard' && (
+                <div className="flex gap-2 mb-8">
+                    {visibleSteps.map((s, idx) => (
+                        <button
+                            key={s}
+                            onClick={() => setStep(s)}
+                            className={`flex-1 h-1.5 rounded-full transition-all ${s === step ? 'bg-primary scale-100' :
+                                (visibleSteps.indexOf(step as any) > idx) ? 'bg-primary/40' : 'bg-slate-200 dark:bg-slate-800'
+                                }`}
+                            title={s}
+                        />
+                    ))}
+                </div>
+            )}
 
             {/* Main Content Area */}
-            <div className="min-h-[500px]">
+            <div className="min-h-[500px] animate-in slide-in-from-bottom-4 duration-500">
                 {renderStep()}
             </div>
 
-            {/* Footer Navigation */}
-            <GlassCard className="p-4 flex justify-between items-center sticky bottom-4 z-10 border-t border-white/20">
-                <Button
-                    variant="outline"
-                    onClick={handleBack}
-                    disabled={step === visibleSteps[0]}
-                >
-                    <ArrowLeft className="w-4 h-4 mr-2" /> Previous
-                </Button>
+            {/* Footer Navigation - Hide on Dashboard */}
+            {step !== 'dashboard' && (
+                <GlassCard className="p-4 flex justify-between items-center sticky bottom-4 z-10 border-t border-white/20">
+                    <Button
+                        variant="outline"
+                        onClick={handleBack}
+                    >
+                        <ArrowLeft className="w-4 h-4 mr-2" /> {visibleSteps.indexOf(step as any) === 0 ? 'Dashboard' : 'Previous'}
+                    </Button>
 
-                <div className="flex gap-2">
-                    {step !== 'consent' ? (
-                        <Button onClick={handleNext}>
-                            Next <ArrowRight className="w-4 h-4 ml-2" />
-                        </Button>
-                    ) : (
-                        <Button onClick={() => router.push(`/intake/${intakeId}`)}>
-                            Finish & Review <Save className="w-4 h-4 ml-2" />
-                        </Button>
-                    )}
-                </div>
-            </GlassCard>
+                    <div className="flex gap-2">
+                        {step !== 'consent' ? (
+                            <Button onClick={handleNext}>
+                                Next <ArrowRight className="w-4 h-4 ml-2" />
+                            </Button>
+                        ) : (
+                            <Button onClick={() => setStep('dashboard')}>
+                                Finish & Review <Save className="w-4 h-4 ml-2" />
+                            </Button>
+                        )}
+                    </div>
+                </GlassCard>
+            )}
 
             {/* Task Sidebar */}
             <IntakeTaskSidebar

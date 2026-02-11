@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { addIntakeObservation, removeIntakeObservationAction } from '@/app/actions/modernizedIntakeActions';
+import { addIntakeObservation, removeIntakeObservationAction, updateIntakeSection } from '@/app/actions/modernizedIntakeActions';
 
 export interface Observation {
     id: string;
@@ -67,6 +67,21 @@ export function useObservations(intakeId: string) {
         }
     };
 
+    const setSectionStatus = async (status: 'in_progress' | 'complete') => {
+        try {
+            // We can reuse loading or add a saving state. Reusing loading for simplicity/consistency with Barriers
+            setLoading(true);
+            await updateIntakeSection(intakeId, 'observations', status);
+            return { success: true };
+        } catch (err: any) {
+            console.error('Error updating status:', err);
+            setError("Failed to update status.");
+            return { success: false, error: err.message };
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return {
         observations,
         loading,
@@ -74,6 +89,7 @@ export function useObservations(intakeId: string) {
         error,
         addObservation,
         removeObservation,
+        setSectionStatus,
         refresh: fetchObservations
     };
 }
