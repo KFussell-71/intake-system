@@ -3,6 +3,7 @@ import { BrainCircuit, MessageSquare, Plus, Trash2, User } from 'lucide-react';
 import { useObservations } from '../hooks/useObservations';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { ElegantInput, ElegantTextarea } from '@/components/ui/ElegantInput';
 import {
     Select,

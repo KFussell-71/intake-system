@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import { ModernizedIntakeStepIdentity } from './ModernizedIntakeStepIdentity';
+import { ModernizedMedicalSection } from './ModernizedMedicalSection';
+import { ModernizedEmploymentSection } from './ModernizedEmploymentSection';
 import { ModernizedBarriersSection } from './ModernizedBarriersSection';
 import { ModernizedObservationsSection } from './ModernizedObservationsSection';
 import { ModernizedConsentSection } from './ModernizedConsentSection';
@@ -14,7 +16,9 @@ interface Props {
     intakeId: string;
 }
 
-type Step = 'identity' | 'barriers' | 'observations' | 'consent';
+type Step = 'identity' | 'medical' | 'employment' | 'barriers' | 'observations' | 'consent';
+
+const STEPS: Step[] = ['identity', 'medical', 'employment', 'barriers', 'observations', 'consent'];
 
 export const ModernizedIntakeWizard: React.FC<Props> = ({ intakeId }) => {
     const router = useRouter();
@@ -23,7 +27,11 @@ export const ModernizedIntakeWizard: React.FC<Props> = ({ intakeId }) => {
     const renderStep = () => {
         switch (step) {
             case 'identity':
-                return <ModernizedIntakeStepIdentity intakeId={intakeId} onComplete={() => setStep('barriers')} />;
+                return <ModernizedIntakeStepIdentity intakeId={intakeId} onComplete={() => setStep('medical')} />;
+            case 'medical':
+                return <ModernizedMedicalSection intakeId={intakeId} />;
+            case 'employment':
+                return <ModernizedEmploymentSection intakeId={intakeId} />;
             case 'barriers':
                 return <ModernizedBarriersSection intakeId={intakeId} />;
             case 'observations':
@@ -38,9 +46,25 @@ export const ModernizedIntakeWizard: React.FC<Props> = ({ intakeId }) => {
     const getStepTitle = () => {
         switch (step) {
             case 'identity': return 'Client Identity';
-            case 'barriers': return 'Employment Barriers';
+            case 'medical': return 'Medical & Psychosocial';
+            case 'employment': return 'Employment & Vocational';
+            case 'barriers': return 'Barriers to Employment';
             case 'observations': return 'Clinical Observations';
             case 'consent': return 'Release of Information';
+        }
+    };
+
+    const handleNext = () => {
+        const currentIndex = STEPS.indexOf(step);
+        if (currentIndex < STEPS.length - 1) {
+            setStep(STEPS[currentIndex + 1]);
+        }
+    };
+
+    const handleBack = () => {
+        const currentIndex = STEPS.indexOf(step);
+        if (currentIndex > 0) {
+            setStep(STEPS[currentIndex - 1]);
         }
     };
 
@@ -66,13 +90,14 @@ export const ModernizedIntakeWizard: React.FC<Props> = ({ intakeId }) => {
 
             {/* Stepper */}
             <div className="flex gap-2 mb-8">
-                {(['identity', 'barriers', 'observations', 'consent'] as Step[]).map((s, idx) => (
+                {STEPS.map((s, idx) => (
                     <button
                         key={s}
                         onClick={() => setStep(s)}
                         className={`flex-1 h-1.5 rounded-full transition-all ${s === step ? 'bg-primary scale-100' :
-                            (['identity', 'barriers', 'observations', 'consent'].indexOf(step) > idx) ? 'bg-primary/40' : 'bg-slate-200 dark:bg-slate-800'
+                            (STEPS.indexOf(step) > idx) ? 'bg-primary/40' : 'bg-slate-200 dark:bg-slate-800'
                             }`}
+                        title={s}
                     />
                 ))}
             </div>
@@ -86,30 +111,19 @@ export const ModernizedIntakeWizard: React.FC<Props> = ({ intakeId }) => {
             <GlassCard className="p-4 flex justify-between items-center sticky bottom-4 z-10 border-t border-white/20">
                 <Button
                     variant="outline"
-                    onClick={() => {
-                        if (step === 'barriers') setStep('identity');
-                        if (step === 'observations') setStep('barriers');
-                        if (step === 'consent') setStep('observations');
-                    }}
+                    onClick={handleBack}
                     disabled={step === 'identity'}
                 >
                     <ArrowLeft className="w-4 h-4 mr-2" /> Previous
                 </Button>
 
                 <div className="flex gap-2">
-                    {/* Auto-save happens in components, but comprehensive save could go here */}
-                    {step !== 'consent' && (
-                        <Button
-                            onClick={() => {
-                                if (step === 'identity') setStep('barriers');
-                                if (step === 'barriers') setStep('observations');
-                                if (step === 'observations') setStep('consent');
-                            }}
-                        >
+                    {/* Auto-save happens in components */}
+                    {step !== 'consent' ? (
+                        <Button onClick={handleNext}>
                             Next <ArrowRight className="w-4 h-4 ml-2" />
                         </Button>
-                    )}
-                    {step === 'consent' && (
+                    ) : (
                         <Button onClick={() => router.push(`/intake/${intakeId}`)}>
                             Finish & Review <Save className="w-4 h-4 ml-2" />
                         </Button>

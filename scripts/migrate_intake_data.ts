@@ -33,7 +33,7 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function migrateData() {
-    console.log('🚀 Starting Data Migration...');
+    console.log('🚀 Starting Data Migration (Sprint 1: Identity & Consent)...');
 
     // 1. Fetch all intakes with data
     const { data: intakes, error } = await supabase
@@ -91,7 +91,6 @@ async function migrateData() {
 
             // --- B. Migrate Observations ---
             if (formData.generalObservations && typeof formData.generalObservations === 'string') {
-                // Check if already exists to avoid duplicates (idempotency)
                 const { data: existingObs } = await supabase
                     .from('observations')
                     .select('id')
@@ -114,6 +113,55 @@ async function migrateData() {
                     if (obsError) console.error(`Failed to migrate observations for ${intake.id}:`, obsError);
                 }
             }
+
+            // --- C. Migrate Identity (The God Object Extraction) ---
+            if (formData.clientName || formData.birthDate) {
+                const { error: identityError } = await supabase
+                    .from('intake_identity')
+                    .upsert({
+                        intake_id: intake.id,
+                        first_name: formData.clientName ? formData.clientName.split(' ')[0] : 'Unknown',
+                        last_name: formData.clientName ? formData.clientName.split(' ').slice(1).join(' ') : 'Client',
+                        dob: formData.birthDate ? new Date(formData.birthDate).toISOString().split('T')[0] : null,
+                        ssn_last_four: formData.ssnLastFour || null,
+                        phone: formData.phone || null,
+                        email: formData.email || null,
+                        address: formData.address || null,
+                        updated_by: intake.created_by || null, // Best effort
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'intake_id' });
+
+                if (identityError) console.error(`Failed to migrate identity for ${intake.id}:`, identityError);
+            }
+
+            // --- D. Migrate Consent (Artifact Backfill) ---
+            // If legacy boolean is true, create a LOCKED document
+            if (formData.consentToRelease === true) {
+                // Check idempotency
+                const { data: existingConsent } = await supabase
+                    .from('consent_documents')
+                    .select('id')
+                    .eq('intake_id', intake.id)
+                    .eq('template_version', 'legacy-v1')
+                    .single();
+
+                if (!existingConsent) {
+                    const { error: consentError } = await supabase
+                        .from('consent_documents')
+                        .insert({
+                            intake_id: intake.id,
+                            template_version: 'legacy-v1',
+                            scope_text: 'General Release of Information (Legacy Migration)',
+                            expires_at: null, // Legacy didn't have expiration
+                            created_by: intake.created_by || null,
+                            locked: true, // Auto-lock as it's historical
+                            created_at: intake.created_at // Backdate to intake creation
+                        });
+
+                    if (consentError) console.error(`Failed to migrate consent for ${intake.id}:`, consentError);
+                }
+            }
+
 
             processedCount++;
             if (processedCount % 10 === 0) process.stdout.write('.');

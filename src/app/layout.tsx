@@ -37,6 +37,7 @@ import { ErrorBoundary } from "@/components/providers/ErrorBoundary";
 import { PWARegister } from "@/components/providers/PWARegister";
 import { GlobalSearchDialog } from "@/components/search/GlobalSearchDialog";
 import { NetworkStatus } from "@/components/ui/NetworkStatus";
+import { Toaster } from 'sonner';
 
 export default function RootLayout({
     children,
@@ -57,6 +58,7 @@ export default function RootLayout({
                     <PWARegister />
                     <ErrorBoundary>
                         {children}
+                        <Toaster />
                     </ErrorBoundary>
                 </ThemeProvider>
             </body>

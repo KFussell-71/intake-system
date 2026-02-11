@@ -1,17 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
-import { updateIntakeSection } from '@/app/actions/modernizedIntakeActions';
-
-export interface IdentityData {
-    clientName: string;
-    ssnLastFour: string;
-    phone: string;
-    email: string;
-    address: string;
-    reportDate: string;
-    completionDate: string;
-    sectionStatus: 'not_started' | 'in_progress' | 'complete' | 'waived';
-}
+import { saveIdentityAction, IdentityData } from '@/app/actions/identityActions';
 
 export function useIdentity(intakeId: string) {
     const [data, setData] = useState<IdentityData | null>(null);
@@ -22,10 +11,19 @@ export function useIdentity(intakeId: string) {
     const fetchIdentity = useCallback(async () => {
         try {
             setLoading(true);
-            // 1. Fetch Intake Data (which contains some identity fields or client_id)
+            // 1. Fetch Intake Data (Hybrid approach: Try relational first, fall back to JSON)
+            // Ideally we join intake_identity.
+
             const { data: intake, error: intakeError } = await supabase
                 .from('intakes')
-                .select('report_date, completion_date, data, client:clients(name, phone, email, address)')
+                .select(`
+                    id, 
+                    report_date, 
+                    completion_date, 
+                    data, 
+                    client:clients(name, phone, email, address),
+                    intake_identity(*)
+                `)
                 .eq('id', intakeId)
                 .single();
 
@@ -39,18 +37,23 @@ export function useIdentity(intakeId: string) {
                 .eq('section_name', 'identity')
                 .single();
 
-            // Map data
-            // Note: We prioritize Client Table data, fallback to JSONB 'data' if needed
-            const client = intake.client as any; // Type assertion for joined data
+            const client = intake.client as any;
             const jsonData = intake.data as any || {};
+            const relational = (intake as any).intake_identity; // Might be null if not migrated yet
 
+            // Priority: Relational -> Client Table -> JSONB
             setData({
-                clientName: client?.name || jsonData.clientName || '',
-                phone: client?.phone || jsonData.phone || '',
-                email: client?.email || jsonData.email || '',
-                address: client?.address || jsonData.address || '',
-                ssnLastFour: jsonData.ssnLastFour || '', // SSN usually not in clients table for security, maybe only in intake data?
-                reportDate: intake.report_date,
+                clientName:
+                    (relational?.first_name ? `${relational.first_name} ${relational.last_name}` : null) ||
+                    client?.name ||
+                    jsonData.clientName || '',
+
+                ssnLastFour: relational?.ssn_last_four || jsonData.ssnLastFour || '',
+                phone: relational?.phone || client?.phone || jsonData.phone || '',
+                email: relational?.email || client?.email || jsonData.email || '',
+                address: relational?.address || client?.address || jsonData.address || '',
+
+                reportDate: intake.report_date || '',
                 completionDate: intake.completion_date || '',
                 sectionStatus: section?.status || 'not_started'
             });
@@ -70,46 +73,17 @@ export function useIdentity(intakeId: string) {
     const saveIdentity = async (newData: Partial<IdentityData>) => {
         try {
             setSaving(true);
-            const updated = { ...data, ...newData } as IdentityData; // Optimistic update merging logic
+            const updated = { ...data, ...newData } as IdentityData;
 
-            // 1. Update Intake Table (Dates)
-            const { error: intakeError } = await supabase
-                .from('intakes')
-                .update({
-                    report_date: updated.reportDate,
-                    completion_date: updated.completionDate || null,
-                    // We still update JSONB for now to maintain compatibility with monlith
-                    data: {
-                        ...(await getCurrentJsonData(intakeId)), // Helper needed? Or just patch.
-                        // Actually, this is tricky. We don't want to overwrite other JSON fields.
-                        // Ideally we use a server action or specific JSON path update.
-                        // For MVP refactor, we might assume useIntakeForm handles the JSON sync? 
-                        // But the goal is to Move AWAY.
-                        // So we should update JSONB via a safe patch.
-                        clientName: updated.clientName,
-                        phone: updated.phone,
-                        email: updated.email,
-                        address: updated.address,
-                        ssnLastFour: updated.ssnLastFour
-                    }
-                })
-                .eq('id', intakeId);
-
-            if (intakeError) throw intakeError;
-
-            // 2. Update Clients Table (Basic Info)
-            // We need to know the client_id. 
-            // In a real scenario, we'd look it up. For now, assuming intake has client_id.
-
-            // 3. Update Section Status
-            if (newData.sectionStatus) {
-                await updateIntakeSection(intakeId, 'identity', newData.sectionStatus);
-            }
+            // Server Action handles Double Write & Audit
+            const result = await saveIdentityAction(intakeId, newData);
+            if (!result.success) throw new Error(result.error);
 
             setData(updated);
             return { success: true };
         } catch (err: any) {
             console.error('Error saving identity:', err);
+            setError(err.message);
             return { success: false, error: err.message };
         } finally {
             setSaving(false);
@@ -124,10 +98,4 @@ export function useIdentity(intakeId: string) {
         saveIdentity,
         refresh: fetchIdentity
     };
-}
-
-// Helper to get current JSON to avoid wiping other fields (Transition Strategy)
-async function getCurrentJsonData(intakeId: string) {
-    const { data } = await supabase.from('intakes').select('data').eq('id', intakeId).single();
-    return data?.data || {};
 }

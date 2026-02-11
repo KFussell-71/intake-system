@@ -116,7 +116,7 @@ export const IntakeStepReview: React.FC<Props> = ({
                     Signature & Finalization
                 </h3>
                 <p className="text-sm text-slate-500">
-                    Please download the compiled report, obtain the client's signature, and upload the signed packet before finalizing.
+                    Please download the compiled report, obtain the client&apos;s signature, and upload the signed packet before finalizing.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">

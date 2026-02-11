@@ -15,7 +15,8 @@ import {
     TrendingUp,
     Clock,
     BarChart3,
-    Activity
+    Activity,
+    Eye
 } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ActionButton } from '@/components/ui/ActionButton';
@@ -335,6 +336,34 @@ export default function DashboardPage() {
                             <div>
                                 <h3 className="font-bold mb-1">Settings</h3>
                                 <p className="text-xs text-slate-500">Preferences</p>
+                            </div>
+                        </GlassCard>
+
+                        <GlassCard
+                            hoverable
+                            onClick={() => router.push('/dashboard/accreditation')}
+                            className="flex flex-col justify-between border-l-4 border-l-emerald-500"
+                        >
+                            <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4">
+                                <FileText className="w-5 h-5 text-emerald-500" />
+                            </div>
+                            <div>
+                                <h3 className="font-bold mb-1">Accreditation</h3>
+                                <p className="text-xs text-slate-500">Audit Proof</p>
+                            </div>
+                        </GlassCard>
+
+                        <GlassCard
+                            hoverable
+                            onClick={() => router.push('/dashboard/transparency')}
+                            className="flex flex-col justify-between border-l-4 border-l-cyan-500"
+                        >
+                            <div className="w-10 h-10 bg-cyan-500/10 rounded-xl flex items-center justify-center mb-4">
+                                <Eye className="w-5 h-5 text-cyan-500" />
+                            </div>
+                            <div>
+                                <h3 className="font-bold mb-1">Transparency</h3>
+                                <p className="text-xs text-slate-500">Public Trust</p>
                             </div>
                         </GlassCard>
                     </motion.div>
