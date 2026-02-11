@@ -73,46 +73,48 @@ export async function createSupabaseServerClient() {
  * Verify user is authenticated (for API routes)
  * Uses Supabase SSR client with cookies
  */
-export async function verifyAuthentication(): Promise<AuthResult> {
-    try {
-        // SECURITY: Allow Mock Auth in Development ONLY
-        // This enables AI features to work in the "Mock Mode" demo
-        const isMockAllowed = process.env.NEXT_PUBLIC_ALLOW_MOCK_AUTH === 'true' || process.env.ALLOW_MOCK_AUTH === 'true';
-        const isDev = process.env.NODE_ENV === 'development';
+export async function verifyAuthentication() {
+    const cookieStore = await cookies(); // Await cookies()
 
-        if (isDev && isMockAllowed) {
-            const cookieStore = await cookies();
-            const mockToken = cookieStore.get('sb-access-token')?.value;
+    // REMOVED: Mock Auth Bypass (Red Team Finding: RT-SEC-002)
+    // We strictly require real Supabase authentication even in Dev to prevent accidental drift or production leaks.
 
-            if (mockToken === 'mock-token') {
-                console.warn('[SECURITY] API: Accepting MOCK Authentication');
-                return {
-                    authenticated: true,
-                    userId: 'mock-user-id' // Matches SEED_USER in mock.ts
-                };
-            }
+    const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                getAll() {
+                    return cookieStore.getAll()
+                },
+                setAll(cookiesToSet) {
+                    try {
+                        cookiesToSet.forEach(({ name, value, options }) =>
+                            cookieStore.set(name, value, options)
+                        )
+                    } catch {
+                        // The `setAll` method was called from a Server Component.
+                        // This can be ignored if you have middleware refreshing
+                        // user sessions.
+                    }
+                },
+            },
         }
+    );
 
-        const supabase = await createSupabaseServerClient();
-        const { data: { session }, error } = await supabase.auth.getSession();
+    const { data: { user }, error } = await supabase.auth.getUser();
 
-        if (error) {
-            console.error('Authentication error:', error);
-            return { authenticated: false, error: 'Authentication failed' };
-        }
-
-        if (!session || !session.user) {
-            return { authenticated: false, error: 'No active session' };
-        }
-
-        return {
-            authenticated: true,
-            userId: session.user.id
-        };
-    } catch (error) {
-        console.error('Exception during authentication:', error);
-        return { authenticated: false, error: 'Authentication system error' };
+    if (error) {
+        console.error('Authentication error:', error);
+        return { authenticated: false, error: error.message };
     }
+
+    return {
+        authenticated: !!user,
+        // user, // Removed 'user' as it's not in the inferred AuthResult type if interface isn't updated
+        userId: user?.id,
+        error: user ? undefined : 'No active session'
+    };
 }
 
 // ============================================

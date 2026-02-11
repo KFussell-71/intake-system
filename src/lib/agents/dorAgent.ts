@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { hipaaLogger } from '@/lib/logging/hipaaLogger';
+import { sanitizeForPrompt, validateAIOutput } from '@/lib/ai/sanitizer';
 
 // Define the interface for the Intake Bundle we get from RPC
 export interface IntakeBundle {
@@ -55,60 +56,7 @@ export interface IntakeBundle {
     };
 }
 
-/**
- * SECURITY: Sanitize user input for AI prompts (BLUE TEAM REMEDIATION)
- * RED TEAM FINDING: HIGH-3 - AI prompt injection vulnerability
- * REMEDIATION: Sanitize all user-controlled data before including in prompts
- * 
- * Removes:
- * - Newlines (prevent instruction injection)
- * - Special characters (prevent escape sequences)
- * - Limits length (prevent DoS)
- */
-function sanitizeForPrompt(text: string | null | undefined): string {
-    if (!text) return 'Not Provided';
-
-    return text
-        .replace(/[\n\r]/g, ' ') // Remove newlines
-        .replace(/[^\w\s@.,-]/g, '') // Remove special chars except basic punctuation
-        .substring(0, 500) // Limit length
-        .trim();
-}
-
-/**
- * SECURITY: Validate AI output for injection indicators
- * Detects potential prompt injection attempts in generated content
- */
-function validateAIOutput(output: string, clientName: string): { valid: boolean; reason?: string } {
-    // Check for injection patterns
-    const injectionPatterns = [
-        /IGNORE.*INSTRUCTIONS/i,
-        /SYSTEM:/i,
-        /ASSISTANT:/i,
-        /<script>/i,
-        /javascript:/i,
-        /DROP TABLE/i,
-        /DELETE FROM/i
-    ];
-
-    for (const pattern of injectionPatterns) {
-        if (pattern.test(output)) {
-            return { valid: false, reason: 'Potential injection detected' };
-        }
-    }
-
-    // Verify output contains client name (basic sanity check)
-    if (!output.includes(clientName)) {
-        return { valid: false, reason: 'Output does not contain client name' };
-    }
-
-    // Check minimum length (should be a full report)
-    if (output.length < 500) {
-        return { valid: false, reason: 'Output too short' };
-    }
-
-    return { valid: true };
-}
+// Redundant local definitions removed in favor of @/lib/ai/sanitizer
 
 export async function runDorAgent(data: IntakeBundle, preparerName: string = "Employment Specialist"): Promise<string> {
     const LOCKED_SYSTEM_PROMPT = `
@@ -243,7 +191,7 @@ Master Application
 
     // SECURITY: Sanitize all user-controlled inputs (BLUE TEAM REMEDIATION)
     // RED TEAM FINDING: HIGH-3 - Unsanitized user data in AI prompts
-    // REMEDIATION: Sanitize all fields before including in prompt
+    // REMEDIATION: Sanitize all fields before including in prompt via Centralized Sanitizer
     const sanitizedClient = {
         name: sanitizeForPrompt(data.client.name),
         first_name: sanitizeForPrompt(data.client.first_name),
@@ -329,10 +277,11 @@ Master Application
         const output = response.text();
 
         // SECURITY: Validate output for injection attempts (BLUE TEAM REMEDIATION)
-        const validation = validateAIOutput(output, data.client.name);
-        if (!validation.valid) {
-            hipaaLogger.error('AI output validation failed:', validation.reason);
-            throw new Error(`AI output validation failed: ${validation.reason}`);
+        // RED TEAM FINDING: RT-AI-003 - Output validation
+        const isValid = validateAIOutput(output);
+        if (!isValid) {
+            hipaaLogger.error('AI output validation failed: Potential Injection Detected');
+            throw new Error('AI output validation failed: Potential Injection-Like Content Detected');
         }
 
         return output;

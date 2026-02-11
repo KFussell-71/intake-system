@@ -6,6 +6,7 @@ import { getResources } from "./resourceActions";
 import { logSystemAction } from "./memoryActions";
 import { AV_RESOURCES } from "../../data/av_resources"; // Fallback if DB fails or empty
 import { PROMPTS } from "@/lib/ai/prompts";
+import { sanitizeForPrompt } from "@/lib/ai/sanitizer";
 
 export async function generateCaseNote(rawInput: string, type: 'SOAP' | 'DAP' | 'General', clientName: string) {
     // Fetch resources from DB dynamically
@@ -23,7 +24,11 @@ export async function generateCaseNote(rawInput: string, type: 'SOAP' | 'DAP' | 
     ).join("\n");
 
     const systemPrompt = PROMPTS.RESOURCE_COORDINATOR.SYSTEM(type, resourceMapString);
-    const userPrompt = PROMPTS.RESOURCE_COORDINATOR.USER(clientName, rawInput);
+    // RED TEAM REMEDIATION: Sanitize user input to prevent Prompt Injection
+    const userPrompt = PROMPTS.RESOURCE_COORDINATOR.USER(
+        sanitizeForPrompt(clientName),
+        sanitizeForPrompt(rawInput)
+    );
 
     try {
         console.log(`Generating case note using UnifiedAIService`);

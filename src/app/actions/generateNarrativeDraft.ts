@@ -2,6 +2,7 @@ import { aiService } from "@/lib/ai/UnifiedAIService";
 import { IntakeFormData } from "@/features/intake/types/intake";
 import { scrubObject } from "@/lib/security/piiScrubber";
 import { PROMPTS } from "@/lib/ai/prompts";
+import { sanitizeForPrompt } from "@/lib/ai/sanitizer";
 
 export async function generateNarrativeDraft(rawData: IntakeFormData, type: 'rationale' | 'notes') {
     // PURPLE TEAM FIX: Scrub all PII from input data
@@ -10,7 +11,8 @@ export async function generateNarrativeDraft(rawData: IntakeFormData, type: 'rat
     // Use Unified AI Service (Works with Ollama or Gemini)
     // No direct API key check needed here, the service handles it.
 
-    const systemPrompt = PROMPTS.NARRATIVE.SYSTEM(data.clientName || 'The participant');
+    // RED TEAM REMEDIATION: Sanitize inputs
+    const systemPrompt = PROMPTS.NARRATIVE.SYSTEM(sanitizeForPrompt(data.clientName) || 'The participant');
 
     const userPrompt = type === 'rationale'
         ? PROMPTS.NARRATIVE.RATIONALE(data)
