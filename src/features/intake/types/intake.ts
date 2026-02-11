@@ -4,27 +4,41 @@
  */
 
 // 1. IDENTITY & DEMOGRAPHICS
-export interface IdentityData {
+export interface IdentityBasic {
     clientName: string;
     phone: string;
     email: string;
     address: string;
     ssnLastFour: string;
+}
+
+export interface IdentityDemographics {
+    birthDate: string;
     gender: string;
     race: string;
-    birthDate: string;
+}
+
+export interface IdentitySocial {
     employmentStatus: string;
     relationshipStatus: string;
+    preferredContactMethods: string[];
+}
+
+export interface IdentityEmergency {
     emergencyContactName: string;
     emergencyContactPhone: string;
     emergencyContactRelation: string;
-    preferredContactMethods: string[];
-    // Basic Intake Meta
+}
+
+export interface IdentityMetadata {
     reportDate: string;
     completionDate: string;
     referralSource: string;
     referralContact: string;
+    sectionStatus?: 'not_started' | 'in_progress' | 'complete' | 'waived';
 }
+
+export type IdentityData = IdentityBasic & IdentityDemographics & IdentitySocial & IdentityEmergency & IdentityMetadata;
 
 // 2. VOCATIONAL PROFILE (Employment, Education, Goals)
 export interface VocationalGoals {
@@ -118,13 +132,15 @@ export interface MedicalMentalHealth {
     mhPriorMedsDetails: string;
 }
 
-export interface MedicalSubstanceUse {
+export interface SubstanceTobacco {
     tobaccoUse: boolean;
     tobaccoDuration: string;
     tobaccoQuitInterest: string;
     tobaccoProducts: string[];
     tobaccoOther: string;
+}
 
+export interface SubstanceAlcohol {
     alcoholHistory: boolean;
     alcoholCurrent: boolean;
     alcoholFrequency: string;
@@ -134,7 +150,9 @@ export interface MedicalSubstanceUse {
     alcoholPriorTx: boolean;
     alcoholPriorTxDetails: string;
     alcoholPriorTxDuration: string;
+}
 
+export interface SubstanceDrugs {
     drugHistory: boolean;
     drugCurrent: boolean;
     drugFrequency: string;
@@ -143,10 +161,14 @@ export interface MedicalSubstanceUse {
     drugOther: string;
     drugPriorTx: boolean;
     drugPriorTxDetails: string;
+}
 
+export interface SubstanceMeta {
     substanceComments: string;
     substanceEmploymentImpact: string;
 }
+
+export type MedicalSubstanceUse = SubstanceTobacco & SubstanceAlcohol & SubstanceDrugs & SubstanceMeta;
 
 export type MedicalData = MedicalGeneral & MedicalMentalHealth & MedicalSubstanceUse & {
     sectionStatus?: 'not_started' | 'in_progress' | 'complete';
@@ -227,24 +249,32 @@ export interface ClinicalAssessment {
     assessmentSummary: string;
 }
 
-export interface ClinicalReviews {
+export interface ReviewDates {
     targetReviewDate: string;
     referralReviewDate: string;
-    referralNotes: string;
     authReviewDate: string;
-    authNotes: string;
     workHistoryReviewDate: string;
-    workHistoryNotes: string;
     resumeUpdateDate: string;
-    resumeUpdateNotes: string;
     mockInterviewDate: string;
-    mockInterviewNotes: string;
     networkingDate: string;
-    networkingNotes: string;
+}
+
+export interface ReviewCheckIn {
     checkInDay: string;
     checkInTime: string;
+}
+
+export interface ReviewNotes {
+    referralNotes: string;
+    authNotes: string;
+    workHistoryNotes: string;
+    resumeUpdateNotes: string;
+    mockInterviewNotes: string;
+    networkingNotes: string;
     checkInNotes: string;
 }
+
+export type ClinicalReviews = ReviewDates & ReviewCheckIn & ReviewNotes;
 
 export type ClinicalData = ClinicalObservations & ClinicalAppearance & ClinicalHistory & ClinicalAssessment & ClinicalReviews;
 

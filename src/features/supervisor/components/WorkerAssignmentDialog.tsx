@@ -5,7 +5,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { ActionButton } from '@/components/ui/ActionButton';
 import { UserPlus, Loader2, CheckCircle } from 'lucide-react';
-import { getWorkerList, getClientAssignment } from '@/lib/supervisor/supervisorActions';
+import { getWorkerList } from '@/lib/supervisor/supervisorCore';
+import { getClientAssignment } from '@/lib/supervisor/supervisorAssignments';
 
 interface WorkerAssignmentDialogProps {
     open: boolean;

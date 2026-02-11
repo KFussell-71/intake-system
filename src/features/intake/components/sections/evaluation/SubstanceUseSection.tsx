@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { IntakeFormData } from '../../../types/intake';
+import { MedicalData } from '../../../types/intake';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Wine, Cigarette, AlertTriangle } from 'lucide-react';
 import { ElegantTextarea } from '@/components/ui/ElegantInput';
@@ -7,7 +7,7 @@ import { FormCheckbox } from '@/features/intake/components/FormCheckbox';
 import { motion } from 'framer-motion';
 
 interface Props {
-    formData: IntakeFormData;
+    formData: MedicalData;
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
 }
 
@@ -15,7 +15,7 @@ export const SubstanceUseSection: React.FC<Props> = ({ formData, onChange }) => 
     const [activeTab, setActiveTab] = useState<'tobacco' | 'alcohol' | 'drugs'>('tobacco');
 
     // Helper for multi-select checkboxes
-    const handleMultiSelect = (field: keyof IntakeFormData, value: string, checked: boolean) => {
+    const handleMultiSelect = (field: keyof MedicalData, value: string, checked: boolean) => {
         const current = (formData[field] as string[]) || [];
         const updated = checked
             ? [...current, value]

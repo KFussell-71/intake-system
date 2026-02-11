@@ -112,6 +112,18 @@ export class IntakeRepository extends BaseRepository {
         return data;
     }
 
+    async updateIntakeStatus(intakeId: string, status: 'draft' | 'submitted' | 'approved' | 'archived') {
+        const { data, error } = await this.db
+            .from('intakes')
+            .update({ status, updated_at: new Date().toISOString() })
+            .eq('id', intakeId)
+            .select()
+            .single();
+
+        if (error) this.handleError(error, 'updateIntakeStatus');
+        return data;
+    }
+
     async getIntakeById(intakeId: string) {
         const { data, error } = await this.db
             .from('intakes')

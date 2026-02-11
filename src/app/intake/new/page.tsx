@@ -27,30 +27,21 @@ import { ActionButton } from '@/components/ui/ActionButton';
 
 // Feature imports
 import { useIntakeForm } from '@/features/intake/hooks/useIntakeForm';
-import { IntakeStepIdentity } from '@/features/intake/components/IntakeStepIdentity';
-import { IntakeStepEvaluation } from '@/features/intake/components/IntakeStepEvaluation';
-import { IntakeStepGoals } from '@/features/intake/components/IntakeStepGoals';
-import { IntakeStepPrep } from '@/features/intake/components/IntakeStepPrep';
-import { IntakeStepPlacement } from '@/features/intake/components/IntakeStepPlacement';
-import { IntakeStepReview } from '@/features/intake/components/IntakeStepReview';
 import { AccessibilityToggle } from '@/components/ui/AccessibilityToggle';
 import { intakeController } from '@/controllers/IntakeController';
 import { LogicValidationSummary } from '@/features/intake/components/LogicValidationSummary';
 import { ReportPreviewModal } from '@/features/intake/components/ReportPreviewModal';
 import { ComplianceSidebar } from '@/features/intake/components/ComplianceSidebar';
-import { IntakeSidebar } from '@/features/intake/components/IntakeSidebar'; // SME Fix
+import { IntakeSidebar } from '@/features/intake/components/IntakeSidebar';
 import { MobileIntakeNav } from '@/features/intake/components/MobileIntakeNav';
 import { ReviewModeBanner } from '@/features/intake/components/ReviewModeBanner';
 import { ConflictResolutionModal } from '@/features/intake/components/ConflictResolutionModal';
-
-const steps = [
-    { title: 'Identity', icon: <UserIcon className="w-4 h-4" /> },
-    { title: 'Evaluation', icon: <Stethoscope className="w-4 h-4" /> },
-    { title: 'Goals', icon: <Target className="w-4 h-4" /> },
-    { title: 'Prep', icon: <GraduationCap className="w-4 h-4" /> },
-    { title: 'Placement', icon: <Briefcase className="w-4 h-4" /> },
-    { title: 'Review', icon: <FileCheck className="w-4 h-4" /> },
-];
+import { IntakePageHeader } from '@/features/intake/components/IntakePageHeader';
+import { IntakeStepNavigation } from '@/features/intake/components/IntakeStepNavigation';
+import { IntakeStepRenderer } from './IntakeStepRenderer';
+import { IntakeHub } from '@/features/intake/components/IntakeHub';
+import { useIntakeConflicts } from '@/features/intake/hooks/useIntakeConflicts';
+import { INTAKE_STEPS as steps } from '@/features/intake/constants/steps';
 
 export default function NewIntakePage() {
     const router = useRouter();
@@ -70,7 +61,8 @@ export default function NewIntakePage() {
         lastSaved,
         clearDraft,
         isReadOnly,
-        toggleEditMode
+        toggleEditMode,
+        draftId
     } = useIntakeForm();
 
     const [error, setError] = useState('');
@@ -95,45 +87,11 @@ export default function NewIntakePage() {
     const [checkingCompliance, setCheckingCompliance] = useState(false);
     const [signedPdf, setSignedPdf] = useState<File | null>(null);
 
-    // Phase 20: Conflict Resolution State
-    const [conflictTask, setConflictTask] = useState<any>(null);
-    const [serverDataForConflict, setServerDataForConflict] = useState<any>(null);
-
-    useEffect(() => {
-        const checkConflicts = async () => {
-            if (!intakeId) return;
-            const { getDB } = await import('@/lib/offline/db');
-            const db = await getDB();
-            if (!db) return;
-
-            const conflicts = await db.getAllFromIndex('sync-queue', 'by-status', 'conflict');
-            const myConflict = conflicts.find(c => c.data.intakeId === intakeId || c.data.intake_id === intakeId);
-
-            if (myConflict) {
-                const sData = await intakeController.fetchServerData(intakeId);
-                setConflictTask(myConflict);
-                setServerDataForConflict(sData);
-            }
-        };
-
-        const interval = setInterval(checkConflicts, 10000); // Poll for conflicts
-        checkConflicts();
-        return () => clearInterval(interval);
-    }, [intakeId]);
-
-    const handleResolveConflict = async (resolvedData: any) => {
-        if (!conflictTask) return;
-
-        const { deleteSyncTask } = await import('@/lib/offline/db');
-        await deleteSyncTask(conflictTask.id);
-
-        setFormData(resolvedData);
-        setConflictTask(null);
-        setServerDataForConflict(null);
-
-        // Trigger a fresh save to the server
-        await intakeController.saveIntakeProgress(intakeId!, resolvedData, "Resolved Sync Conflict");
-    };
+    const {
+        conflictTask,
+        serverDataForConflict,
+        handleResolveConflict
+    } = useIntakeConflicts(intakeId, setFormData);
 
     const runComplianceCheck = async () => {
         setCheckingCompliance(true);
@@ -257,29 +215,6 @@ export default function NewIntakePage() {
         );
     }
 
-
-    const renderStep = () => {
-        const commonProps = {
-            formData,
-            onChange: handleInputChange,
-            onPatch: patchFormData,
-            setFormData, // Added for AI Auto-Fill
-            errors: validationErrors,
-            isReadOnly, // SME Fix: Propagate review mode
-            intakeId // For Integrity Agent
-        };
-
-        switch (currentStep) {
-            case 0: return <IntakeStepIdentity {...commonProps} />;
-            case 1: return <IntakeStepEvaluation {...commonProps} />;
-            case 2: return <IntakeStepGoals formData={formData} onChange={handleInputChange} />;
-            case 3: return <IntakeStepPrep formData={formData} onChange={handleInputChange} />;
-            case 4: return <IntakeStepPlacement formData={formData} onChange={handleInputChange} />;
-            case 5: return <IntakeStepReview {...commonProps} onFileSelect={setSignedPdf} />;
-            default: return null;
-        }
-    };
-
     return (
         <div className="min-h-screen bg-surface dark:bg-surface-dark py-12 px-6">
             <div className="max-w-7xl mx-auto">
@@ -289,60 +224,13 @@ export default function NewIntakePage() {
                     onToggleEdit={toggleEditMode}
                 />
 
-                <div className="flex justify-between items-start mb-8 max-w-3xl mx-auto lg:mx-0">
-                    <div className="flex items-center gap-4">
-                        <button
-                            onClick={() => router.push('/dashboard')}
-                            className="flex items-center gap-2 text-slate-500 hover:text-primary transition-colors font-semibold group"
-                        >
-                            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                            Back to Dashboard
-                        </button>
-                        {lastSaved && (
-                            <div className="flex items-center gap-2 px-3 py-1 bg-green-500/10 rounded-full">
-                                <span className="relative flex h-2 w-2">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                                </span>
-                                <span className="text-xs font-bold text-green-600 dark:text-green-400">
-                                    Last Snapshot Taken {lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                                </span>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="flex gap-4">
-                        <ActionButton
-                            variant="secondary"
-                            size="sm"
-                            onClick={() => setShowPreview(true)}
-                            icon={<Eye className="w-4 h-4" />}
-                            className="bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100"
-                        >
-                            Preview Report
-                        </ActionButton>
-                        <ActionButton
-                            variant="secondary"
-                            size="sm"
-                            onClick={handleSaveAndExit}
-                            className="border-slate-200"
-                        >
-                            Save & Exit
-                        </ActionButton>
-                        <AccessibilityToggle />
-                        {!isReadOnly && (
-                            <ActionButton
-                                variant="secondary"
-                                size="sm"
-                                onClick={toggleEditMode}
-                                icon={<Shield className="w-4 h-4" />}
-                                className="bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100"
-                            >
-                                Supervisor View
-                            </ActionButton>
-                        )}
-                    </div>
-                </div>
+                <IntakePageHeader
+                    lastSaved={lastSaved}
+                    isReadOnly={isReadOnly}
+                    onToggleEdit={toggleEditMode}
+                    onShowPreview={() => setShowPreview(true)}
+                    onSaveAndExit={handleSaveAndExit}
+                />
 
                 <div className="mb-12 max-w-3xl mx-auto lg:mx-0">
                     <h1 className="text-4xl font-bold mb-2">New Client Intake</h1>
@@ -415,63 +303,43 @@ export default function NewIntakePage() {
                             </motion.div>
                         )}
 
-                        <GlassCard className="overflow-hidden">
-                            <AnimatePresence mode="wait">
-                                <motion.div
-                                    key={currentStep}
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -20 }}
-                                    transition={{ duration: 0.3 }}
-                                    className="space-y-8"
-                                >
-                                    {renderStep()}
-                                </motion.div>
-                            </AnimatePresence>
+                        <GlassCard className="overflow-hidden min-h-[600px]">
+                            {(intakeId || draftId) ? (
+                                <IntakeHub intakeId={intakeId || draftId || ''} />
+                            ) : (
+                                <AnimatePresence mode="wait">
+                                    <motion.div
+                                        key={currentStep}
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: -20 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="space-y-8"
+                                    >
+                                        <IntakeStepRenderer
+                                            currentStep={currentStep}
+                                            activeIntakeId={intakeId || draftId || ''}
+                                            formData={formData}
+                                            handleInputChange={handleInputChange}
+                                            setFormData={setFormData}
+                                            isReadOnly={isReadOnly}
+                                            setSignedPdf={setSignedPdf}
+                                        />
 
-                            <div className="mt-12 flex justify-between items-center border-t border-slate-100 dark:border-white/5 pt-8">
-                                <ActionButton
-                                    variant="secondary"
-                                    onClick={prevStep}
-                                    disabled={currentStep === 0 || saving}
-                                    icon={<ChevronLeft className="w-4 h-4" />}
-                                >
-                                    Previous
-                                </ActionButton>
-
-                                <div className="flex gap-4">
-                                    {currentStep < steps.length - 1 ? (
-                                        <ActionButton
-                                            onClick={nextStep}
-                                            icon={<ChevronRight className="w-4 h-4" />}
-                                            className="bg-accent text-white"
-                                        >
-                                            Continue
-                                        </ActionButton>
-                                    ) : (
-                                        <div className="flex gap-4">
-                                            <ActionButton
-                                                variant="secondary"
-                                                onClick={handleSaveAndExit}
-                                                className="border-slate-200"
-                                            >
-                                                Save Draft
-                                            </ActionButton>
-                                            <ActionButton
-                                                onClick={(e) => {
-                                                    const dummyEvent = { preventDefault: () => { } } as React.FormEvent;
-                                                    handleSubmit(dummyEvent);
-                                                }}
-                                                isLoading={saving}
-                                                icon={<FileCheck className="w-4 h-4" />}
-                                                className="bg-primary text-white shadow-xl shadow-primary/20"
-                                            >
-                                                Submit & Finalize
-                                            </ActionButton>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
+                                        <IntakeStepNavigation
+                                            currentStep={currentStep}
+                                            totalSteps={steps.length}
+                                            isSaving={saving}
+                                            onPrevious={prevStep}
+                                            onNext={nextStep}
+                                            onSubmit={() => {
+                                                const dummyEvent = { preventDefault: () => { } } as React.FormEvent;
+                                                handleSubmit(dummyEvent);
+                                            }}
+                                        />
+                                    </motion.div>
+                                </AnimatePresence>
+                            )}
                         </GlassCard>
                     </div>
 
@@ -496,7 +364,7 @@ export default function NewIntakePage() {
 
             <ConflictResolutionModal
                 isOpen={!!conflictTask}
-                onClose={() => setConflictTask(null)}
+                onClose={() => { }}
                 localData={conflictTask?.data?.data || conflictTask?.data || {}}
                 serverData={serverDataForConflict || {}}
                 onResolve={handleResolveConflict}

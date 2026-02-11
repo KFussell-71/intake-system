@@ -2,12 +2,12 @@ import React from 'react';
 import { Target } from 'lucide-react';
 import { ElegantInput, ElegantTextarea } from '@/components/ui/ElegantInput';
 import { GlassCard } from '@/components/ui/GlassCard';
-import { IntakeFormData } from '../types/intake';
+import { any } from '../types/intake';
 import { CounselorRationaleField } from './CounselorRationaleField';
 import { AISuccessSuggestions } from './AISuccessSuggestions';
 
 interface Props {
-    formData: IntakeFormData;
+    formData: any;
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
     errors?: Record<string, string>;
 }

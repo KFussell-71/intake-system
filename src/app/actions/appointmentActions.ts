@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { modernizedIntakeRepository } from "@/repositories/ModernizedIntakeRepository";
 
 const AppointmentSchema = z.object({
     clientId: z.string().uuid(),
@@ -50,6 +51,15 @@ export async function createAppointment(prevState: any, formData: FormData) {
         const { error } = await supabase.from('appointments').insert(payload);
         if (error) throw error;
 
+        // Audit Log
+        await modernizedIntakeRepository.logIntakeEvent({
+            intake_id: payload.client_id as string, // Assuming client_id is the intake_id in this context
+            event_type: 'appointment_scheduled',
+            new_value: payload.title as string,
+            changed_by: user.id,
+            field_path: 'appointments'
+        });
+
         revalidatePath(`/clients/${payload.client_id}`);
         return { success: true, message: 'Appointment scheduled' };
     } catch (error: any) {
@@ -68,6 +78,18 @@ export async function cancelAppointment(appointmentId: string, clientId: string)
             .eq('id', appointmentId);
 
         if (error) throw error;
+
+        // Audit Log
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            await modernizedIntakeRepository.logIntakeEvent({
+                intake_id: clientId,
+                event_type: 'appointment_cancelled',
+                new_value: appointmentId,
+                changed_by: user.id,
+                field_path: 'appointments'
+            });
+        }
 
         revalidatePath(`/clients/${clientId}`);
         return { success: true };

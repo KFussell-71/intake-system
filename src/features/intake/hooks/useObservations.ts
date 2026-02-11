@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
-import { addIntakeObservation, removeIntakeObservationAction, updateIntakeSection } from '@/app/actions/modernizedIntakeActions';
+import { supabase } from '@/lib/supabase/client';
+import { addObservationAction, removeObservationAction } from '@/app/actions/observationActions';
+import { updateIntakeSection } from '@/app/actions/modernizedIntakeActions';
 
 export interface Observation {
     id: string;
@@ -44,7 +45,7 @@ export function useObservations(intakeId: string) {
     const addObservation = async (domain: string, value: string, source: 'client' | 'counselor' | 'document') => {
         try {
             setAdding(true);
-            const newObs = await addIntakeObservation(intakeId, domain, value, source);
+            const newObs = await addObservationAction(intakeId, domain, value, source);
             setObservations(prev => [newObs, ...prev]);
             return { success: true };
         } catch (err: any) {
@@ -59,7 +60,7 @@ export function useObservations(intakeId: string) {
         try {
             // Optimistic update
             setObservations(prev => prev.filter(o => o.id !== id));
-            await removeIntakeObservationAction(intakeId, id);
+            await removeObservationAction(intakeId, id);
         } catch (err: any) {
             console.error('Error removing observation:', err);
             // Revert on error would be complex without re-fetch, so just re-fetch

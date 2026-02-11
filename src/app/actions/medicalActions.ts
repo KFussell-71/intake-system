@@ -31,7 +31,7 @@ export async function saveMedicalAction(intakeId: string, data: Partial<MedicalD
     // const safeData = validation.data;
 
     try {
-        // 1. Relational Write (The Future)
+        // 1. Relational Write (The Source of Truth)
         const { error: relationalError } = await supabase
             .from('intake_medical')
             .upsert({
@@ -83,8 +83,6 @@ export async function saveMedicalAction(intakeId: string, data: Partial<MedicalD
                 drug_other: data.drugOther,
                 drug_prior_tx: data.drugPriorTx,
                 drug_prior_tx_details: data.drugPriorTxDetails,
-                substance_comments: data.substanceComments,
-                substance_employment_impact: data.substanceEmploymentImpact,
                 // Meta
                 updated_by: userId,
                 updated_at: new Date().toISOString()
@@ -92,55 +90,27 @@ export async function saveMedicalAction(intakeId: string, data: Partial<MedicalD
 
         if (relationalError) throw new Error(`Relational Write Failed: ${relationalError.message}`);
 
-        // 2. Legacy Write (Backward Compatibility)
-        // We fetch current data first to merge deeply if needed, but for root level keys shallow merge is okay via jsonb functionality
-        // However, standard pattern: fetch, merge, update.
-        const { data: currentIntake } = await supabase
-            .from('intakes')
-            .select('data')
-            .eq('id', intakeId)
-            .single();
-
-        const currentData = currentIntake?.data || {};
-        const mergedData = { ...currentData, ...data };
-
-        const { error: legacyError } = await supabase
-            .from('intakes')
-            .update({
-                data: mergedData,
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', intakeId);
-
-        if (legacyError) throw new Error(`Legacy Write Failed: ${legacyError.message}`);
-
-        // 3. Audit Log
+        // 2. Audit Log (Event Sourcing)
+        // For large medical forms, we log a domain-level event with a diff summary if possible,
+        // but here we follow the append-only delta rule. 
+        // We'll log a summary of changes for this batch.
         await supabase.from('intake_events').insert({
             intake_id: intakeId,
             event_type: 'field_update',
             field_path: 'medical_domain',
-            new_value: 'Batch Update via Modernized Form',
+            new_value: JSON.stringify(data),
             changed_by: userId
         });
 
-        // 4. Update Section Status
-        if (data.sectionStatus) {
-            await supabase.from('intake_sections').upsert({
-                intake_id: intakeId,
-                section_name: 'medical',
-                status: data.sectionStatus,
-                last_updated_by: userId,
-                updated_at: new Date().toISOString()
-            }, { onConflict: 'intake_id,section_name' });
-        } else {
-            await supabase.from('intake_sections').upsert({
-                intake_id: intakeId,
-                section_name: 'medical',
-                status: 'in_progress',
-                last_updated_by: userId,
-                updated_at: new Date().toISOString()
-            }, { onConflict: 'intake_id,section_name' });
-        }
+        // 3. Update Section Status
+        const status = data.sectionStatus || 'in_progress';
+        await supabase.from('intake_sections').upsert({
+            intake_id: intakeId,
+            section_name: 'medical',
+            status: status,
+            last_updated_by: userId,
+            updated_at: new Date().toISOString()
+        }, { onConflict: 'intake_id,section_name' });
 
         revalidatePath(`/intake/${intakeId}`);
         revalidatePath(`/modernized-intake/${intakeId}`);

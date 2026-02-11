@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getSupervisorActions } from '@/lib/supervisor/supervisorActions';
+import { getSupervisorActions } from '@/lib/supervisor/supervisorCore';
 import { CheckCircle, XCircle, UserPlus, FileCheck, Download, Loader2, Filter } from 'lucide-react';
 import { motion } from 'framer-motion';
 

@@ -1,97 +1,172 @@
+import * as fs from 'fs';
+import * as path from 'path';
 
-import fs from 'fs';
-import path from 'path';
-import { glob } from 'glob';
+/**
+ * CI Electric Fence
+ * 
+ * Enforces architectural rules to prevent "God Object" patterns and ensure
+ * clinical data integrity during the modernization phase.
+ */
 
-// --- Configuration ---
-const CONFIG = {
-    maxLines: 400,
-    maxInterfaceLines: 50, // "Giant interface" threshold
-    forbiddenPatterns: [
-        {
-            regex: /data\.(psychHistory|barriers|medical|employment)/,
-            message: "⚠️  JSONB Access Detected: Stop! Use the relational hook/action instead."
-        },
-        {
-            regex: /export interface .*FormData/,
-            message: "⚠️  Monolithic Interface Detected: separate your domains."
-        },
-        {
-            regex: /fetch.*11434/,
-            message: "⛔ Direct AI Access Forbidden: Use UnifiedAIService only."
-        },
-        {
-            regex: /fetch.*openai/,
-            message: "⛔ Direct AI Access Forbidden: Use UnifiedAIService only."
-        }
-    ],
-    scanPaths: [
-        'src/**/*{.ts,.tsx}'
-    ],
-    ignorePaths: [
-        'src/features/intake/components/ModernizedIntakeWizard.tsx', // The conductor is allowed to be a bit larger
-        'src/lib/ai/providers/**', // Trusted infrastructure allowed to call AI
-        '**/*.test.ts',
-        '**/*.spec.ts'
-    ]
-};
+const MAX_INTERFACE_FIELDS = 30;
+const MAX_FILE_LINES = 400;
+const SRC_DIR = path.join(process.cwd(), 'src');
 
-async function runElectricFence() {
-    console.log('⚡ Running CI Electric Fences...');
-    let failureCount = 0;
+interface Violation {
+    file: string;
+    rule: string;
+    message: string;
+}
 
-    const files = await glob(CONFIG.scanPaths, { ignore: CONFIG.ignorePaths });
+const violations: Violation[] = [];
 
-    if (files.length === 0) {
-        console.warn('No files found to scan. Check paths.');
-        return;
+function checkFile(filePath: string) {
+    const content = fs.readFileSync(filePath, 'utf-8');
+    const lines = content.split('\n');
+
+    // Rule 1: Max File Lines
+    if (lines.length > MAX_FILE_LINES) {
+        violations.push({
+            file: filePath,
+            rule: 'FILE_SIZE_LIMIT',
+            message: `File has ${lines.length} lines, exceeding limit of ${MAX_FILE_LINES}.`
+        });
     }
 
-    for (const filePath of files) {
-        const content = fs.readFileSync(filePath, 'utf-8');
-        const lines = content.split('\n');
-        const relativePath = path.relative(process.cwd(), filePath);
+    // Rule 2: No Giant Interfaces (Improved to handle nested braces)
+    let pos = 0;
+    while (true) {
+        const startMatch = content.slice(pos).match(/interface\s+(\w+)\s*\{/);
+        if (!startMatch) break;
 
-        // Rule 1: File Size
-        if (lines.length > CONFIG.maxLines) {
-            console.error(`❌ [SIZE] ${relativePath}: ${lines.length} lines (Limit: ${CONFIG.maxLines})`);
-            failureCount++;
+        const interfaceName = startMatch[1];
+        const interfaceStart = pos + startMatch.index! + startMatch[0].length;
+
+        // Find matching closing brace
+        let depth = 1;
+        let i = interfaceStart;
+        while (depth > 0 && i < content.length) {
+            if (content[i] === '{') depth++;
+            if (content[i] === '}') depth--;
+            i++;
         }
 
-        // Rule 2: Giant Interfaces
-        // Simple heuristic: count lines between 'interface' and '}'
-        let interfaceLineStart = -1;
-        for (let i = 0; i < lines.length; i++) {
-            if (lines[i].match(/interface\s+\w+\s+\{/)) {
-                interfaceLineStart = i;
-            } else if (lines[i].includes('}') && interfaceLineStart !== -1) {
-                const height = i - interfaceLineStart;
-                if (height > CONFIG.maxInterfaceLines) {
-                    console.error(`❌ [COMPLEXITY] ${relativePath}: Interface at line ${interfaceLineStart + 1} is ${height} lines tall (Limit: ${CONFIG.maxInterfaceLines})`);
-                    failureCount++;
-                }
-                interfaceLineStart = -1;
-            }
+        const body = content.slice(interfaceStart, i - 1);
+        const fieldCount = (body.match(/[:;]/g) || []).length;
+
+        if (fieldCount > MAX_INTERFACE_FIELDS) {
+            violations.push({
+                file: filePath,
+                rule: 'NO_GIANT_INTERFACES',
+                message: `Interface '${interfaceName}' contains ~${fieldCount} fields, exceeding limit of ${MAX_INTERFACE_FIELDS}.`
+            });
         }
 
-        // Rule 3: Forbidden Patterns
-        for (const pattern of CONFIG.forbiddenPatterns) {
-            if (pattern.regex.test(content)) {
-                console.error(`❌ [PATTERN] ${relativePath}: ${pattern.message}`);
-                failureCount++;
-            }
+        pos = i;
+    }
+
+    // Rule 3: JSONB Swamp Detection (Block new clinical writes to data.obj)
+    const jsonbWriteRegex = /\.data(\.|\[['"])(psych|medical|barrier|employment|observation|history|clientName|phone|email|address|ssnLastFour)\w*/gi;
+    if (jsonbWriteRegex.test(content)) {
+        violations.push({
+            file: filePath,
+            rule: 'JSONB_SWAMP_DETECTION',
+            message: `Found direct write/access to legacy JSONB field. Use relational tables instead.`
+        });
+    }
+
+    // Rule 4: Audit Requirement
+    if (filePath.includes('.actions.') || filePath.includes('Actions.ts')) {
+        const hasMutation = content.includes('update') || content.includes('upsert') || content.includes('insert') || content.includes('delete');
+        const hasAudit = content.includes('intake_events') || content.includes('logIntakeEvent') || content.includes('logEvent');
+
+        if (hasMutation && !hasAudit) {
+            violations.push({
+                file: filePath,
+                rule: 'AUDIT_REQUIREMENT',
+                message: `Mutation detected without visible 'intake_events' or 'logIntakeEvent' logging.`
+            });
         }
     }
 
-    if (failureCount > 0) {
-        console.error(`\n💥 Electric Fence Audit FAILED with ${failureCount} violations.`);
-        process.exit(1);
-    } else {
-        console.log('\n✅ Electric Fence Audit PASSED. No smells detected.');
+    // Rule 5: Domain Isolation (No God Object in specialized features)
+    if (filePath.includes('src/features/') && !filePath.includes('src/features/intake/types/')) {
+        if (content.includes('IntakeFormData') && !filePath.endsWith('.test.ts') && !filePath.endsWith('.spec.ts')) {
+            violations.push({
+                file: filePath,
+                rule: 'DOMAIN_ISOLATION_VIOLATION',
+                message: `Domain-specific feature should not import the monolithic 'IntakeFormData'. Use domain-specific interfaces.`
+            });
+        }
+    }
+
+    // Rule 6: Tightened Interface Limits for Domains
+    if (filePath.includes('src/features/') && content.includes('interface ')) {
+        const DOMAIN_INTERFACE_LIMIT = 15;
+        let pos = 0;
+        while (true) {
+            const startMatch = content.slice(pos).match(/interface\s+(\w+)\s*\{/);
+            if (!startMatch) break;
+
+            const interfaceName = startMatch[1];
+            const interfaceStart = pos + startMatch.index! + startMatch[0].length;
+
+            let depth = 1;
+            let i = interfaceStart;
+            while (depth > 0 && i < content.length) {
+                if (content[i] === '{') depth++;
+                if (content[i] === '}') depth--;
+                i++;
+            }
+
+            const body = content.slice(interfaceStart, i - 1);
+            const fieldCount = (body.match(/:/g) || []).length;
+
+            if (fieldCount > DOMAIN_INTERFACE_LIMIT) {
+                violations.push({
+                    file: filePath,
+                    rule: 'DOMAIN_INTERFACE_LIMIT',
+                    message: `Domain interface '${interfaceName}' has ${fieldCount} fields, exceeding limit of ${DOMAIN_INTERFACE_LIMIT}.`
+                });
+            }
+            pos = i;
+        }
     }
 }
 
-runElectricFence().catch(err => {
-    console.error(err);
+function walkDir(dir: string) {
+    const files = fs.readdirSync(dir);
+    for (const file of files) {
+        const fullPath = path.join(dir, file);
+        if (fs.statSync(fullPath).isDirectory()) {
+            if (!file.startsWith('.') && file !== 'node_modules' && file !== 'agents') {
+                walkDir(fullPath);
+            }
+        } else if (fullPath.endsWith('.ts') || fullPath.endsWith('.tsx')) {
+            // Exclude auto-generated or large external-ish types
+            if (filePathExcludes.some(exclude => fullPath.includes(exclude))) {
+                continue;
+            }
+            checkFile(fullPath);
+        }
+    }
+}
+
+const filePathExcludes = [
+    'src/types/supabase.ts',
+    'src/lib/agents/',
+];
+
+console.log('⚡ Starting Electric Fence CI Checks...');
+walkDir(SRC_DIR);
+
+if (violations.length > 0) {
+    console.error(`\n❌ Found ${violations.length} architectural violations:`);
+    violations.forEach(v => {
+        console.error(`- [${v.rule}] ${v.file}: ${v.message}`);
+    });
     process.exit(1);
-});
+} else {
+    console.log('\n✅ All architectural checks passed.');
+    process.exit(0);
+}

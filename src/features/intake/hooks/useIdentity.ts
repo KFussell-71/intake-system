@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
-import { saveIdentityAction, IdentityData } from '@/app/actions/identityActions';
+import { saveIdentityAction } from '@/app/actions/identityActions';
+import { IdentityData } from '@/features/intake/types/intake';
 
 export function useIdentity(intakeId: string) {
     const [data, setData] = useState<IdentityData | null>(null);
@@ -53,9 +54,23 @@ export function useIdentity(intakeId: string) {
                 email: relational?.email || client?.email || jsonData.email || '',
                 address: relational?.address || client?.address || jsonData.address || '',
 
+                birthDate: relational?.date_of_birth || jsonData.birthDate || '',
+                gender: relational?.gender || jsonData.gender || '',
+                race: relational?.race || jsonData.race || '',
+
                 reportDate: intake.report_date || '',
                 completionDate: intake.completion_date || '',
-                sectionStatus: section?.status || 'not_started'
+                sectionStatus: section?.status || 'not_started',
+
+                // Satisfy other Identity sub-types
+                relationshipStatus: jsonData.relationshipStatus || '',
+                preferredContactMethods: jsonData.preferredContactMethods || [],
+                employmentStatus: jsonData.employmentStatus || '',
+                emergencyContactName: jsonData.emergencyContactName || '',
+                emergencyContactPhone: jsonData.emergencyContactPhone || '',
+                emergencyContactRelation: jsonData.emergencyContactRelation || '',
+                referralSource: relational?.referral_source || jsonData.referralSource || '',
+                referralContact: relational?.referral_contact || jsonData.referralContact || ''
             });
 
         } catch (err: any) {
@@ -70,17 +85,27 @@ export function useIdentity(intakeId: string) {
         if (intakeId) fetchIdentity();
     }, [intakeId, fetchIdentity]);
 
-    const saveIdentity = async (newData: Partial<IdentityData>) => {
+    const saveIdentity = async () => {
+        if (!intakeId) return { success: false, error: 'No intake ID' };
+        setSaving(true);
         try {
-            setSaving(true);
-            const updated = { ...data, ...newData } as IdentityData;
-
-            // Server Action handles Double Write & Audit
-            const result = await saveIdentityAction(intakeId, newData);
-            if (!result.success) throw new Error(result.error);
-
-            setData(updated);
-            return { success: true };
+            const { saveIdentityAction } = await import('@/app/actions/identityActions');
+            // SME: Map hook identity state to relational action params
+            const result = await saveIdentityAction(intakeId, {
+                full_name: data?.clientName,
+                phone: data?.phone,
+                email: data?.email,
+                address: data?.address,
+                ssn_last_four: data?.ssnLastFour,
+                date_of_birth: data?.birthDate
+            } as any);
+            if (result.success) {
+                // If the save was successful, refresh the data to get the latest from DB
+                await fetchIdentity();
+            } else {
+                setError(result.error);
+            }
+            return result;
         } catch (err: any) {
             console.error('Error saving identity:', err);
             setError(err.message);
@@ -90,10 +115,12 @@ export function useIdentity(intakeId: string) {
         }
     };
 
+    const updateField = useCallback((name: string, value: any) => {
+        setData(prev => prev ? ({ ...prev, [name]: value }) : null);
+    }, []);
+
     const saveDraft = async () => {
-        // Just save current state as in_progress
-        const result = await saveIdentity({ ...data, sectionStatus: 'in_progress' } as any);
-        return result;
+        return await saveIdentity();
     };
 
     return {
@@ -101,8 +128,9 @@ export function useIdentity(intakeId: string) {
         loading,
         saving,
         error,
+        updateField,
         saveIdentity,
-        saveDraft, // New
+        saveDraft,
         refresh: fetchIdentity
     };
 }

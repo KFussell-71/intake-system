@@ -25,7 +25,7 @@ export async function saveEmploymentAction(intakeId: string, data: Partial<Vocat
     }
 
     try {
-        // 1. Relational Write
+        // 1. Relational Write (The Source of Truth)
         const { error: relationalError } = await supabase
             .from('intake_employment')
             .upsert({
@@ -81,53 +81,24 @@ export async function saveEmploymentAction(intakeId: string, data: Partial<Vocat
 
         if (relationalError) throw new Error(`Relational Write Failed: ${relationalError.message}`);
 
-        // 2. Legacy Write
-        const { data: currentIntake } = await supabase
-            .from('intakes')
-            .select('data')
-            .eq('id', intakeId)
-            .single();
-
-        const currentData = currentIntake?.data || {};
-        const mergedData = { ...currentData, ...data };
-
-        const { error: legacyError } = await supabase
-            .from('intakes')
-            .update({
-                data: mergedData,
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', intakeId);
-
-        if (legacyError) throw new Error(`Legacy Write Failed: ${legacyError.message}`);
-
-        // 3. Audit Log
+        // 2. Audit Log (Event Sourcing)
         await supabase.from('intake_events').insert({
             intake_id: intakeId,
             event_type: 'field_update',
             field_path: 'employment_domain',
-            new_value: 'Batch Update via Modernized Form',
+            new_value: JSON.stringify(data),
             changed_by: userId
         });
 
-        // 4. Update Section Status
-        if (data.sectionStatus) {
-            await supabase.from('intake_sections').upsert({
-                intake_id: intakeId,
-                section_name: 'employment',
-                status: data.sectionStatus,
-                last_updated_by: userId,
-                updated_at: new Date().toISOString()
-            }, { onConflict: 'intake_id,section_name' });
-        } else {
-            await supabase.from('intake_sections').upsert({
-                intake_id: intakeId,
-                section_name: 'employment',
-                status: 'in_progress',
-                last_updated_by: userId,
-                updated_at: new Date().toISOString()
-            }, { onConflict: 'intake_id,section_name' });
-        }
+        // 3. Update Section Status
+        const status = data.sectionStatus || 'in_progress';
+        await supabase.from('intake_sections').upsert({
+            intake_id: intakeId,
+            section_name: 'employment',
+            status: status,
+            last_updated_by: userId,
+            updated_at: new Date().toISOString()
+        }, { onConflict: 'intake_id,section_name' });
 
         revalidatePath(`/intake/${intakeId}`);
         revalidatePath(`/modernized-intake/${intakeId}`);

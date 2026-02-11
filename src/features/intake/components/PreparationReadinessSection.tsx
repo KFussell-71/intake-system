@@ -2,10 +2,10 @@ import React from 'react';
 import { Calendar, CheckCircle2, ListTodo } from 'lucide-react';
 import { ElegantInput, ElegantTextarea } from '@/components/ui/ElegantInput';
 import { GlassCard } from '@/components/ui/GlassCard';
-import { IntakeFormData } from '../types/intake';
+import { any } from '../types/intake';
 
 interface Props {
-    formData: IntakeFormData;
+    formData: any;
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
 }
 
@@ -14,8 +14,8 @@ export const PreparationReadinessSection: React.FC<Props> = ({ formData, onChang
     const renderItem = (
         title: string,
         subtitle: string,
-        dateField: keyof IntakeFormData,
-        notesField: keyof IntakeFormData,
+        dateField: keyof any,
+        notesField: keyof any,
     ) => {
         const isComplete = !!formData[dateField];
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { IntakeFormData } from '../../../types/intake';
+import { any } from '../../../types/intake';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ListChecks, Sparkles, Loader2 } from 'lucide-react';
 import { ElegantTextarea } from '@/components/ui/ElegantInput';
@@ -9,9 +9,9 @@ import { smartFormFill } from '@/app/actions/aiActions';
 import { toast } from 'sonner';
 
 interface Props {
-    formData: IntakeFormData;
+    formData: any;
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
-    onPatch?: (patch: Partial<IntakeFormData>) => void;
+    onPatch?: (patch: Partial<any>) => void;
 }
 
 export const AssessmentSummarySection: React.FC<Props> = ({ formData, onChange, onPatch }) => {

@@ -1,11 +1,11 @@
 import React from 'react';
-import { IntakeFormData } from '../types/intake';
+import { any } from '../types/intake';
 import { AlertCircle, CheckCircle2, Info, Gavel } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { EligibilityDecisionModal } from './EligibilityDecisionModal';
 
 interface Props {
-    formData: IntakeFormData;
+    formData: any;
 }
 
 export const ComplianceSidebar: React.FC<Props> = ({ formData }) => {

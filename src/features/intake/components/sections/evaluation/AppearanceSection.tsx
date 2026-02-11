@@ -1,17 +1,17 @@
 import React from 'react';
-import { IntakeFormData } from '../../../types/intake';
+import { any } from '../../../types/intake';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Eye, Smile } from 'lucide-react';
 
 interface Props {
-    formData: IntakeFormData;
+    formData: any;
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
 }
 
 export const AppearanceSection: React.FC<Props> = ({ formData, onChange }) => {
 
     // Helper for multi-select checkboxes
-    const handleMultiSelect = (field: keyof IntakeFormData, value: string, checked: boolean) => {
+    const handleMultiSelect = (field: keyof any, value: string, checked: boolean) => {
         const current = (formData[field] as string[]) || [];
         const updated = checked
             ? [...current, value]

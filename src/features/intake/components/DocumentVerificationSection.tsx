@@ -2,11 +2,11 @@ import React from 'react';
 import { FileCheck, Calendar, Upload, CheckCircle2 } from 'lucide-react';
 import { ElegantInput, ElegantTextarea } from '@/components/ui/ElegantInput';
 import { GlassCard } from '@/components/ui/GlassCard';
-import { IntakeFormData } from '../types/intake';
+import { any } from '../types/intake';
 import { ActionButton } from '@/components/ui/ActionButton';
 
 interface Props {
-    formData: IntakeFormData;
+    formData: any;
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
     // Optional: Pass clientId if available to enable uploads immediately
     clientId?: string;
@@ -17,8 +17,8 @@ export const DocumentVerificationSection: React.FC<Props> = ({ formData, onChang
     // Helper to render a verification card
     const renderVerificationItem = (
         title: string,
-        dateField: keyof IntakeFormData,
-        notesField: keyof IntakeFormData,
+        dateField: keyof any,
+        notesField: keyof any,
         hasDoc: boolean = false
     ) => {
         const isReviewed = !!formData[dateField];

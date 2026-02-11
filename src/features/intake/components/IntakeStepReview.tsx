@@ -1,7 +1,7 @@
 import React from 'react';
 import { FileCheck, AlertCircle, Download, Upload } from 'lucide-react';
 import { ElegantInput, ElegantTextarea } from '@/components/ui/ElegantInput';
-import { IntakeFormData } from '../types/intake';
+import { IdentityData, VocationalData, MedicalData, ClinicalData, IntakeMetadata } from '../types/intake';
 import { AISuccessSuggestions } from './AISuccessSuggestions';
 import { CounselorRationaleField } from './CounselorRationaleField';
 import { GlassCard } from '@/components/ui/GlassCard';
@@ -10,12 +10,13 @@ import { AIIntegrityReview } from './AIIntegrityReview';
 import { ReferralPlanWidget } from './ReferralPlanWidget';
 
 interface Props {
-    formData: IntakeFormData;
+    formData: IdentityData & VocationalData & MedicalData & ClinicalData & IntakeMetadata;
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
-    setFormData: (data: IntakeFormData | ((prev: IntakeFormData) => IntakeFormData)) => void;
+    setFormData: (data: any | ((prev: any) => any)) => void;
     errors?: Record<string, string>;
     onFileSelect?: (file: File | null) => void;
     intakeId?: string | null;
+    isReadOnly?: boolean;
 }
 
 export const IntakeStepReview: React.FC<Props> = ({
@@ -27,7 +28,7 @@ export const IntakeStepReview: React.FC<Props> = ({
     intakeId
 }) => {
     const handleAIDraftGenerated = (field: 'clinicalRationale' | 'notes', text: string) => {
-        setFormData(prev => ({
+        setFormData((prev: any) => ({
             ...prev,
             [field]: text
         }));

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { returnForRevision } from '@/lib/supervisor/supervisorActions';
+import { returnForRevision } from '@/lib/supervisor/supervisorReports';
 import {
     verifyAuthorization,
     verifyOrigin,

@@ -3,8 +3,7 @@
  * TypeScript interface for form data storage
  */
 
-export interface HIPAAAuthorizationData {
-    // Header Info (Auto-populated)
+export interface HIPAAPatientInfo {
     patientFirstName: string;
     patientLastName: string;
     dateOfBirth: string;
@@ -14,61 +13,65 @@ export interface HIPAAAuthorizationData {
     state: string;
     postalCode: string;
     dateOfInitialAssessment: string;
+}
 
-    // Item 7: Health Provider releasing info
+export interface HIPAAProviderInfo {
     providerName: string;
     providerAddress: string;
     providerCity: string;
     providerState: string;
     providerZip: string;
     providerPhone: string;
+}
 
-    // Item 8: Recipient of info
+export interface HIPAARecipientInfo {
     recipientName: string;
     recipientAddress: string;
     recipientCity: string;
     recipientState: string;
     recipientZip: string;
+}
 
-    // Item 9(a): Record types
+export interface HIPAAAuthorizationDetails {
+    // Record types
     recordType: 'entire' | 'specific_dates' | 'other';
     specificDatesFrom: string;
     specificDatesTo: string;
     otherRecordsDescription: string;
 
-    // Item 9(a): Special categories (initials required)
+    // Special categories
     includeAlcoholDrug: boolean;
     includeMentalHealth: boolean;
     includeHIV: boolean;
     includeGenetic: boolean;
     otherCategories: string;
 
-    // Item 9(b-d): Authorization to discuss
+    // Authorization to discuss
     authorizeDiscussion: boolean;
-    healthcareProviderName: string;  // 9(c)
-    attorneyOrAgencyName: string;    // 9(d)
+    healthcareProviderName: string;
+    attorneyOrAgencyName: string;
 
-    // Item 10: Reason for release
+    // Reason and Expiration
     releaseReason: 'personal' | 'other';
     releaseReasonOther: string;
-
-    // Item 11: Expiration
     expirationDate: string;
+}
 
-    // Item 12-13: Representative signing
+export interface HIPAAExecution {
     representativeName: string;
     representativeAuthority: string;
-
-    // Signature capture
-    signatureDataUrl: string;        // Base64 PNG of signature
+    signatureDataUrl: string;
     signatureDate: string;
     signedByPatient: boolean;
+}
 
-    // Metadata
+export interface HIPAAMetadata {
     formId: string;
     createdAt: string;
     updatedAt: string;
 }
+
+export type HIPAAAuthorizationData = HIPAAPatientInfo & HIPAAProviderInfo & HIPAARecipientInfo & HIPAAAuthorizationDetails & HIPAAExecution & HIPAAMetadata;
 
 export const initialHIPAAData: HIPAAAuthorizationData = {
     patientFirstName: '',

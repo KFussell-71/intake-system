@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
+import { modernizedIntakeRepository } from "@/repositories/ModernizedIntakeRepository";
 
 export interface AVResource {
     id?: string;
@@ -38,6 +39,19 @@ export async function createResource(resource: AVResource) {
         throw new Error(`Failed to create resource: ${error.message}`);
     }
     revalidatePath("/supervisor/resources");
+
+    // Audit Log
+    const { data: { user } } = await supabase.auth.getUser();
+    if (data) {
+        await modernizedIntakeRepository.logIntakeEvent({
+            intake_id: "RESOURCES",
+            event_type: 'resource_created',
+            new_value: (data as any).name,
+            changed_by: user?.id || "SYSTEM",
+            field_path: "av_resources"
+        });
+    }
+
     return data;
 }
 
@@ -54,6 +68,17 @@ export async function updateResource(id: string, resource: Partial<AVResource>) 
         throw new Error(`Failed to update resource: ${error.message}`);
     }
     revalidatePath("/supervisor/resources");
+
+    // Audit Log
+    const { data: { user } } = await supabase.auth.getUser();
+    await modernizedIntakeRepository.logIntakeEvent({
+        intake_id: "RESOURCES",
+        event_type: 'resource_updated',
+        new_value: id,
+        changed_by: user?.id || "SYSTEM",
+        field_path: "av_resources"
+    });
+
     return data;
 }
 
@@ -65,4 +90,14 @@ export async function deleteResource(id: string) {
         throw new Error(`Failed to delete resource: ${error.message}`);
     }
     revalidatePath("/supervisor/resources");
+
+    // Audit Log
+    const { data: { user } } = await supabase.auth.getUser();
+    await modernizedIntakeRepository.logIntakeEvent({
+        intake_id: "RESOURCES",
+        event_type: 'resource_deleted',
+        new_value: id,
+        changed_by: user?.id || "SYSTEM",
+        field_path: "av_resources"
+    });
 }

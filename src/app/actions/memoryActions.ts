@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
+import { modernizedIntakeRepository } from "@/repositories/ModernizedIntakeRepository";
 
 export interface SystemMemoryLog {
     id?: string;
@@ -21,6 +22,15 @@ export async function logSystemAction(log: Omit<SystemMemoryLog, 'id' | 'created
         // Don't throw, failing to log shouldn't break the app flow usually
     } else {
         revalidatePath("/supervisor/memory");
+
+        // Audit Log
+        await modernizedIntakeRepository.logIntakeEvent({
+            intake_id: "SYSTEM",
+            event_type: 'system_memory_log',
+            new_value: log.description,
+            changed_by: log.created_by || "SYSTEM",
+            field_path: "system_memory"
+        });
     }
 }
 

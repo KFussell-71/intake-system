@@ -6,24 +6,32 @@
 
 import { supabase } from '@/lib/supabase/client';
 
-export interface Document {
+export interface DocumentBasic {
     id: string;
     client_id?: string;
     intake_id?: string;
     uploaded_by: string;
     filename: string;
     original_filename: string;
-    file_size: number;
-    mime_type: string;
-    storage_path: string;
     category?: string;
-    version: number;
-    parent_document_id?: string;
-    ocr_text?: string;
-    metadata?: any;
     created_at: string;
     deleted_at?: string;
 }
+
+export interface DocumentStorage {
+    file_size: number;
+    mime_type: string;
+    storage_path: string;
+    version: number;
+    parent_document_id?: string;
+}
+
+export interface DocumentIntelligence {
+    ocr_text?: string;
+    metadata?: any;
+}
+
+export type Document = DocumentBasic & DocumentStorage & DocumentIntelligence;
 
 const STORAGE_BUCKET = 'documents';
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB

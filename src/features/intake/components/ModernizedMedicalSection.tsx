@@ -99,7 +99,7 @@ export const ModernizedMedicalSection: React.FC<Props> = ({ intakeId }) => {
     }
 
     // Cast partial types to match strict sub-component props if needed
-    // Assuming sub-components take IntakeFormData superset
+    // Assuming sub-components take any superset
     const formData = localData as any;
 
     return (

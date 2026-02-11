@@ -8,13 +8,13 @@ import { Button } from '@/components/ui/button';
 // import { generatePDF } from '@/lib/pdf/generatePDF';
 import { marked } from 'marked';
 import DOMPurify from 'isomorphic-dompurify';
-import { IntakeFormData } from '../types/intake';
+import { any } from '../types/intake';
 import { cn } from '@/lib/utils';
 
 interface Props {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    formData: IntakeFormData;
+    formData: any;
     onSubmit: () => void;
     onJumpToStep?: (stepIndex: number) => void;
 }

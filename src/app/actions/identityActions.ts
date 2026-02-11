@@ -2,91 +2,71 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { verifyAuthentication } from '@/lib/auth/authHelpersServer';
-import { cookies } from 'next/headers';
 import { updateIntakeSection } from './modernizedIntakeActions';
+import { revalidatePath } from 'next/cache';
 
-export interface IdentityData {
-    clientName: string;
-    ssnLastFour: string;
-    phone: string;
-    email: string;
-    address: string;
-    reportDate: string;
-    completionDate: string;
-    sectionStatus?: 'not_started' | 'in_progress' | 'complete' | 'waived';
-}
+import { IdentityData } from '@/features/intake/types/intake';
 
 /**
- * Server Action: Save Identity (Dual-Write Pattern).
- * Writes to relational `intake_identity` AND legacy JSONB `intakes.data`.
+ * Server Action: Save Identity (Relational-First).
+ * Writes exclusively to relational `intake_identity`.
+ * Logs audit deltas to `intake_events`.
  */
 export async function saveIdentityAction(intakeId: string, data: Partial<IdentityData>) {
     const auth = await verifyAuthentication();
     if (!auth.authenticated || !auth.userId) throw new Error('Unauthorized');
 
-    // In strict mode, we might enforce RBAC here
-
-    const cookieStore = cookies();
     const supabase = await createClient();
 
     try {
-        // 1. Relational Write (The Future)
+        // 1. Fetch Existing (for Audit Delta)
+        const { data: oldData } = await supabase
+            .from('intake_identity')
+            .select('*')
+            .eq('intake_id', intakeId)
+            .single();
+
+        // 2. Relational Write (The Source of Truth)
         const relationalPayload: any = {
             intake_id: intakeId,
-            updated_by: auth.userId,
             updated_at: new Date().toISOString()
         };
 
-        // Map fields that exist in relational schema
         if (data.clientName) {
-            const parts = data.clientName.split(' ');
+            const parts = data.clientName.trim().split(/\s+/);
             relationalPayload.first_name = parts[0];
             relationalPayload.last_name = parts.slice(1).join(' ');
         }
-        if (data.ssnLastFour) relationalPayload.ssn_last_four = data.ssnLastFour;
-        if (data.phone) relationalPayload.phone = data.phone;
-        if (data.email) relationalPayload.email = data.email;
-        if (data.address) relationalPayload.address = data.address;
-        if (data.reportDate) relationalPayload.dob = new Date(data.reportDate).toISOString().split('T')[0];
+        if (data.ssnLastFour !== undefined) relationalPayload.ssn_last_four = data.ssnLastFour;
+        if (data.phone !== undefined) relationalPayload.phone = data.phone;
+        if (data.email !== undefined) relationalPayload.email = data.email;
+        if (data.address !== undefined) relationalPayload.address = data.address;
+        if (data.birthDate !== undefined) relationalPayload.date_of_birth = data.birthDate;
+        if (data.gender !== undefined) relationalPayload.gender = data.gender;
+        if (data.race !== undefined) relationalPayload.race = data.race;
 
         const { error: relError } = await supabase
             .from('intake_identity')
-            .upsert(relationalPayload);
+            .upsert(relationalPayload, { onConflict: 'intake_id' });
 
-        if (relError) console.error('Relational Write Failed', relError);
-
-        // 2. Legacy JSONB Write (The Compatibility Layer)
-        const { data: current, error: fetchError } = await supabase
-            .from('intakes')
-            .select('data')
-            .eq('id', intakeId)
-            .single();
-
-        if (fetchError) throw fetchError;
-
-        const newData = { ...current.data, ...data };
-
-        const { error: jsonError } = await supabase
-            .from('intakes')
-            .update({
-                data: newData,
-                report_date: data.reportDate,
-                completion_date: data.completionDate || null
-            })
-            .eq('id', intakeId);
-
-        if (jsonError) throw jsonError;
+        if (relError) throw new Error(`Relational Write Failed: ${relError.message}`);
 
         // 3. Audit Log (Event Sourcing)
         const changes = Object.keys(data).filter(k => k !== 'sectionStatus');
-        if (changes.length > 0) {
-            await supabase.from('intake_events').insert({
-                intake_id: intakeId,
-                event_type: 'field_update',
-                field_path: 'identity', // simplified
-                new_value: JSON.stringify(data), // succinct
-                changed_by: auth.userId
-            });
+        for (const key of changes) {
+            const newVal = (data as any)[key];
+            const oldVal = oldData ? (oldData as any)[key === 'birthDate' ? 'date_of_birth' : key] : null;
+
+            if (String(newVal) !== String(oldVal)) {
+                await supabase.from('intake_events').insert({
+                    intake_id: intakeId,
+                    event_type: 'field_update',
+                    field_path: `identity.${key}`,
+                    old_value: oldVal ? String(oldVal) : null,
+                    new_value: newVal ? String(newVal) : null,
+                    changed_by: auth.userId
+                });
+            }
         }
 
         // 4. Update Section Status
@@ -94,6 +74,7 @@ export async function saveIdentityAction(intakeId: string, data: Partial<Identit
             await updateIntakeSection(intakeId, 'identity', data.sectionStatus);
         }
 
+        revalidatePath(`/intake/${intakeId}`);
         return { success: true };
 
     } catch (err: any) {

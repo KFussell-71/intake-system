@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { assignClientToWorker } from '@/lib/supervisor/supervisorActions';
+import { assignClientToWorker } from '@/lib/supervisor/supervisorAssignments';
 import {
     verifyAuthorization,
     verifyOrigin,

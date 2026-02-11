@@ -1,6 +1,6 @@
 import React from 'react';
 import { Stethoscope } from 'lucide-react';
-import { IntakeFormData } from '../types/intake';
+import { any } from '../types/intake';
 import { FormCheckbox } from './FormCheckbox';
 import { useEffect } from 'react';
 
@@ -16,9 +16,9 @@ import { CounselorRationaleField } from './CounselorRationaleField';
 import { StructuredObservation } from './StructuredObservation'; // SME Fix
 
 interface Props {
-    formData: IntakeFormData;
+    formData: any;
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
-    onPatch?: (patch: Partial<IntakeFormData>) => void;
+    onPatch?: (patch: Partial<any>) => void;
     errors?: Record<string, string>;
     isReadOnly?: boolean;
 }

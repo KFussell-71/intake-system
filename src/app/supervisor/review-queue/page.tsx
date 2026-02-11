@@ -19,7 +19,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { ReturnForRevisionDialog } from '@/features/supervisor/components/ReturnForRevisionDialog';
 import { BulkActionsToolbar } from '@/features/supervisor/components/BulkActionsToolbar';
-import { approveReport } from '@/lib/supervisor/supervisorActions';
+import { approveReport } from '@/lib/supervisor/supervisorReports';
 
 interface PendingReport {
     id: string;

@@ -2,13 +2,13 @@ import React from 'react';
 import { GraduationCap } from 'lucide-react';
 import { ElegantInput } from '@/components/ui/ElegantInput';
 import { FormCheckbox } from './FormCheckbox';
-import { IntakeFormData } from '../types/intake';
+import { any } from '../types/intake';
 import { PreparationReadinessSection } from './PreparationReadinessSection';
 import { WeeklyCheckInSection } from './WeeklyCheckInSection';
 import { CounselorRationaleField } from './CounselorRationaleField';
 
 interface Props {
-    formData: IntakeFormData;
+    formData: any;
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
 }
 

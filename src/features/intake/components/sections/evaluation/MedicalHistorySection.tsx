@@ -1,5 +1,5 @@
 import React from 'react';
-import { IntakeFormData, MedicalData } from '../../../types/intake';
+import { MedicalData } from '../../../types/intake';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Stethoscope, Activity } from 'lucide-react';
 import { ElegantTextarea, ElegantInput } from '@/components/ui/ElegantInput';
@@ -7,7 +7,7 @@ import { FormCheckbox } from '@/features/intake/components/FormCheckbox';
 
 interface Props {
     // Soft Refactor: Using Pick type to strictly define what this section needs
-    formData: MedicalData & Partial<IntakeFormData>;
+    formData: MedicalData;
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
     isReadOnly?: boolean;
 }

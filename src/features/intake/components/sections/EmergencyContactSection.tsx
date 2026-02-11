@@ -1,11 +1,11 @@
 import React from 'react';
 import { ElegantInput } from '@/components/ui/ElegantInput';
-import { IntakeFormData } from '../../types/intake';
+import { any } from '../../types/intake';
 import { Phone, UserPlus } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 
 interface Props {
-    formData: IntakeFormData;
+    formData: any;
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
 }
 

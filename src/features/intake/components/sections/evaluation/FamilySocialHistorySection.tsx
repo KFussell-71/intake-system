@@ -1,19 +1,19 @@
 import React from 'react';
-import { IntakeFormData } from '../../../types/intake';
+import { any } from '../../../types/intake';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Globe, Users, BookOpen, Gavel } from 'lucide-react';
 import { ElegantTextarea, ElegantInput } from '@/components/ui/ElegantInput';
 import { FormCheckbox } from '@/features/intake/components/FormCheckbox';
 
 interface Props {
-    formData: IntakeFormData;
+    formData: any;
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
 }
 
 export const FamilySocialHistorySection: React.FC<Props> = ({ formData, onChange }) => {
 
     // Helper for multi-select checkboxes
-    const handleMultiSelect = (field: keyof IntakeFormData, value: string, checked: boolean) => {
+    const handleMultiSelect = (field: keyof any, value: string, checked: boolean) => {
         const current = (formData[field] as string[]) || [];
         const updated = checked
             ? [...current, value]

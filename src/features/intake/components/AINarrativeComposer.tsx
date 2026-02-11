@@ -3,12 +3,12 @@
 import React, { useState } from 'react';
 import { Sparkles, Loader2, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { IntakeFormData } from '../types/intake';
+import { IdentityData, VocationalData, MedicalData, ClinicalData, IntakeMetadata } from '../types/intake';
 import { generateNarrativeDraft } from '@/app/actions/generateNarrativeDraft';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Props {
-    formData: IntakeFormData;
+    formData: IdentityData & VocationalData & MedicalData & ClinicalData & IntakeMetadata;
     onDraftGenerated: (field: 'clinicalRationale' | 'notes', text: string) => void;
     targetField: 'clinicalRationale' | 'notes';
     label: string;

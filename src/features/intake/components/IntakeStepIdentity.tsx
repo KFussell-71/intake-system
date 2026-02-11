@@ -1,7 +1,7 @@
 import React from 'react';
 import { User as UserIcon } from 'lucide-react';
 import { ElegantInput } from '@/components/ui/ElegantInput';
-import { IntakeFormData } from '../types/intake';
+import { any } from '../types/intake';
 import { DocumentVerificationSection } from './DocumentVerificationSection';
 import { CounselorRationaleField } from './CounselorRationaleField';
 
@@ -12,7 +12,7 @@ import { FinancialInfoSection } from './sections/FinancialInfoSection';
 import { CurrentIssueSection } from './sections/CurrentIssueSection';
 
 interface Props {
-    formData: IntakeFormData;
+    formData: any;
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
     errors?: Record<string, string>;
 }

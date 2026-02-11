@@ -48,6 +48,15 @@ export async function addIntakeObservation(intakeId: string, domain: string, val
         author_user_id: auth.userId
     });
 
+    // Audit Log
+    await modernizedIntakeRepository.logIntakeEvent({
+        intake_id: intakeId,
+        event_type: 'observation_add',
+        new_value: `${domain}: ${value}`,
+        changed_by: auth.userId,
+        field_path: `observations.${domain}`
+    });
+
     revalidatePath(`/intake/${intakeId}`);
     return result;
 }
@@ -57,6 +66,15 @@ export async function removeIntakeObservationAction(intakeId: string, observatio
     if (!auth.authenticated) throw new Error('Unauthorized');
 
     await modernizedIntakeRepository.deleteObservation(observationId);
+
+    // Audit Log
+    await modernizedIntakeRepository.logIntakeEvent({
+        intake_id: intakeId,
+        event_type: 'observation_remove',
+        new_value: observationId,
+        changed_by: auth.userId,
+        field_path: 'observations'
+    });
 
     revalidatePath(`/intake/${intakeId}`);
     return { success: true };

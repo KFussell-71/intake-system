@@ -1,9 +1,11 @@
 import { useState, useCallback, useEffect } from 'react';
-import { IntakeFormData } from '../types/intake';
+import { IdentityData, VocationalData, MedicalData, ClinicalData, IntakeMetadata } from '../types/intake';
+
+type CompositeData = IdentityData & VocationalData & MedicalData & ClinicalData & IntakeMetadata & { id?: string };
 
 const STORAGE_KEY = 'intake_draft_v1';
 
-const initialFormData: IntakeFormData = {
+const initialFormData: CompositeData = {
     clientName: '',
     phone: '',
     email: '',
@@ -202,7 +204,7 @@ const initialFormData: IntakeFormData = {
 };
 
 export function useIntakeForm() {
-    const [formData, setFormData] = useState<IntakeFormData>(initialFormData);
+    const [formData, setFormData] = useState<CompositeData>(initialFormData);
     const [currentStep, setCurrentStep] = useState(0);
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
     const [loadingDraft, setLoadingDraft] = useState(true);
@@ -225,7 +227,7 @@ export function useIntakeForm() {
 
                 if (mounted && result.success && result.data) {
                     console.log('Draft loaded', result.data);
-                    setFormData(prev => ({ ...prev, ...result.data.data }));
+                    setFormData((prev: CompositeData) => ({ ...prev, ...result.data.data }));
                     setDraftId(result.data.intake_id);
                     setLastSaved(new Date(result.data.last_saved));
                 }
@@ -252,7 +254,7 @@ export function useIntakeForm() {
                 // Don't save empty init state if no changes? 
                 // We'll trust the debouncing to only fire on updates.
 
-                const result = await intakeController.saveDraft(formData, draftId || undefined);
+                const result = await intakeController.saveDraft(formData, draftId || undefined) as any;
                 if (result.success) {
                     setLastSaved(new Date());
                     setHasUnsavedChanges(false);
@@ -285,7 +287,7 @@ export function useIntakeForm() {
         const { name, value, type } = e.target;
         const checked = (e.target as HTMLInputElement).checked;
 
-        setFormData(prev => ({
+        setFormData((prev: CompositeData) => ({
             ...prev,
             [name]: type === 'checkbox' ? checked : value
         }));
@@ -302,8 +304,8 @@ export function useIntakeForm() {
         // Should we delete from server? Maybe just leave as is/archived.
     }, []);
 
-    const patchFormData = useCallback((patch: Partial<IntakeFormData>) => {
-        setFormData(prev => ({ ...prev, ...patch }));
+    const patchFormData = useCallback((patch: Partial<CompositeData>) => {
+        setFormData((prev: CompositeData) => ({ ...prev, ...patch }));
         setHasUnsavedChanges(true);
     }, []);
 
@@ -321,6 +323,7 @@ export function useIntakeForm() {
         loadingDraft,
         hasUnsavedChanges,
         isReadOnly,
-        toggleEditMode
+        toggleEditMode,
+        draftId
     };
 }

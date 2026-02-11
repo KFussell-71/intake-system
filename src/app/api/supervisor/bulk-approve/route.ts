@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { bulkApproveReports } from '@/lib/supervisor/supervisorActions';
+import { bulkApproveReports } from '@/lib/supervisor/supervisorReports';
 import {
     verifyAuthorization,
     verifyOrigin,

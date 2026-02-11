@@ -5,10 +5,10 @@ import { Sparkles, ArrowRight, Briefcase, GraduationCap, Link2, ExternalLink } f
 import { motion, AnimatePresence } from 'framer-motion';
 import { SuccessSuggestion } from '@/lib/agents/successAssistant';
 import { intakeController } from '@/controllers/IntakeController';
-import { IntakeFormData } from '../types/intake';
+import { IdentityData, VocationalData, MedicalData, ClinicalData, IntakeMetadata } from '../types/intake';
 
 interface Props {
-    formData: IntakeFormData;
+    formData: IdentityData & VocationalData & MedicalData & ClinicalData & IntakeMetadata;
 }
 
 export const AISuccessSuggestions: React.FC<Props> = ({ formData }) => {
