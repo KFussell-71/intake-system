@@ -22,13 +22,31 @@ export class UnifiedAIService {
             console.warn('AI Provider configuration missing (GEMINI_API_KEY or OLLAMA_URL). AI features may be disabled.');
             this.provider = {
                 name: 'null-provider',
-                generateText: async () => ({ text: 'AI service unavailable', model: 'none' })
+                generate: async () => 'AI service unavailable'
             };
         }
     }
 
-    async generateText(request: AIRequest): Promise<AIResponse> {
-        return this.provider.generateText(request);
+    async ask(req: AIRequest): Promise<string> {
+        const start = Date.now();
+        try {
+            // TELEMETRY: Usage Logging
+            const response = await this.provider.generate(req);
+            const duration = Date.now() - start;
+
+            console.log('[AI_USAGE]', {
+                provider: this.provider.name,
+                promptLength: req.prompt.length,
+                responseLength: response.length,
+                latencyMs: duration,
+                temperature: req.temperature
+            });
+
+            return response;
+        } catch (error) {
+            console.error('[AI_FAILURE]', { provider: this.provider.name, error });
+            throw error;
+        }
     }
 }
 

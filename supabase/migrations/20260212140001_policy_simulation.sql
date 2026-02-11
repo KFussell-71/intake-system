@@ -1,20 +1,18 @@
--- Migration: 20260212140000_policy_simulation.sql
+-- Migration: 20260212140001_policy_simulation.sql
 -- Tier 2: Policy Simulation (Institutional Intelligence)
 
 -- 1. Policy Definitions (The Rules of the Game)
--- Stores versioned, executable policy configurations.
 CREATE TABLE IF NOT EXISTS policy_definitions (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name TEXT NOT NULL,
   description TEXT,
-  rules JSONB NOT NULL DEFAULT '{}'::jsonb, -- e.g. { "max_assessment_days": 5 }
+  rules JSONB NOT NULL DEFAULT '{}'::jsonb,
   active BOOLEAN DEFAULT true,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   created_by UUID REFERENCES auth.users(id)
 );
 
 -- 2. Simulation Results (The Outcome)
--- Audit trail of "What If" scenarios run by leadership.
 CREATE TABLE IF NOT EXISTS simulation_results (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   policy_id UUID REFERENCES policy_definitions(id),
@@ -27,7 +25,7 @@ CREATE TABLE IF NOT EXISTS simulation_results (
   simulated_failure_count INTEGER NOT NULL,
   
   -- Rich Data
-  details JSONB -- breakdown of specific failures
+  details JSONB
 );
 
 -- 3. Seed Data (Example Policies)
@@ -38,14 +36,13 @@ INSERT INTO policy_definitions (name, description, rules) VALUES
 ON CONFLICT DO NOTHING;
 
 -- 4. Simulation Engine (RPC)
--- Re-plays history against new rules.
 CREATE OR REPLACE FUNCTION simulate_policy_impact(target_policy_id UUID)
 RETURNS TABLE (
     policy_name TEXT,
     cases_analyzed INTEGER,
     baseline_failure_rate NUMERIC,
     simulated_failure_rate NUMERIC,
-    impact_summary MENU_TYPE -- simplifying return type for demo, actually just JSONB usually better
+    impact_summary JSONB -- Fixed return type
 ) 
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -80,24 +77,20 @@ BEGIN
                EXTRACT(DAY FROM (i.completed_at - i.created_at)) as duration_days,
                (i.data->'vocational'->>'housingAssistance') is not null as has_housing
         FROM intakes i
-        WHERE i.status = 'closed' OR i.status = 'opt_out' -- simulation specific states
+        WHERE i.status = 'closed' OR i.status = 'opt_out' 
         OR i.completed_at IS NOT NULL
         LIMIT 100
     LOOP
         total_cases := total_cases + 1;
         
-        -- A. Baseline Check (Hypothetical: assume historical 10% failure baseline for demo math)
-        -- In reality, we'd check against the rules active AT THAT TIME. 
-        -- For this demo, let's say "Slow > 10 days" was the old fail condition.
+        -- A. Baseline Check
         IF case_record.duration_days > 10 THEN
             baseline_fails := baseline_fails + 1;
         END IF;
         
         -- B. Simulated Check
-        -- Rule 1: Timeliness
         IF rule_max_days IS NOT NULL AND case_record.duration_days > rule_max_days THEN
             sim_fails := sim_fails + 1;
-        -- Rule 2: Completness
         ELSIF rule_req_housing IS TRUE AND case_record.has_housing IS FALSE THEN
              sim_fails := sim_fails + 1;
         END IF;

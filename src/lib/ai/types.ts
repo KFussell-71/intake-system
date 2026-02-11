@@ -1,8 +1,10 @@
+
 export interface AIRequest {
+    system?: string;
     prompt: string;
     temperature?: number;
-    maxTokens?: number;
-    userId: string;
+    // Keeping optional metadata for telemetry if needed, but strict to user core request
+    userId?: string;
 }
 
 export interface AIResponse {
@@ -16,5 +18,5 @@ export interface AIResponse {
 
 export interface AIProvider {
     name: string;
-    generateText(request: AIRequest): Promise<AIResponse>;
+    generate(req: AIRequest): Promise<string>;
 }

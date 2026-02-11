@@ -10,38 +10,31 @@ export class LocalAIProvider implements AIProvider {
         this.model = model;
     }
 
-    async generateText(request: AIRequest): Promise<AIResponse> {
+    async generate(req: AIRequest): Promise<string> {
         try {
-            const response = await fetch(`${this.baseUrl}/api/generate`, {
+            const res = await fetch(`${this.baseUrl}/api/generate`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     model: this.model,
-                    prompt: request.prompt,
+                    prompt: `${req.system ? req.system + '\n' : ''}${req.prompt}`,
                     stream: false,
                     options: {
-                        temperature: request.temperature ?? 0.3,
-                        num_predict: request.maxTokens ?? 1024
+                        temperature: req.temperature ?? 0.3,
+                        num_predict: 1024 // Keep a reasonable default
                     }
                 })
             });
 
-            if (!response.ok) {
-                throw new Error(`Ollama API error: ${response.statusText}`);
+            if (!res.ok) {
+                throw new Error(`Ollama API error: ${res.statusText}`);
             }
 
-            const data = await response.json();
+            const data = await res.json();
+            return data.response;
 
-            return {
-                text: data.response,
-                model: this.model,
-                usage: {
-                    promptTokens: data.prompt_eval_count || 0,
-                    completionTokens: data.eval_count || 0
-                }
-            };
         } catch (error) {
             console.error('[LocalAIProvider] Generation failed:', error);
             throw error;

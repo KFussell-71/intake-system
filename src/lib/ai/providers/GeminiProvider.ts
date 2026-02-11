@@ -9,23 +9,18 @@ export class GeminiProvider implements AIProvider {
         this.genAI = new GoogleGenerativeAI(apiKey);
     }
 
-    async generateText(request: AIRequest): Promise<AIResponse> {
+    async generate(req: AIRequest): Promise<string> {
         const modelName = 'gemini-1.5-pro';
         const model = this.genAI.getGenerativeModel({
             model: modelName,
             generationConfig: {
-                temperature: request.temperature ?? 0.3,
-                maxOutputTokens: request.maxTokens
+                temperature: req.temperature ?? 0.3,
+                maxOutputTokens: 1024
             }
         });
 
-        const result = await model.generateContent(request.prompt);
+        const result = await model.generateContent(req.prompt);
         const response = await result.response;
-        const text = response.text();
-
-        return {
-            text,
-            model: modelName
-        };
+        return response.text();
     }
 }

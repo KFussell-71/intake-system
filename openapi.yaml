@@ -1,0 +1,66 @@
+openapi: 3.0.0
+info:
+  title: Intake Service API
+  version: 1.0.0
+paths:
+  /intakes/{id}/identity:
+    put:
+      summary: Update Identity Data
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdentityData'
+      responses:
+        '200':
+          description: Identity updated
+  /intakes/{id}/barriers:
+    post:
+      summary: Add Barrier
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                barrierId:
+                  type: integer
+                source:
+                  type: string
+      responses:
+        '201':
+          description: Barrier added
+components:
+  schemas:
+    IdentityData:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        dob:
+          type: string
+          format: date
+        ssnLastFour:
+          type: string
+          pattern: '^\d{4}$'
+      required:
+        - firstName
+        - lastName

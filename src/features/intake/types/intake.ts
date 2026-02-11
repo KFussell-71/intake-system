@@ -27,13 +27,13 @@ export interface IdentityData {
 }
 
 // 2. VOCATIONAL PROFILE (Employment, Education, Goals)
-export interface VocationalData {
-    // Goals
+export interface VocationalGoals {
     employmentGoals: string;
     educationGoals: string;
     housingNeeds: string;
+}
 
-    // History & Skills
+export interface VocationalHistory {
     educationLevel: string;
     employmentType: string[];
     desiredJobTitles: string;
@@ -43,16 +43,18 @@ export interface VocationalData {
     transferableSkillsOther: string;
     industryPreferences: string[];
     industryOther: string;
+}
 
-    // Readiness & Barriers
+export interface VocationalReadiness {
     resumeComplete: boolean;
     interviewSkills: boolean;
     jobSearchAssistance: boolean;
     transportationAssistance: boolean;
     childcareAssistance: boolean;
     housingAssistance: boolean;
+}
 
-    // Placement Details (If applicable)
+export interface VocationalPlacement {
     placementDate: string;
     companyName: string;
     jobTitle: string;
@@ -64,19 +66,16 @@ export interface VocationalData {
     benefits: string;
     transportationType: 'bus' | 'car' | 'other' | '';
     commuteTime: string;
+}
 
-    // Prep Curriculum & Commitments
+export interface VocationalCurriculum {
     class1Date: string;
     class2Date: string;
     class3Date: string;
     class4Date: string;
     masterAppComplete: boolean;
-
-    // Job Search
     jobSearchCommitmentCount: string;
     jobSearchCommitments: string[];
-
-    // ISP (Individual Service Plan)
     ispGoals: {
         goal: string;
         actionSteps: string;
@@ -85,16 +84,14 @@ export interface VocationalData {
     }[];
 }
 
-// 3. MEDICAL & PSYCHOSOCIAL HISTORY
-export interface MedicalData {
-    // Consent
-    consentToRelease: boolean;
+export type VocationalData = VocationalGoals & VocationalHistory & VocationalReadiness & VocationalPlacement & VocationalCurriculum;
 
-    // Clinical Evals
+
+// 3. MEDICAL & PSYCHOSOCIAL HISTORY
+export interface MedicalGeneral {
+    consentToRelease: boolean;
     medicalEvalNeeded: boolean;
     psychEvalNeeded: boolean;
-
-    // General Health
     medicalConditionCurrent: boolean;
     medicalConditionDescription: string;
     medicalPriorHistory: string;
@@ -104,8 +101,9 @@ export interface MedicalData {
     primaryCarePhysicianContact: string;
     medicalComments: string;
     medicalEmploymentImpact: string;
+}
 
-    // Mental Health
+export interface MedicalMentalHealth {
     mhHistory: boolean;
     mhHistoryDetails: string;
     mhPriorCounseling: boolean;
@@ -116,8 +114,9 @@ export interface MedicalData {
     mhPriorHelpfulActivities: string;
     mhPriorMeds: boolean;
     mhPriorMedsDetails: string;
+}
 
-    // Substance Use
+export interface MedicalSubstanceUse {
     tobaccoUse: boolean;
     tobaccoDuration: string;
     tobaccoQuitInterest: string;
@@ -147,23 +146,22 @@ export interface MedicalData {
     substanceEmploymentImpact: string;
 }
 
+export type MedicalData = MedicalGeneral & MedicalMentalHealth & MedicalSubstanceUse;
+
+
 // 4. CLINICAL ASSESSMENT (Counselor View)
-export interface ClinicalData {
-    // General Observations
-    // SME FIX: De-conflicted Observation Fields
+export interface ClinicalObservations {
     prepObservations: string;
     employmentObservations: string;
     placementObservations: string;
 
-    // Legacy mapping (to be deprecated or used for summary)
-    /** @deprecated Use relational `observations` table (domain='clinical') */
+    /** @deprecated Use relational observations table */
     counselorObservations: string;
-    /** @deprecated Use relational `observations` table */
+    /** @deprecated Use relational observations table */
     clinicalRationale: string;
-    /** @deprecated Use relational `observations` table */
+    /** @deprecated Use relational observations table */
     notes: string;
 
-    // NEW: Structured Clinical Logic (SME Fix)
     clinical_observations?: {
         id: string;
         category: string;
@@ -171,16 +169,18 @@ export interface ClinicalData {
         functional_limitation: string;
         accommodation: string;
     }[];
+}
 
-    // Appearance & Behavior
+export interface ClinicalAppearance {
     appearanceClothing: string[];
     appearanceHygiene: string[];
     generalBehavior: string[];
     appearanceOther: string;
     clientMood: string[];
     clientMoodOther: string;
+}
 
-    // Deep History
+export interface ClinicalHistory {
     presentingIssueDescription: string;
     presentingIssueDuration: string;
     presentingIssueImmediateNeed: string;
@@ -198,8 +198,9 @@ export interface ClinicalData {
     familyAttitude: string;
     culturalValuesGrowingUp: string;
     culturalValuesCurrent: string;
+}
 
-    // Legal & Financial
+export interface ClinicalAssessment {
     financialIssues: boolean;
     financialIssuesDescription: string;
     legalIssues: boolean;
@@ -208,21 +209,21 @@ export interface ClinicalData {
     abuseTypes: string[];
     abuseOther: string;
 
-    // Assessment Summary
     keyStrengths: string;
     motivationFactors: string;
     readinessScale: number | null;
 
-    /** @deprecated Use relational `intake_barriers` table instead. */
+    /** @deprecated Use relational intake_barriers table */
     barriers: string[];
-    /** @deprecated Use relational `intake_barriers` table instead. */
+    /** @deprecated Use relational intake_barriers table */
     barriersOther: string;
 
     supportServices: string[];
     supportServicesOther: string;
     assessmentSummary: string;
+}
 
-    // Reviews
+export interface ClinicalReviews {
     targetReviewDate: string;
     referralReviewDate: string;
     referralNotes: string;
@@ -240,6 +241,8 @@ export interface ClinicalData {
     checkInTime: string;
     checkInNotes: string;
 }
+
+export type ClinicalData = ClinicalObservations & ClinicalAppearance & ClinicalHistory & ClinicalAssessment & ClinicalReviews;
 
 // 5. ADMINISTRATIVE & METADATA
 export interface IntakeMetadata {

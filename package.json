@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",
+    "ci:fence": "npx tsx scripts/ci_electric_fence.ts",
     "setup": "node setup.js"
   },
   "engines": {
@@ -47,6 +48,7 @@
     "diff": "^8.0.3",
     "dotenv": "^17.2.4",
     "framer-motion": "^12.29.2",
+    "glob": "^13.0.2",
     "html2canvas": "^1.4.1",
     "idb": "^8.0.3",
     "isomorphic-dompurify": "^2.35.0",
