@@ -26,6 +26,9 @@ import { authController } from '@/controllers/AuthController';
 import { NotificationCenter } from '@/features/dashboard/components/NotificationCenter';
 import { IntakeTrendChart, WorkloadBarChart } from '@/components/dashboard/AnalyticsCharts';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
+import { StaffingForecastWidget } from '@/features/dashboard/components/StaffingForecastWidget';
+import { PolicySimulator } from '@/features/simulation/components/PolicySimulator';
+import { ComparabilityWidget } from '@/features/comparability/components/ComparabilityWidget';
 import { DashboardStats } from '@/types/dashboard';
 
 export default function DashboardPage() {
@@ -185,6 +188,14 @@ export default function DashboardPage() {
                                     >
                                         Start New Intake
                                     </ActionButton>
+                                    <ActionButton
+                                        onClick={() => router.push('/modernized-intake/new')}
+                                        icon={<TrendingUp className="w-5 h-5" />}
+                                        size="lg"
+                                        className="bg-white/10 text-white border-white/20 hover:bg-white/20 backdrop-blur-sm"
+                                    >
+                                        Try New Experience (Beta)
+                                    </ActionButton>
                                 </div>
                             </div>
                             {/* Decorative element */}
@@ -231,8 +242,20 @@ export default function DashboardPage() {
                                     <IntakeTrendChart data={stats.intakeTrends} />
                                 </GlassCard>
                             </motion.div>
-                            <motion.div variants={itemVariants} className="md:col-span-4 lg:col-span-4">
-                                <GlassCard className="h-full">
+                            <motion.div variants={itemVariants} className="md:col-span-4 lg:col-span-4 space-y-6">
+                                {/* Staffing Optimization Widget */}
+                                <div className="h-[300px]">
+                                    <StaffingForecastWidget />
+                                </div>
+                                {/* Policy Simulation Widget */}
+                                <div className="h-auto">
+                                    <PolicySimulator />
+                                </div>
+                                {/* Comparability Widget */}
+                                <div className="h-auto">
+                                    <ComparabilityWidget />
+                                </div>
+                                <GlassCard className="h-auto">
                                     <div className="flex items-center gap-2 mb-6">
                                         <BarChart3 className="w-5 h-5 text-orange-500" />
                                         <h3 className="text-lg font-bold">Team Workload</h3>
@@ -317,6 +340,6 @@ export default function DashboardPage() {
                     </motion.div>
                 </motion.div>
             </main>
-        </div>
+        </div >
     );
 }

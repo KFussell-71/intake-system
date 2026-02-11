@@ -47,6 +47,7 @@ export interface Database {
                     completion_date: string | null
                     data: Json | null
                     created_at: string
+                    created_by: string | null
                 }
                 Insert: {
                     id?: string
@@ -56,6 +57,7 @@ export interface Database {
                     completion_date?: string | null
                     data?: Json | null
                     created_at?: string
+                    created_by?: string | null
                 }
                 Update: {
                     id?: string
@@ -65,6 +67,7 @@ export interface Database {
                     completion_date?: string | null
                     data?: Json | null
                     created_at?: string
+                    created_by?: string | null
                 }
             }
             documents: {
@@ -97,6 +100,206 @@ export interface Database {
                     size?: number | null
                     uploaded_at?: string
                     uploaded_by?: string | null
+                }
+            }
+            intake_sections: {
+                Row: {
+                    id: string
+                    intake_id: string
+                    section_name: string
+                    status: 'not_started' | 'in_progress' | 'complete' | 'waived'
+                    last_updated_by: string | null
+                    updated_at: string
+                }
+                Insert: {
+                    id?: string
+                    intake_id: string
+                    section_name: string
+                    status: 'not_started' | 'in_progress' | 'complete' | 'waived'
+                    last_updated_by?: string | null
+                    updated_at?: string
+                }
+                Update: {
+                    id?: string
+                    intake_id?: string
+                    section_name?: string
+                    status?: 'not_started' | 'in_progress' | 'complete' | 'waived'
+                    last_updated_by?: string | null
+                    updated_at?: string
+                }
+            }
+            observations: {
+                Row: {
+                    id: string
+                    intake_id: string
+                    domain: string
+                    value: string
+                    source: 'client' | 'counselor' | 'document'
+                    confidence: string | null
+                    author_user_id: string | null
+                    observed_at: string
+                }
+                Insert: {
+                    id?: string
+                    intake_id: string
+                    domain: string
+                    value: string
+                    source: 'client' | 'counselor' | 'document'
+                    confidence?: string | null
+                    author_user_id?: string | null
+                    observed_at?: string
+                }
+                Update: {
+                    id?: string
+                    intake_id?: string
+                    domain?: string
+                    value?: string
+                    source?: 'client' | 'counselor' | 'document'
+                    confidence?: string | null
+                    author_user_id?: string | null
+                    observed_at?: string
+                }
+            }
+            barriers: {
+                Row: {
+                    id: number
+                    key: string
+                    display: string
+                    category: string | null
+                    active: boolean
+                }
+                Insert: {
+                    id?: number
+                    key: string
+                    display: string
+                    category?: string | null
+                    active?: boolean
+                }
+                Update: {
+                    id?: number
+                    key?: string
+                    display?: string
+                    category?: string | null
+                    active?: boolean
+                }
+            }
+            intake_barriers: {
+                Row: {
+                    intake_id: string
+                    barrier_id: number
+                    source: string | null
+                    added_at: string
+                    notes: string | null
+                }
+                Insert: {
+                    intake_id: string
+                    barrier_id: number
+                    source?: string | null
+                    added_at?: string
+                    notes?: string | null
+                }
+                Update: {
+                    intake_id?: string
+                    barrier_id?: number
+                    source?: string | null
+                    added_at?: string
+                    notes?: string | null
+                }
+            }
+            consent_documents: {
+                Row: {
+                    id: string
+                    intake_id: string | null
+                    template_version: string
+                    scope_text: string
+                    expires_at: string | null
+                    created_at: string
+                    created_by: string | null
+                    locked: boolean
+                }
+                Insert: {
+                    id?: string
+                    intake_id?: string | null
+                    template_version: string
+                    scope_text: string
+                    expires_at?: string | null
+                    created_at?: string
+                    created_by?: string | null
+                    locked?: boolean
+                }
+                Update: {
+                    id?: string
+                    intake_id?: string | null
+                    template_version?: string
+                    scope_text?: string
+                    expires_at?: string | null
+                    created_at?: string
+                    created_by?: string | null
+                    locked?: boolean
+                }
+            }
+            consent_signatures: {
+                Row: {
+                    id: string
+                    consent_document_id: string | null
+                    signer_name: string
+                    signer_role: string
+                    method: string
+                    signed_at: string
+                    document_hash: string | null
+                    ip_address: string | null
+                }
+                Insert: {
+                    id?: string
+                    consent_document_id?: string | null
+                    signer_name: string
+                    signer_role: string
+                    method: string
+                    signed_at?: string
+                    document_hash?: string | null
+                    ip_address?: string | null
+                }
+                Update: {
+                    id?: string
+                    consent_document_id?: string | null
+                    signer_name?: string
+                    signer_role?: string
+                    method?: string
+                    signed_at?: string
+                    document_hash?: string | null
+                    ip_address?: string | null
+                }
+            }
+            intake_events: {
+                Row: {
+                    id: string
+                    intake_id: string | null
+                    event_type: string
+                    field_path: string | null
+                    old_value: string | null
+                    new_value: string | null
+                    changed_by: string | null
+                    changed_at: string
+                }
+                Insert: {
+                    id?: string
+                    intake_id?: string | null
+                    event_type: string
+                    field_path?: string | null
+                    old_value?: string | null
+                    new_value?: string | null
+                    changed_by?: string | null
+                    changed_at?: string
+                }
+                Update: {
+                    id?: string
+                    intake_id?: string | null
+                    event_type?: string
+                    field_path?: string | null
+                    old_value?: string | null
+                    new_value?: string | null
+                    changed_by?: string | null
+                    changed_at?: string
                 }
             }
         }

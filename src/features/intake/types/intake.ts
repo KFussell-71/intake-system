@@ -156,8 +156,11 @@ export interface ClinicalData {
     placementObservations: string;
 
     // Legacy mapping (to be deprecated or used for summary)
+    /** @deprecated Use relational `observations` table (domain='clinical') */
     counselorObservations: string;
+    /** @deprecated Use relational `observations` table */
     clinicalRationale: string;
+    /** @deprecated Use relational `observations` table */
     notes: string;
 
     // NEW: Structured Clinical Logic (SME Fix)
@@ -209,8 +212,12 @@ export interface ClinicalData {
     keyStrengths: string;
     motivationFactors: string;
     readinessScale: number | null;
+
+    /** @deprecated Use relational `intake_barriers` table instead. */
     barriers: string[];
+    /** @deprecated Use relational `intake_barriers` table instead. */
     barriersOther: string;
+
     supportServices: string[];
     supportServicesOther: string;
     assessmentSummary: string;
@@ -256,6 +263,12 @@ export interface IntakeMetadata {
 
 // BACKWARD COMPATIBILITY: Re-assemble the God Object
 // This ensures existing components don't break immediately
+//
+// ⚠️ ARCHITECTURE GUARDRAIL ⚠️
+// Do NOT add new clinical fields here for JSONB storage.
+// - Usage: Legacy compatibility only.
+// - New Fields: Must be added to specific Domain tables (e.g. observations, intake_sections)
+// - See: modernization_plan.md
 export type IntakeFormData = IdentityData & VocationalData & MedicalData & ClinicalData & IntakeMetadata;
 
 export type IntakeStep = 'Identity' | 'Evaluation' | 'Goals' | 'Prep' | 'Placement' | 'Review';

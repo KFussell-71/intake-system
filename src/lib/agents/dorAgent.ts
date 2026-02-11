@@ -1,6 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { hipaaLogger } from '@/lib/logging/hipaaLogger';
 import { sanitizeForPrompt, validateAIOutput } from '@/lib/ai/sanitizer';
+import { aiService } from '@/lib/ai/UnifiedAIService';
+import { scrubPII } from '@/lib/security/piiScrubber';
 
 // Define the interface for the Intake Bundle we get from RPC
 export interface IntakeBundle {
@@ -190,16 +192,15 @@ Master Application
 `;
 
     // SECURITY: Sanitize all user-controlled inputs (BLUE TEAM REMEDIATION)
-    // RED TEAM FINDING: HIGH-3 - Unsanitized user data in AI prompts
-    // REMEDIATION: Sanitize all fields before including in prompt via Centralized Sanitizer
+    // PURPLE TEAM: Scrub PII (RT-HIGH-PII)
     const sanitizedClient = {
-        name: sanitizeForPrompt(data.client.name),
-        first_name: sanitizeForPrompt(data.client.first_name),
-        last_name: sanitizeForPrompt(data.client.last_name),
-        phone: sanitizeForPrompt(data.client.phone),
-        email: sanitizeForPrompt(data.client.email),
-        consumer_id: sanitizeForPrompt(data.client.consumer_id),
-        dob: sanitizeForPrompt(data.client.dob)
+        name: sanitizeForPrompt(scrubPII(data.client.name || '')),
+        first_name: sanitizeForPrompt(scrubPII(data.client.first_name || '')),
+        last_name: sanitizeForPrompt(scrubPII(data.client.last_name || '')),
+        phone: sanitizeForPrompt(scrubPII(data.client.phone || '')),
+        email: sanitizeForPrompt(scrubPII(data.client.email || '')),
+        consumer_id: sanitizeForPrompt(scrubPII(data.client.consumer_id || '')),
+        dob: sanitizeForPrompt(scrubPII(data.client.dob || ''))
     };
 
     const userPrompt = `
@@ -241,53 +242,27 @@ Master Application
     OUTPUT: Structured Markdown matching DOR.ES template exactly. No preamble.
   `;
 
-    // SECURITY: Require API key from environment (BLUE TEAM REMEDIATION)
-    // RED TEAM FINDING: HIGH-2 - Hardcoded API key in source code
-    // REMEDIATION: Removed hardcoded fallback, require env var
-    const apiKey = process.env.GEMINI_API_KEY;
-
-    if (!apiKey) {
-        hipaaLogger.error("GEMINI_API_KEY environment variable is not set");
-        return generateMockReport(data);
-    }
-
+    // Use Unified AI Service
     try {
-        const { GoogleGenerativeAI } = await import("@google/generative-ai");
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-pro",
+        const output = await aiService.generateText({
+            prompt: LOCKED_SYSTEM_PROMPT + "\n\n" + userPrompt,
+            temperature: 0.2,
+            userId: 'system-agent'
         });
 
-        const result = await model.generateContent({
-            contents: [
-                {
-                    role: "user",
-                    parts: [
-                        { text: LOCKED_SYSTEM_PROMPT },
-                        { text: userPrompt }
-                    ]
-                }
-            ],
-            generationConfig: {
-                temperature: 0.2,
-            },
-        });
-
-        const response = await result.response;
-        const output = response.text();
+        const text = output.text;
 
         // SECURITY: Validate output for injection attempts (BLUE TEAM REMEDIATION)
-        // RED TEAM FINDING: RT-AI-003 - Output validation
-        const isValid = validateAIOutput(output);
+        const isValid = validateAIOutput(text);
         if (!isValid) {
             hipaaLogger.error('AI output validation failed: Potential Injection Detected');
             throw new Error('AI output validation failed: Potential Injection-Like Content Detected');
         }
 
-        return output;
+        return text;
 
     } catch (error) {
-        hipaaLogger.error("Gemini Agent execution failed:", error);
+        hipaaLogger.error("DOR Agent execution failed:", error);
         return generateMockReport(data);
     }
 }
