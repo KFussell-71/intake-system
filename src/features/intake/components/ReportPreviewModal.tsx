@@ -162,7 +162,7 @@ export function ReportPreviewModal({ open, onOpenChange, formData, onSubmit, onJ
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-6xl h-[90vh] flex flex-col p-0 gap-0 bg-surface dark:bg-surface-dark border-slate-200 dark:border-white/10 overflow-hidden">
+            <DialogContent className="w-full max-w-6xl h-[90vh] flex flex-col p-0 gap-0 bg-surface dark:bg-surface-dark border-slate-200 dark:border-white/10 overflow-hidden">
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-white/10 bg-surface dark:bg-surface-dark z-10">
                     <div className="flex items-center gap-3">
@@ -236,7 +236,7 @@ export function ReportPreviewModal({ open, onOpenChange, formData, onSubmit, onJ
                                 <Button onClick={generatePreview} variant="outline">Try Again</Button>
                             </div>
                         ) : (
-                            <div className="prose prose-slate dark:prose-invert max-w-4xl mx-auto bg-white dark:bg-slate-900 p-12 rounded-xl shadow-sm border border-slate-200 dark:border-white/5 relative">
+                            <div className="w-full prose prose-slate dark:prose-invert max-w-4xl mx-auto bg-white dark:bg-slate-900 p-12 rounded-xl shadow-sm border border-slate-200 dark:border-white/5 relative">
                                 {/* Watermark */}
                                 <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-[0.03] overflow-hidden select-none">
                                     <div className="transform -rotate-45 text-9xl font-black text-slate-900 dark:text-white whitespace-nowrap">
