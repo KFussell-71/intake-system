@@ -41,6 +41,7 @@ import { ComplianceSidebar } from '@/features/intake/components/ComplianceSideba
 import { IntakeSidebar } from '@/features/intake/components/IntakeSidebar'; // SME Fix
 import { MobileIntakeNav } from '@/features/intake/components/MobileIntakeNav';
 import { ReviewModeBanner } from '@/features/intake/components/ReviewModeBanner';
+import { ConflictResolutionModal } from '@/features/intake/components/ConflictResolutionModal';
 
 const steps = [
     { title: 'Identity', icon: <UserIcon className="w-4 h-4" /> },
@@ -60,6 +61,7 @@ export default function NewIntakePage() {
     const {
         formData,
         setFormData,
+        patchFormData,
         currentStep,
         setCurrentStep,
         handleInputChange,
@@ -91,6 +93,47 @@ export default function NewIntakePage() {
 
     const [complianceResult, setComplianceResult] = useState<{ valid: boolean, score: number, issues: any[] } | null>(null);
     const [checkingCompliance, setCheckingCompliance] = useState(false);
+    const [signedPdf, setSignedPdf] = useState<File | null>(null);
+
+    // Phase 20: Conflict Resolution State
+    const [conflictTask, setConflictTask] = useState<any>(null);
+    const [serverDataForConflict, setServerDataForConflict] = useState<any>(null);
+
+    useEffect(() => {
+        const checkConflicts = async () => {
+            if (!intakeId) return;
+            const { getDB } = await import('@/lib/offline/db');
+            const db = await getDB();
+            if (!db) return;
+
+            const conflicts = await db.getAllFromIndex('sync-queue', 'by-status', 'conflict');
+            const myConflict = conflicts.find(c => c.data.intakeId === intakeId || c.data.intake_id === intakeId);
+
+            if (myConflict) {
+                const sData = await intakeController.fetchServerData(intakeId);
+                setConflictTask(myConflict);
+                setServerDataForConflict(sData);
+            }
+        };
+
+        const interval = setInterval(checkConflicts, 10000); // Poll for conflicts
+        checkConflicts();
+        return () => clearInterval(interval);
+    }, [intakeId]);
+
+    const handleResolveConflict = async (resolvedData: any) => {
+        if (!conflictTask) return;
+
+        const { deleteSyncTask } = await import('@/lib/offline/db');
+        await deleteSyncTask(conflictTask.id);
+
+        setFormData(resolvedData);
+        setConflictTask(null);
+        setServerDataForConflict(null);
+
+        // Trigger a fresh save to the server
+        await intakeController.saveIntakeProgress(intakeId!, resolvedData, "Resolved Sync Conflict");
+    };
 
     const runComplianceCheck = async () => {
         setCheckingCompliance(true);
@@ -116,13 +159,8 @@ export default function NewIntakePage() {
                 await intakeController.saveIntakeProgress(intakeId, formData, "Manual Draft Save");
             } else {
                 const result = await intakeController.handleIntakeSubmission({
-                    p_name: formData.clientName || 'Draft ' + new Date().toLocaleDateString(),
-                    p_phone: formData.phone || '',
-                    p_email: formData.email || '',
-                    p_address: formData.address || '',
-                    p_ssn_last_four: formData.ssnLastFour || '0000',
-                    p_report_date: formData.reportDate,
-                    p_intake_data: { ...formData, status: 'draft' }
+                    ...formData,
+                    status: 'draft'
                 });
                 if (result.success && result.data?.intake_id) {
                     setIntakeId(result.data.intake_id);
@@ -145,17 +183,9 @@ export default function NewIntakePage() {
         try {
             const validatedData = intakeSchema.parse(formData);
             const result = await intakeController.handleIntakeSubmission({
-                p_name: validatedData.clientName,
-                p_phone: validatedData.phone,
-                p_email: validatedData.email,
-                p_address: validatedData.address,
-                p_ssn_last_four: validatedData.ssnLastFour,
-                p_report_date: validatedData.reportDate,
-                p_completion_date: validatedData.completionDate || null,
-                p_intake_data: {
-                    ...formData,
-                    status: 'submitted'
-                }
+                ...formData,
+                ...validatedData,
+                status: 'submitted'
             });
 
             if (!result.success) throw new Error(result.error);
@@ -227,15 +257,16 @@ export default function NewIntakePage() {
         );
     }
 
-    const [signedPdf, setSignedPdf] = useState<File | null>(null);
 
     const renderStep = () => {
         const commonProps = {
             formData,
             onChange: handleInputChange,
+            onPatch: patchFormData,
             setFormData, // Added for AI Auto-Fill
             errors: validationErrors,
-            isReadOnly // SME Fix: Propagate review mode
+            isReadOnly, // SME Fix: Propagate review mode
+            intakeId // For Integrity Agent
         };
 
         switch (currentStep) {
@@ -461,6 +492,14 @@ export default function NewIntakePage() {
                     const dummyEvent = { preventDefault: () => { } } as React.FormEvent;
                     handleSubmit(dummyEvent);
                 }}
+            />
+
+            <ConflictResolutionModal
+                isOpen={!!conflictTask}
+                onClose={() => setConflictTask(null)}
+                localData={conflictTask?.data?.data || conflictTask?.data || {}}
+                serverData={serverDataForConflict || {}}
+                onResolve={handleResolveConflict}
             />
         </div>
     );

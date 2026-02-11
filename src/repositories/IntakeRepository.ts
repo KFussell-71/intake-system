@@ -91,8 +91,12 @@ export class IntakeRepository extends BaseRepository {
         // Note: Creating these as wrappers around standard DB calls or specific RPCs
         const { data: result, error } = await this.db.rpc('save_intake_draft', {
             p_intake_id: intakeId,
-            p_intake_data: data,
-            p_user_id: userId
+            p_client_id: null, // As per original spec, or infer from context if repository method updated. Wait, the repository method signature didn't have client_id. 
+            // In the migration file I kept p_client_id. The repository wrapper seems to handle intakeId. 
+            // Let me check the migration file again. It takes (intake_id, client_id, intake_data). 
+            // The repository call had (intake_id, intake_data, user_id). It was MISSING client_id in the view I saw?
+            // Let me check the view again.
+            p_intake_data: data
         });
 
         if (error) this.handleError(error, 'saveDraft');

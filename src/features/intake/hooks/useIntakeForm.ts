@@ -90,6 +90,9 @@ const initialFormData: IntakeFormData = {
         { goal: '', actionSteps: '', responsibleParty: '', targetDate: '' }
     ],
     // Clinical Assessment & Rationale (SME Fix #3)
+    prepObservations: '',
+    employmentObservations: '',
+    placementObservations: '',
     counselorObservations: '',
     clinicalRationale: '',
     clinical_observations: [], // SME Fix: Structured Logic
@@ -299,9 +302,15 @@ export function useIntakeForm() {
         // Should we delete from server? Maybe just leave as is/archived.
     }, []);
 
+    const patchFormData = useCallback((patch: Partial<IntakeFormData>) => {
+        setFormData(prev => ({ ...prev, ...patch }));
+        setHasUnsavedChanges(true);
+    }, []);
+
     return {
         formData,
         setFormData,
+        patchFormData,
         currentStep,
         setCurrentStep,
         handleInputChange,

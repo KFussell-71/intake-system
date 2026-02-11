@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { X, FileText, CheckCircle, AlertTriangle, Loader2, Edit3, ArrowRight, Printer, Download } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { generatePDF } from '@/lib/pdf/generatePDF'; // Import PDF generator
+// Removed static import to prevent SSR issues with jsdom/html2canvas
+// import { generatePDF } from '@/lib/pdf/generatePDF';
 import { marked } from 'marked';
 import DOMPurify from 'isomorphic-dompurify';
 import { IntakeFormData } from '../types/intake';
@@ -112,6 +113,7 @@ export function ReportPreviewModal({ open, onOpenChange, formData, onSubmit, onJ
     const handleDownloadPDF = async () => {
         if (!reportMarkdown) return;
         try {
+            const { generatePDF } = await import('@/lib/pdf/generatePDF');
             const pdfBlob = await generatePDF(reportMarkdown);
             const url = URL.createObjectURL(pdfBlob);
             const link = document.createElement('a');

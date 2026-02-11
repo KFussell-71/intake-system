@@ -1,7 +1,4 @@
-/**
- * SME: Observability & Performance Tracing
- * Lightweight abstraction for OpenTelemetry-compatible tracing.
- */
+import { supabase } from '@/lib/supabase';
 
 interface TraceAttributes {
     [key: string]: string | number | boolean | undefined;
@@ -35,35 +32,79 @@ export class ObservabilityService {
                 console.log(`[OTel:Trace] Ending span: ${name}, duration: ${duration}ms`);
 
                 // Track as metric
-                this.trackMetric(`duration_${name}`, duration, attributes);
+                this.trackMetric(`duration_${name}`, duration, attributes, 'metric');
             },
             recordError: (error: Error) => {
                 console.error(`[OTel:Trace] Error in span: ${name}`, error);
-                this.trackMetric(`error_${name}`, 1, { ...attributes, error: error.message });
+                this.trackMetric(`error_${name}`, 1, { ...attributes, error: error.message }, 'error');
             }
         };
     }
 
     /**
-     * Track a custom metric (Counter, Histogram, etc.)
+     * SME: HIPAA Compliance Masking
+     * Prevents PII/PHI from leaking into telemetry logs.
      */
-    trackMetric(name: string, value: number, attributes: TraceAttributes = {}) {
-        // In a real OpenTelemetry setup, this would use @opentelemetry/api
-        // For now, we log it and can easily wire to any collector.
-        const metric = {
-            name,
+    private sanitizeAttributes(attributes: TraceAttributes): TraceAttributes {
+        const sanitized: TraceAttributes = {};
+        const SENSITIVE_KEYS = ['ssn', 'phone', 'email', 'name', 'rationale', 'summary', 'address'];
+        const SSN_REGEX = /\d{3}-\d{2}-\d{4}/g;
+
+        for (const [key, value] of Object.entries(attributes)) {
+            if (value === undefined) continue;
+
+            const lowerKey = key.toLowerCase();
+            if (SENSITIVE_KEYS.some(sk => lowerKey.includes(sk))) {
+                sanitized[key] = '[MASKED]';
+            } else if (typeof value === 'string') {
+                sanitized[key] = value.replace(SSN_REGEX, '[SSN_MASKED]');
+            } else {
+                sanitized[key] = value;
+            }
+        }
+        return sanitized;
+    }
+
+    /**
+     * Track a custom metric, span, or error
+     */
+    async trackMetric(
+        name: string,
+        value: number,
+        attributes: TraceAttributes = {},
+        type: 'metric' | 'span' | 'error' = 'metric'
+    ) {
+        const sanitizedAttributes = this.sanitizeAttributes(attributes);
+        const payload = {
+            event_name: name,
+            event_type: type,
             value,
-            attributes,
-            timestamp: Date.now(),
-            service: 'intake-system'
+            attributes: sanitizedAttributes,
+            created_at: new Date().toISOString()
         };
 
-        if (this.isClient) {
-            // Potential: Send to telemetry endpoint
-            // fetch('/api/telemetry', { method: 'POST', body: JSON.stringify(metric) });
+        // 1. Console logging for dev visibility
+        if (type === 'error') {
+            console.error(`[OTel:${type.toUpperCase()}] ${name}:`, payload);
         } else {
-            // Server-side logging
-            console.log(`[OTel:Metric] ${JSON.stringify(metric)}`);
+            console.log(`[OTel:${type.toUpperCase()}] ${name}:`, value, sanitizedAttributes);
+        }
+
+        // 2. Persistent storage in Supabase (Shadow recording)
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (user) {
+                // SECURITY: Fire-and-forget, but sanitized
+                supabase.from('telemetry_logs').insert({
+                    ...payload,
+                    created_by: user.id
+                }).then(({ error }) => {
+                    if (error) console.error('[Observability] Persistence Error:', error);
+                });
+            }
+        } catch (err) {
+            console.warn('[Observability] Telemetry persistence skipped:', err);
         }
     }
 }

@@ -62,6 +62,8 @@
     "react": "^19.2.4",
     "react-day-picker": "^9.13.0",
     "react-dom": "^19.2.4",
+    "react-hook-form": "^7.71.1",
+    "react-icons": "^5.5.0",
     "react-signature-canvas": "^1.1.0-alpha.2",
     "recharts": "^3.7.0",
     "resend": "^6.9.1",
@@ -78,9 +80,11 @@
     "@types/react-signature-canvas": "^1.0.7",
     "@vitejs/plugin-react": "^5.1.2",
     "eslint": "^9.39.2",
-    "eslint-config-next": "16.1.6",
+    "eslint-config-next": "^15.1.0",
+    "javascript-obfuscator": "^5.3.0",
     "jsdom": "^27.4.0",
     "supabase": "^2.74.5",
-    "vitest": "^4.0.18"
+    "vitest": "^4.0.18",
+    "webpack-obfuscator": "^3.6.0"
   }
 }

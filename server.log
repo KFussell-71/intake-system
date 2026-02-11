@@ -1,0 +1,187 @@
+
+> intake@1.0.0 dev
+> next dev
+
+ ⚠ Invalid next.config.js options detected: 
+ ⚠     Unrecognized key(s) in object: 'swcMinify'
+ ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+   ▲ Next.js 15.5.11
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.76:3000
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     · optimizePackageImports
+
+ ✓ Starting...
+ ⚠ Mismatching @next/swc version, detected: 15.5.7 while Next.js is on 15.5.11. Please ensure these match
+> [PWA] PWA support is disabled
+> [PWA] PWA support is disabled
+ ✓ Ready in 3.8s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 569ms (160 modules)
+ ○ Compiling /login ...
+ ✓ Compiled /login in 6.5s (2096 modules)
+[SECURITY] Returning MOCK Supabase client - DEVELOPMENT ONLY
+[UnifiedAIService] Using Local AI Provider (Ollama) with model: phi4-mini:3.8b
+ GET /login 200 in 8324ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 6.2s (3127 modules)
+ GET /dashboard 200 in 6834ms
+ GET /dashboard 200 in 134ms
+[SECURITY] Returning MOCK Supabase client - DEVELOPMENT ONLY
+[UnifiedAIService] Using Local AI Provider (Ollama) with model: phi4-mini:3.8b
+ GET /dashboard 200 in 1100ms
+ ○ Compiling /intake/new ...
+ ✓ Compiled /intake/new in 4.8s (4008 modules)
+ GET /intake/new 200 in 5572ms
+[UnifiedAIService] Using Local AI Provider (Ollama) with model: phi4-mini:3.8b
+[MOCK] Inserting into audit_logs {
+  user_id: 'mock-user-id',
+  action: 'INTAKE_UPDATE',
+  entity_type: 'intake',
+  entity_id: '',
+  details: { summary: 'Draft Save', ip: undefined, ua: undefined },
+  ip_address: undefined,
+  user_agent: undefined
+}
+ POST /intake/new 200 in 352ms
+ ○ Compiling /api/ai/gemini ...
+ ✓ Compiled /api/ai/gemini in 2.5s (2309 modules)
+[UnifiedAIService] Using Local AI Provider (Ollama) with model: phi4-mini:3.8b
+[SECURITY] Returning MOCK Supabase client - DEVELOPMENT ONLY
+[OTel:Trace] Starting span: ai_proxy_post {}
+[SECURITY] API: Accepting MOCK Authentication
+[SECURITY] API: Bypass Profile Check for Mock User
+[RATE_LIMIT] Database error: TypeError: supabase.from(...).upsert is not a function
+    at checkRateLimit (src/lib/rateLimit.ts:42:18)
+    at async POST (src/app/api/ai/gemini/route.ts:75:27)
+    at async AppRouteRouteModule.do (../../../../src/server/route-modules/app-route/module.ts:586:15)
+    at async AppRouteRouteModule.handle (../../../../src/server/route-modules/app-route/module.ts:706:31)
+  40 |             const { data: newData, error: insertError } = await supabase
+  41 |                 .from('rate_limits')
+> 42 |                 .upsert({
+     |                  ^
+  43 |                     identifier,
+  44 |                     resource,
+  45 |                     count: 1, {
+  
+}
+[MOCK] Inserting into audit_logs {
+  user_id: 'mock-user-id',
+  action: 'INTAKE_UPDATE',
+  entity_type: 'intake',
+  entity_id: '',
+  details: { summary: 'Draft Save', ip: undefined, ua: undefined },
+  ip_address: undefined,
+  user_agent: undefined
+}
+ POST /intake/new 200 in 69ms
+[SECURITY] Returning MOCK Supabase client - DEVELOPMENT ONLY
+[UnifiedAIService] Using Local AI Provider (Ollama) with model: phi4-mini:3.8b
+ POST /api/ai/gemini 200 in 169384ms
+ GET /intake/new 200 in 3400ms
+[MOCK] Inserting into audit_logs {
+  user_id: 'mock-user-id',
+  action: 'INTAKE_UPDATE',
+  entity_type: 'intake',
+  entity_id: '',
+  details: { summary: 'Draft Save', ip: undefined, ua: undefined },
+  ip_address: undefined,
+  user_agent: undefined
+}
+ POST /intake/new 200 in 53ms
+[MOCK] Inserting into audit_logs {
+  user_id: 'mock-user-id',
+  action: 'AI_QUERY',
+  entity_type: 'ai_service',
+  entity_id: 'phi4-mini:3.8b',
+  details: {
+  promptLength: 1361,
+  responseLength: 1362,
+  model: 'phi4-mini:3.8b',
+  ip: undefined,
+  ua: undefined
+},
+  ip_address: undefined,
+  user_agent: undefined
+}
+[OTel:Trace] Ending span: ai_proxy_post, duration: 180494ms
+[OTel:METRIC] duration_ai_proxy_post: 180494 {}
+[MOCK] Inserting into telemetry_logs {
+  event_name: 'duration_ai_proxy_post',
+  event_type: 'metric',
+  value: 180494,
+  attributes: {},
+  created_at: '2026-02-11T01:46:59.355Z',
+  created_by: 'mock-user-id'
+}
+[OTel:Trace] Starting span: ai_proxy_post {}
+[SECURITY] API: Accepting MOCK Authentication
+[SECURITY] API: Bypass Profile Check for Mock User
+[RATE_LIMIT] Database error: TypeError: supabase.from(...).upsert is not a function
+    at checkRateLimit (src/lib/rateLimit.ts:42:18)
+    at async POST (src/app/api/ai/gemini/route.ts:75:27)
+    at async AppRouteRouteModule.do (../../../../src/server/route-modules/app-route/module.ts:586:15)
+    at async AppRouteRouteModule.handle (../../../../src/server/route-modules/app-route/module.ts:706:31)
+  40 |             const { data: newData, error: insertError } = await supabase
+  41 |                 .from('rate_limits')
+> 42 |                 .upsert({
+     |                  ^
+  43 |                     identifier,
+  44 |                     resource,
+  45 |                     count: 1, {
+  
+}
+[MOCK] Inserting into audit_logs {
+  user_id: 'mock-user-id',
+  action: 'INTAKE_UPDATE',
+  entity_type: 'intake',
+  entity_id: '',
+  details: { summary: 'Draft Save', ip: undefined, ua: undefined },
+  ip_address: undefined,
+  user_agent: undefined
+}
+ POST /intake/new 200 in 56ms
+[MOCK] Inserting into audit_logs {
+  user_id: 'mock-user-id',
+  action: 'AI_QUERY',
+  entity_type: 'ai_service',
+  entity_id: 'phi4-mini:3.8b',
+  details: {
+  promptLength: 1361,
+  responseLength: 1480,
+  model: 'phi4-mini:3.8b',
+  ip: undefined,
+  ua: undefined
+},
+  ip_address: undefined,
+  user_agent: undefined
+}
+[OTel:Trace] Ending span: ai_proxy_post, duration: 94523ms
+[OTel:METRIC] duration_ai_proxy_post: 94523 {}
+[MOCK] Inserting into telemetry_logs {
+  event_name: 'duration_ai_proxy_post',
+  event_type: 'metric',
+  value: 94523,
+  attributes: {},
+  created_at: '2026-02-11T01:49:16.830Z',
+  created_by: 'mock-user-id'
+}
+ POST /api/ai/gemini 200 in 94586ms
+ ✓ Compiled in 1519ms (1768 modules)
+ GET /intake/new 200 in 69ms
+ ✓ Compiled in 780ms (1768 modules)
+ GET /intake/new 200 in 56ms
+ ⚠ Found a change in next.config.js. Restarting the server to apply the changes...
+   ▲ Next.js 15.5.11
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.76:3000
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     · optimizePackageImports
+
+ ✓ Starting...
+ ⚠ Mismatching @next/swc version, detected: 15.5.7 while Next.js is on 15.5.11. Please ensure these match
+> [PWA] PWA support is disabled
+> [PWA] PWA support is disabled
+ ✓ Ready in 8.4s

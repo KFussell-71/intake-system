@@ -150,6 +150,12 @@ export interface MedicalData {
 // 4. CLINICAL ASSESSMENT (Counselor View)
 export interface ClinicalData {
     // General Observations
+    // SME FIX: De-conflicted Observation Fields
+    prepObservations: string;
+    employmentObservations: string;
+    placementObservations: string;
+
+    // Legacy mapping (to be deprecated or used for summary)
     counselorObservations: string;
     clinicalRationale: string;
     notes: string;

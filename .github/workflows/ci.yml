@@ -124,6 +124,8 @@ jobs:
     if: github.ref == 'refs/heads/main'
     environment:
       name: production
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       
@@ -137,5 +139,3 @@ jobs:
         run: |
           echo "Sentry release creation would happen here"
           echo "This tracks deployments in Sentry"
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}

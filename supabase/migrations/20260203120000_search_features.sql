@@ -10,6 +10,9 @@ CREATE INDEX IF NOT EXISTS idx_clients_search
 ON clients 
 USING GIN (to_tsvector('english', name || ' ' || email || ' ' || coalesce(phone, '')));
 
+-- SME: Ensure documents has a description column for indexing
+ALTER TABLE documents ADD COLUMN IF NOT EXISTS description TEXT;
+
 CREATE INDEX IF NOT EXISTS idx_documents_search 
 ON documents 
 USING GIN (to_tsvector('english', name || ' ' || coalesce(description, '')));

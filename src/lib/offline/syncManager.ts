@@ -46,6 +46,25 @@ export class SyncManager {
         try {
             await updateTaskStatus(task.id, 'syncing');
 
+            // --- CONFLICT DETECTION LOGIC ---
+            if (task.type === 'INTAKE_UPDATE' || task.type === 'ASSESSMENT_UPSERT') {
+                const intakeId = task.type === 'INTAKE_UPDATE' ? task.data.intakeId : task.data.intake_id;
+                const serverData = await intakeService.fetchServerData(intakeId);
+
+                if (serverData) {
+                    // Simple heuristic: If server data exists and we don't know the last sync time,
+                    // or if server's updated_at is later than our task's createdAt, it's a potential conflict.
+                    const serverUpdatedAt = new Date(serverData.updated_at || 0).getTime();
+                    if (serverUpdatedAt > task.createdAt) {
+                        console.warn(`[SyncManager] Conflict detected for task ${task.id}. Server has newer data.`);
+                        await updateTaskStatus(task.id, 'conflict', 'Data conflict: Server version is newer.');
+                        obs.trackMetric('sync_conflict_detected', 1, { taskId: task.id });
+                        span.end();
+                        return;
+                    }
+                }
+            }
+
             switch (task.type) {
                 case 'INTAKE_CREATE':
                     await intakeService.submitNewIntake(task.data);

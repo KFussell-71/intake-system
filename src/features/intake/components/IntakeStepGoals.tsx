@@ -4,6 +4,7 @@ import { ElegantInput, ElegantTextarea } from '@/components/ui/ElegantInput';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { IntakeFormData } from '../types/intake';
 import { CounselorRationaleField } from './CounselorRationaleField';
+import { AISuccessSuggestions } from './AISuccessSuggestions';
 
 interface Props {
     formData: IntakeFormData;
@@ -115,11 +116,13 @@ export const IntakeStepGoals: React.FC<Props> = ({ formData, onChange, errors = 
 
             <CounselorRationaleField
                 label="Career Plan Analysis"
-                name="counselorObservations"
-                value={formData.counselorObservations || ''}
+                name="employmentObservations"
+                value={formData.employmentObservations || ''}
                 onChange={onChange as any}
                 placeholder="Document your professional assessment of the client's goals and how they align with their identified strengths/barriers..."
             />
+
+            <AISuccessSuggestions formData={formData} />
 
             <GlassCard className="p-6 mt-6 border border-white/20">
                 <div className="flex items-center justify-between mb-6">

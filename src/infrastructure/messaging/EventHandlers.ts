@@ -1,10 +1,10 @@
 import { DomainEventBus } from '@/domain/events/DomainEventBus';
-import { auditService } from '@/services/auditService';
+import { logAuditAction } from '@/app/actions/auditActions';
 
 export function registerDomainEventHandlers() {
     // Audit Logging Handler
     DomainEventBus.subscribe('INTAKE_SUBMITTED', async (event) => {
-        await auditService.log({
+        await logAuditAction({
             userId: event.payload.submittedBy,
             action: 'INTAKE_SUBMIT',
             entityType: 'intake',
@@ -17,7 +17,7 @@ export function registerDomainEventHandlers() {
     });
 
     DomainEventBus.subscribe('INTAKE_UPDATED', async (event) => {
-        await auditService.log({
+        await logAuditAction({
             userId: event.payload.userId,
             action: 'INTAKE_UPDATE',
             entityType: 'intake',

@@ -363,10 +363,28 @@ CREATE OR REPLACE FUNCTION get_client_intake_bundle(p_client_id uuid)
 RETURNS jsonb
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 DECLARE
   result jsonb;
+  v_uid uuid;
 BEGIN
+  v_uid := auth.uid();
+
+  -- SECURITY CHECK: Ensure user has access to this client
+  IF NOT EXISTS (
+    SELECT 1 FROM clients c
+    WHERE c.id = p_client_id
+    AND (
+      c.assigned_to = v_uid 
+      OR c.created_by = v_uid
+      OR (SELECT role FROM profiles WHERE id = v_uid) IN ('admin', 'supervisor')
+    )
+  ) THEN
+    -- Return null to prevent leakage or raise exception
+    RAISE EXCEPTION 'Access Denied: You do not have permission to view this client bundle.';
+  END IF;
+
   SELECT jsonb_build_object(
     'client', (
       SELECT row_to_json(c)
@@ -436,6 +454,7 @@ CREATE OR REPLACE FUNCTION create_client_intake(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 DECLARE
   new_client_id UUID;

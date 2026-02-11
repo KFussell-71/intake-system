@@ -18,11 +18,12 @@ import { StructuredObservation } from './StructuredObservation'; // SME Fix
 interface Props {
     formData: IntakeFormData;
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+    onPatch?: (patch: Partial<IntakeFormData>) => void;
     errors?: Record<string, string>;
     isReadOnly?: boolean;
 }
 
-export const IntakeStepEvaluation: React.FC<Props> = ({ formData, onChange, errors = {}, isReadOnly = false }) => {
+export const IntakeStepEvaluation: React.FC<Props> = ({ formData, onChange, onPatch, errors = {}, isReadOnly = false }) => {
 
     // SME Fix #4: Logic to flag evaluation needs
     // (Preserved legacy logic but mapped to new fields can be added here if needed)

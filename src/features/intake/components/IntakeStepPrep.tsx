@@ -74,8 +74,8 @@ export const IntakeStepPrep: React.FC<Props> = ({ formData, onChange }) => {
 
             <CounselorRationaleField
                 label="Preparation Assessment"
-                name="counselorObservations"
-                value={formData.counselorObservations || ''}
+                name="prepObservations"
+                value={formData.prepObservations || ''}
                 onChange={onChange as any}
                 placeholder="Document professional assessment of client's readiness for employment based on class participation and preparation quality..."
             />

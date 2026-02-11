@@ -43,6 +43,13 @@ export class DashboardRepository extends BaseRepository {
         return data || [];
     }
 
+    async getAnalyticsSummary(): Promise<any> {
+        const { data, error } = await this.db.rpc('get_intake_analytics');
+        if (error) this.handleError(error, 'getAnalyticsSummary');
+        return data || {};
+    }
+
+
     async getMonthlyIntakes(): Promise<{ name: string; intakes: number }[]> {
         const { data, error } = await this.db
             .from('intakes')

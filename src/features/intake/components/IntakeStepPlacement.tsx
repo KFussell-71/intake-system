@@ -86,8 +86,8 @@ export const IntakeStepPlacement: React.FC<Props> = ({ formData, onChange }) => 
 
             <CounselorRationaleField
                 label="Placement Suitability Analysis"
-                name="counselorObservations"
-                value={formData.counselorObservations || ''}
+                name="placementObservations"
+                value={formData.placementObservations || ''}
                 onChange={onChange as any}
                 placeholder="Document clinical assessment of the placement's suitability, any anticipated workplace barriers, and the reasoning for this specific job match..."
             />

@@ -1,9 +1,13 @@
 /** @type {import('next').NextConfig} */
 import withPWAInit from 'next-pwa';
 
+// Basic protection: Obfuscate production builds
+import WebpackObfuscator from 'webpack-obfuscator';
+
 const withPWA = withPWAInit({
     dest: 'public',
     disable: process.env.NODE_ENV === 'development',
+    // ... existing PWA config ...
     register: true,
     skipWaiting: true,
     reloadOnOnline: true,
@@ -35,6 +39,20 @@ const withPWA = withPWAInit({
 
 const nextConfig = {
     reactStrictMode: true,
+    output: 'standalone',
+
+    webpack: (config, { dev }) => {
+        if (!dev) {
+            config.plugins.push(
+                new WebpackObfuscator({
+                    rotateStringArray: true,
+                    stringArray: true,
+                    stringArrayThreshold: 0.75
+                }, [])
+            );
+        }
+        return config;
+    },
 
     // Image Optimization (Quick Win #4)
     images: {
@@ -48,7 +66,7 @@ const nextConfig = {
     },
 
     // Performance optimizations
-    swcMinify: true,
+    // swcMinify is enabled by default in Next.js 13+
 
     // Experimental features for better performance
     experimental: {

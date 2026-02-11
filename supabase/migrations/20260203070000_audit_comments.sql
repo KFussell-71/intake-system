@@ -11,11 +11,23 @@ COMMENT ON VIEW clients_staff_view IS
 -- ============================================================================
 -- 2. IMMUTABILITY TRIGGERS
 -- ============================================================================
-COMMENT ON TRIGGER audit_logs_immutable_trigger ON audit_logs IS 
-'HIPAA: Prevents UPDATE or DELETE of audit logs to ensure non-repudiation.';
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'audit_logs_immutable_update') THEN
+        COMMENT ON TRIGGER audit_logs_immutable_update ON audit_logs IS 
+        'HIPAA: Prevents UPDATE of audit logs to ensure non-repudiation.';
+    END IF;
 
-COMMENT ON FUNCTION prevent_audit_log_modification() IS 
-'Security: Rejects any modification attempts on audit_logs table.';
+    IF EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'audit_logs_immutable_delete') THEN
+        COMMENT ON TRIGGER audit_logs_immutable_delete ON audit_logs IS 
+        'HIPAA: Prevents DELETE of audit logs to ensure non-repudiation.';
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'prevent_audit_modification') THEN
+        COMMENT ON FUNCTION prevent_audit_modification() IS 
+        'Security: Rejects any modification attempts on audit_logs table.';
+    END IF;
+END $$;
 
 -- ============================================================================
 -- 3. ARCHIVAL FUNCTIONS

@@ -15,15 +15,33 @@ export const AISuccessSuggestions: React.FC<Props> = ({ formData }) => {
     const [suggestions, setSuggestions] = useState<SuccessSuggestion[]>([]);
     const [loading, setLoading] = useState(false);
 
+    const [error, setError] = useState<string | null>(null);
+
     const getSuggestions = async () => {
         setLoading(true);
-        const result = await intakeController.getSuccessSuggestions(formData);
-        if (result) setSuggestions(result);
-        setLoading(false);
+        setError(null);
+        try {
+            const result = await intakeController.getSuccessSuggestions(formData);
+            if (result && result.length > 0) {
+                setSuggestions(result);
+            } else {
+                setError("No suggestions generated. Please try again.");
+            }
+        } catch (err) {
+            setError("Failed to generate suggestions. Please ensure AI service is available.");
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
         <div className="mt-8">
+            {error && (
+                <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg flex items-center gap-2">
+                    <span className="font-bold">Error:</span> {error}
+                </div>
+            )}
             <button
                 onClick={getSuggestions}
                 disabled={loading}

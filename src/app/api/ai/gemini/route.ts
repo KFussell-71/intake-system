@@ -37,7 +37,7 @@ function sanitizePrompt(prompt: string): string {
     if (!prompt) return '';
 
     return prompt
-        .replace(/[^\w\s@.,;:?!()\-\[\]{}"']/g, '') // Remove dangerous chars
+        .replace(/[^\w\s@.,;:?!()\-\[\]{}"'<>/|\\]/g, '') // Remove dangerous chars but allow XML tags
         .substring(0, 5000) // Limit length
         .trim();
 }

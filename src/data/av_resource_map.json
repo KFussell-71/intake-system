@@ -1,0 +1,204 @@
+{
+    "resources": [
+        {
+            "id": "paving-the-way",
+            "name": "Paving the Way Foundation",
+            "address": "44818 Fern Ave, Suite 105, Lancaster, CA 93534",
+            "phone": "(661) 341-3652",
+            "categories": [
+                "employment",
+                "vocational_training",
+                "reentry",
+                "legal"
+            ],
+            "description": "Workforce training and certifications including Forklift, Solar, and Food Handlers. Specializes in justice-involved and parolee support.",
+            "keywords": [
+                "unemployed",
+                "job skills",
+                "skills",
+                "parole",
+                "probation",
+                "justice involved",
+                "forklift",
+                "certification"
+            ]
+        },
+        {
+            "id": "doors-av",
+            "name": "DOORS AV",
+            "address": "349-A E Ave K-6, Lancaster, CA 93535",
+            "phone": "(661) 802-1002",
+            "categories": [
+                "reentry",
+                "legal",
+                "housing",
+                "mental_health"
+            ],
+            "description": "Comprehensive reentry center providing housing support, legal assistance, and mental health referrals for justice-involved individuals.",
+            "keywords": [
+                "parole",
+                "probation",
+                "justice involved",
+                "reentry",
+                "record clearing",
+                "housing"
+            ]
+        },
+        {
+            "id": "avta",
+            "name": "AVTA (Antelope Valley Transit Authority)",
+            "address": "42210 6th St W, Lancaster, CA 93534",
+            "phone": "(661) 945-9445",
+            "categories": [
+                "transportation"
+            ],
+            "description": "Public transit provider. Offers 'LIFE' discounted pass programs and accessibility services.",
+            "keywords": [
+                "no car",
+                "transportation",
+                "bus",
+                "pass",
+                "transit",
+                "travel",
+                "commute"
+            ]
+        },
+        {
+            "id": "av-mental-health",
+            "name": "AV Mental Health Center",
+            "address": "349-A E Ave K-6, Lancaster, CA 93535",
+            "phone": "(661) 723-4260",
+            "categories": [
+                "mental_health",
+                "crisis"
+            ],
+            "description": "County mental health facility providing outpatient therapy, psychiatric medication management, and crisis intervention.",
+            "keywords": [
+                "mental health",
+                "depression",
+                "anxiety",
+                "crisis",
+                "therapy",
+                "psychiatrist",
+                "medication"
+            ]
+        },
+        {
+            "id": "mha-av",
+            "name": "Mental Health America (Antelope Valley)",
+            "address": "506 W Jackman St, Lancaster, CA 93534",
+            "phone": "(661) 726-2850",
+            "categories": [
+                "mental_health",
+                "support"
+            ],
+            "description": "Peer-run support groups and mental health advocacy services.",
+            "keywords": [
+                "mental health",
+                "peer support",
+                "advocacy",
+                "groups"
+            ]
+        },
+        {
+            "id": "saves-palmdale",
+            "name": "SAVES (South Antelope Valley Emergency Services)",
+            "address": "1002 E Ave Q-12, Palmdale, CA 93550",
+            "phone": "(661) 267-5191",
+            "categories": [
+                "food",
+                "emergency",
+                "housing"
+            ],
+            "description": "Provides food assistance, utility payment assistance, and basic needs for Palmdale residents.",
+            "keywords": [
+                "food",
+                "utility",
+                "eviction",
+                "emergency",
+                "hunger",
+                "groceries",
+                "palmdale"
+            ]
+        },
+        {
+            "id": "grace-resources",
+            "name": "Grace Resources",
+            "address": "45134 N Sierra Hwy, Lancaster, CA 93534",
+            "phone": "(661) 940-5272",
+            "categories": [
+                "food",
+                "clothing",
+                "education",
+                "spiritual"
+            ],
+            "description": "Multi-resource center offering food, clothing, thrift store, and life-skills classes.",
+            "keywords": [
+                "food",
+                "clothes",
+                "classes",
+                "lancaster",
+                "hygiene",
+                "groceries"
+            ]
+        },
+        {
+            "id": "green-thumb-av",
+            "name": "Green Thumb AV",
+            "address": "1805 W Ave K, Lancaster, CA 93534",
+            "phone": "(661) 940-6211",
+            "categories": [
+                "youth",
+                "employment",
+                "education"
+            ],
+            "description": "Youth-focused vocational training and employment assistance for individuals under 25.",
+            "keywords": [
+                "youth",
+                "young adult",
+                "under 25",
+                "job search",
+                "education"
+            ]
+        },
+        {
+            "id": "av-trc",
+            "name": "AV Transition Resource Center",
+            "address": "1420 W Ave I, Lancaster, CA 93534",
+            "phone": "(661) 723-5414",
+            "categories": [
+                "youth",
+                "housing",
+                "support"
+            ],
+            "description": "Resource hub specifically for transitional aged youth (TAY) addressing homelessness and support needs.",
+            "keywords": [
+                "youth",
+                "homeless youth",
+                "TAY",
+                "transition",
+                "at risk"
+            ]
+        },
+        {
+            "id": "ilc-sc",
+            "name": "Independent Living Center of Southern California",
+            "address": "342 E Ave K, Lancaster, CA 93535",
+            "phone": "(661) 942-9726",
+            "categories": [
+                "disability",
+                "advocacy",
+                "assistive_technology"
+            ],
+            "description": "Advocacy and support for individuals with disabilities, including assistive technology and peer support.",
+            "keywords": [
+                "disability",
+                "physical disability",
+                "advocacy",
+                "ADA",
+                "assistive tech",
+                "wheelchair"
+            ]
+        }
+    ]
+}

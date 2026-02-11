@@ -126,6 +126,24 @@ export class IntakeService {
     async getSupervisionHistory(intakeId: string) {
         return await this.intakeRepo.getSupervisionHistory(intakeId);
     }
+
+    /**
+     * Phase 20: Fetch raw server data for conflict detection
+     */
+    async fetchServerData(intakeId: string) {
+        try {
+            const intake = await this.intakeRepo.getIntakeById(intakeId);
+            const assessment = await this.intakeRepo.getAssessment(intakeId);
+            return {
+                ...intake?.data,
+                ...assessment,
+                updated_at: assessment?.updated_at || intake?.updated_at
+            };
+        } catch (error) {
+            console.error('[IntakeService] fetchServerData failed:', error);
+            return null;
+        }
+    }
 }
 
 export const intakeService = new IntakeService();

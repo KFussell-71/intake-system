@@ -1,61 +1,28 @@
 #!/bin/bash
-
-# Complete Security Migration Script
-# Applies ALL security migrations in correct order
-
 set -e
 
-echo "🛡️  COMPLETE SECURITY MIGRATION SCRIPT"
-echo "======================================"
-echo ""
+# ==============================================================================
+# INTAKE SYSTEM: MIGRATION APPLIER
+# ==============================================================================
+# This script is a wrapper around the Supabase CLI to ensure consistent application
+# of database schemas. It replaces the old legacy SQL runner.
 
-if [ -z "$1" ]; then
-    echo "❌ Error: DATABASE_URL required"
-    echo ""
-    echo "Usage: ./apply_all_migrations.sh <DATABASE_URL>"
-    exit 1
+echo "🔄 INTAKE SYSTEM: DATABASE UPDATE"
+echo "----------------------------------"
+
+# 1. Check for .env.local
+if [ -f .env.local ]; then
+    echo "📄 Loading environment from .env.local..."
+    export $(grep -v '^#' .env.local | xargs)
+else
+    echo "⚠️  Warning: .env.local not found. Relying on system environment variables."
 fi
 
-DATABASE_URL="$1"
-
-echo "📋 Migrations to apply (in order):"
-echo "  1. Enable RLS on All Tables (CRITICAL)"
-echo "  2. Blue Team RLS Fixes"
-echo "  3. HIPAA Column Security"
-echo "  4. HIPAA Audit Immutability"
-echo ""
-
-apply_migration() {
-    local file=$1
-    local name=$2
-    
-    echo "🔄 Applying: $name"
-    if psql "$DATABASE_URL" -f "$file"; then
-        echo "✅ Success: $name"
-    else
-        echo "❌ Failed: $name"
-        return 1
-    fi
-    echo ""
-}
-
-echo "Starting migration application..."
-echo ""
-
-apply_migration "migrations/20260202_enable_rls_all_tables.sql" "Enable RLS on All Tables"
-apply_migration "migrations/20260202_blue_team_rls_fixes.sql" "Blue Team RLS Fixes"
-apply_migration "migrations/20260202_hipaa_column_security.sql" "HIPAA Column Security"
-apply_migration "migrations/20260202_hipaa_audit_immutability.sql" "HIPAA Audit Immutability"
-
-echo "🎉 All migrations applied successfully!"
-echo ""
-echo "✅ Verification:"
-psql "$DATABASE_URL" -c "SELECT * FROM check_rls_status();"
+# 2. Run Supabase Push
+echo "🚀 Applying migrations via Supabase CLI..."
+# We pipe 'y' to auto-confirm if interactive, but 'db push' is usually non-interactive in CI
+# unless there are conflicts.
+npx supabase db push
 
 echo ""
-echo "📊 Security Status:"
-echo "  ✅ RLS enabled on all tables"
-echo "  ✅ Policies scoped to assigned clients"
-echo "  ✅ SSN access controlled by role"
-echo "  ✅ Audit logs immutable"
-echo ""
+echo "✅ Database is up to date."

@@ -6,6 +6,8 @@ import { AISuccessSuggestions } from './AISuccessSuggestions';
 import { CounselorRationaleField } from './CounselorRationaleField';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { AINarrativeComposer } from './AINarrativeComposer';
+import { AIIntegrityReview } from './AIIntegrityReview';
+import { ReferralPlanWidget } from './ReferralPlanWidget';
 
 interface Props {
     formData: IntakeFormData;
@@ -13,9 +15,17 @@ interface Props {
     setFormData: (data: IntakeFormData | ((prev: IntakeFormData) => IntakeFormData)) => void;
     errors?: Record<string, string>;
     onFileSelect?: (file: File | null) => void;
+    intakeId?: string | null;
 }
 
-export const IntakeStepReview: React.FC<Props> = ({ formData, onChange, setFormData, errors = {}, onFileSelect }) => {
+export const IntakeStepReview: React.FC<Props> = ({
+    formData,
+    onChange,
+    setFormData,
+    errors = {},
+    onFileSelect,
+    intakeId
+}) => {
     const handleAIDraftGenerated = (field: 'clinicalRationale' | 'notes', text: string) => {
         setFormData(prev => ({
             ...prev,
@@ -28,6 +38,15 @@ export const IntakeStepReview: React.FC<Props> = ({ formData, onChange, setFormD
                 <FileCheck className="w-6 h-6 text-primary" />
                 Review & Finalize
             </h2>
+
+            {/* SME Fix: Agentic Integrity Shadow Audit */}
+            {intakeId && (
+                <AIIntegrityReview
+                    intakeId={intakeId}
+                    data={formData}
+                    status={formData.status || 'draft'}
+                />
+            )}
 
             {Object.keys(errors).length > 0 && (
                 <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-red-600 dark:text-red-400">
@@ -138,6 +157,10 @@ export const IntakeStepReview: React.FC<Props> = ({ formData, onChange, setFormD
                     </div>
                 </div>
             </div>
+
+            {intakeId && (
+                <ReferralPlanWidget intakeId={intakeId} />
+            )}
 
             <AISuccessSuggestions formData={formData} />
         </div>

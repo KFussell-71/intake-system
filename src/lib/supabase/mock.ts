@@ -209,6 +209,18 @@ export const createMockSupabase = () => {
                     // In a real in-memory implementation we would push to mockManager.state[table]
                     // For now, we simulate success for the UI verification
                     return { data: { ...data, id: `new-${Date.now()}` }, error: null };
+                },
+                upsert: async (data: any) => {
+                    console.log(`[MOCK] Upserting into ${table}`, data);
+                    return { data: { ...data, id: `upsert-${Date.now()}` }, error: null };
+                },
+                update: async (data: any) => {
+                    console.log(`[MOCK] Updating ${table}`, data);
+                    return { data: { ...data }, error: null };
+                },
+                delete: async () => {
+                    console.log(`[MOCK] Deleting from ${table}`);
+                    return { data: null, error: null };
                 }
             };
             return queryBuilder;

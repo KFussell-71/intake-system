@@ -26,6 +26,7 @@ export const identitySchema = z.object({
     completionDate: z.string().optional().or(z.literal('')),
     referralSource: z.string().optional().or(z.literal('')),
     referralContact: z.string().optional().or(z.literal('')),
+    consentToRelease: z.boolean().default(false),
 });
 
 // Strict Schema for Submission
@@ -33,4 +34,5 @@ export const identitySubmissionSchema = identitySchema.extend({
     clientName: z.string().min(2, "Full name is required"),
     ssnLastFour: z.string().length(4, "SSN (Last 4) is required"),
     reportDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Report date is required"),
+    consentToRelease: z.literal(true),
 });

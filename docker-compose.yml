@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: intake-system
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      # Use host 'ollama' service
+      - NEXT_PUBLIC_OLLAMA_MODEL=gemma2:2b
+      # Important: Point to the INTERNAL docker network alias for Ollama if doing server-side fetching
+      # But since generateCaseNote.ts uses fetch("http://127.0.0.1:11434"), we might need adjustment.
+      # Actually, Next.js Server Actions run in the container, so localhost refers to the container itself.
+      # We need to point to 'http://ollama:11434'
+      - OLLAMA_BASE_URL=http://ollama:11434
+      # Database connection (User must provide their own .env or set here)
+      # - NEXT_PUBLIC_SUPABASE_URL=...
+      # - NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+    env_file:
+      - .env
+    depends_on:
+      - ollama
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: intake-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./ollama_data:/root/.ollama
+    # GPU Support (Uncomment if NVIDIA GPU is present and nvidia-container-toolkit is installed)
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]

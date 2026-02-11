@@ -4,7 +4,7 @@ export interface SyncTask {
     id: string;
     type: 'INTAKE_CREATE' | 'INTAKE_UPDATE' | 'ASSESSMENT_UPSERT';
     data: any;
-    status: 'pending' | 'syncing' | 'failed';
+    status: 'pending' | 'syncing' | 'failed' | 'conflict';
     error?: string;
     attempts: number;
     createdAt: number;

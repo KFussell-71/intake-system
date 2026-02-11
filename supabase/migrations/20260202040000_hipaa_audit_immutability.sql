@@ -27,15 +27,15 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Trigger to prevent UPDATE
-DROP TRIGGER IF EXISTS prevent_audit_update ON audit_logs;
-CREATE TRIGGER prevent_audit_update
+DROP TRIGGER IF EXISTS audit_logs_immutable_update ON audit_logs;
+CREATE TRIGGER audit_logs_immutable_update
 BEFORE UPDATE ON audit_logs
 FOR EACH ROW
 EXECUTE FUNCTION prevent_audit_modification();
 
 -- Trigger to prevent DELETE
-DROP TRIGGER IF EXISTS prevent_audit_delete ON audit_logs;
-CREATE TRIGGER prevent_audit_delete
+DROP TRIGGER IF EXISTS audit_logs_immutable_delete ON audit_logs;
+CREATE TRIGGER audit_logs_immutable_delete
 BEFORE DELETE ON audit_logs
 FOR EACH ROW
 EXECUTE FUNCTION prevent_audit_modification();

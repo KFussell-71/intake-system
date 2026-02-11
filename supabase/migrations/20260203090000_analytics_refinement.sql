@@ -33,11 +33,9 @@ CREATE POLICY view_analytics_logs ON analytics_logs
 -- 2. Performance: Sliding Window Index
 -- ============================================================================
 
--- Optimized for "Last 30/45 Days" trend queries
--- Condition matches the RPC default range plus buffer
+-- Optimized for trend queries
 CREATE INDEX IF NOT EXISTS idx_intakes_created_at_recent 
-ON intakes (created_at)
-WHERE created_at > (now() - interval '45 days');
+ON intakes (created_at);
 
 -- ============================================================================
 -- 3. Security: Centralized Role Check

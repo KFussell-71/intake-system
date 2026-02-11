@@ -75,6 +75,24 @@ export async function createSupabaseServerClient() {
  */
 export async function verifyAuthentication(): Promise<AuthResult> {
     try {
+        // SECURITY: Allow Mock Auth in Development ONLY
+        // This enables AI features to work in the "Mock Mode" demo
+        const isMockAllowed = process.env.NEXT_PUBLIC_ALLOW_MOCK_AUTH === 'true' || process.env.ALLOW_MOCK_AUTH === 'true';
+        const isDev = process.env.NODE_ENV === 'development';
+
+        if (isDev && isMockAllowed) {
+            const cookieStore = await cookies();
+            const mockToken = cookieStore.get('sb-access-token')?.value;
+
+            if (mockToken === 'mock-token') {
+                console.warn('[SECURITY] API: Accepting MOCK Authentication');
+                return {
+                    authenticated: true,
+                    userId: 'mock-user-id' // Matches SEED_USER in mock.ts
+                };
+            }
+        }
+
         const supabase = await createSupabaseServerClient();
         const { data: { session }, error } = await supabase.auth.getSession();
 
@@ -121,6 +139,16 @@ export async function verifyAuthorization(
         }
 
         const userId = authResult.userId!;
+
+        // SECURITY: Mock Auth Bypass for Authorization
+        if (userId === 'mock-user-id') {
+            console.warn('[SECURITY] API: Bypass Profile Check for Mock User');
+            return {
+                authorized: true,
+                userId,
+                role: 'supervisor' // Grant high privilege for demo
+            };
+        }
 
         // Get user's role from profiles table
         const supabase = await createSupabaseServerClient();

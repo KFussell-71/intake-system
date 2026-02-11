@@ -1,6 +1,7 @@
 import { IntakeEntity, ClientAggregate } from '../entities/ClientAggregate';
 import { DomainEventBus } from '../events/DomainEventBus';
 import type { IntakeFormData } from '@/features/intake/types/intake';
+import { AIIntegrityAgent } from './AIIntegrityAgent';
 
 export class IntakeWorkflowService {
     /**
@@ -23,7 +24,13 @@ export class IntakeWorkflowService {
             occurredAt: Date.now()
         });
 
-        // 3. Return updated aggregate for persistence
+        // 3. SME: Agentic Shadowing (Phase 19.1)
+        // Fire and forget, does not block submission
+        AIIntegrityAgent.checkIntegrity(intake, userId).catch(err =>
+            console.error('[IntakeWorkflowService] AI Shadow failure:', err)
+        );
+
+        // 4. Return updated aggregate for persistence
         return { client, intake };
     }
 

@@ -84,6 +84,10 @@ export class IntakeController {
             return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
         }
     }
+
+    async fetchServerData(intakeId: string) {
+        return await this.service.fetchServerData(intakeId);
+    }
 }
 
 export const intakeController = new IntakeController();
