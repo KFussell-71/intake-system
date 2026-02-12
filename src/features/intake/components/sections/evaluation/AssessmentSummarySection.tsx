@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { any } from '../../../types/intake';
+
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ListChecks, Sparkles, Loader2 } from 'lucide-react';
 import { ElegantTextarea } from '@/components/ui/ElegantInput';

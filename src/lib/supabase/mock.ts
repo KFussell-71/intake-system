@@ -17,6 +17,7 @@ interface MockState {
     consent_documents: any[];
     consent_signatures: any[];
     clients: any[];
+    cases: any[];
 }
 
 // --- Initial Seed Data (Demo Mode) ---
@@ -107,6 +108,25 @@ const SEED_ACTIONS = [
     }
 ];
 
+const SEED_CASES = [
+    {
+        id: 'mock-case-id',
+        client_id: 'mock-client-id',
+        intake_id: 'intake-awaiting-1',
+        status: 'active',
+        stage: 'assessment',
+        start_date: '2026-02-01T10:00:00Z',
+        created_at: '2026-02-01T10:00:00Z',
+        updated_at: '2026-02-01T10:00:00Z',
+        client: {
+            name: 'Kyla Stevenson',
+            full_name: 'Kyla Stevenson',
+            email: 'kyla.s@example.com',
+            phone: '555-0199'
+        }
+    }
+];
+
 // --- Mock Data Manager ---
 class MockDataManager {
     private state: MockState;
@@ -148,7 +168,8 @@ class MockDataManager {
             ],
             observations: [],
             consent_documents: [],
-            consent_signatures: []
+            consent_signatures: [],
+            cases: [...SEED_CASES]
         };
     }
 
@@ -169,7 +190,8 @@ class MockDataManager {
             observations: [],
             consent_documents: [],
             consent_signatures: [],
-            clients: []
+            clients: [],
+            cases: []
         };
     }
 
@@ -192,6 +214,7 @@ class MockDataManager {
         if (table === 'intake_sections') return this.state.intake_sections || [];
         if (table === 'consent_documents') return this.state.consent_documents || [];
         if (table === 'consent_signatures') return this.state.consent_signatures || [];
+        if (table === 'cases') return this.state.cases || [];
         return [];
     }
 

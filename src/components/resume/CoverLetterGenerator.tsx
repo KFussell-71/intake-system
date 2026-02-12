@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import { FileText, Loader2, Download, Copy, Trash } from 'lucide-react';
-import { coverLetterService } from '@/services/CoverLetterService';
+import { generateCoverLetterAction } from '@/app/actions/aiEmploymentActions';
 import { JSONResume } from '@/services/ResumeMapperService';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { toast } from 'sonner';
+import { coverLetterService } from '@/services/CoverLetterService';
 
 interface Props {
     resume: JSONResume;
@@ -30,14 +31,19 @@ export function CoverLetterGenerator({ resume, clientId }: Props) {
 
         setLoading(true);
         try {
-            const letter = await coverLetterService.generateCoverLetter(
+            const result = await generateCoverLetterAction(
                 resume,
                 companyName,
                 position,
                 jobDescription || undefined
             );
-            setGeneratedLetter(letter);
-            toast.success('Cover letter generated!');
+
+            if (result.success && result.content) {
+                setGeneratedLetter(result.content);
+                toast.success('Cover letter generated!');
+            } else {
+                throw new Error(result.error || 'Failed to generate cover letter');
+            }
         } catch (error) {
             console.error('[CoverLetter] Error:', error);
             toast.error('Failed to generate cover letter', {

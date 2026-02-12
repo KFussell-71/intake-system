@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { verifyAuthentication } from '@/lib/auth/authHelpersServer';
-import { VocationalData } from '@/features/intake/types/intake';
+import { VocationalData } from '@/features/intake/intakeTypes';
 import { revalidatePath } from 'next/cache';
 import { validateSection } from '@/lib/validation/intakeValidation';
 

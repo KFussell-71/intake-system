@@ -1,6 +1,6 @@
 import { IntakeEntity, ClientAggregate } from '../entities/ClientAggregate';
 import { DomainEventBus } from '../events/DomainEventBus';
-import type { IntakeFormData } from '@/features/intake/types/intake';
+import type { IntakeFormData } from '@/features/intake/intakeTypes';
 import { AIIntegrityAgent } from './AIIntegrityAgent';
 
 export class IntakeWorkflowService {

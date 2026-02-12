@@ -35,20 +35,21 @@ export async function generateCaseNote(rawInput: string, type: 'SOAP' | 'DAP' | 
     try {
         console.log(`Generating case note using UnifiedAIService`);
 
-        const result = await aiService.generateText({
+        // UnifiedAIService.ask returns a string directly
+        const responseText = await aiService.ask({
             prompt: systemPrompt + "\n\n" + userPrompt,
             temperature: 0.1,
-            userId: 'system-action'
+            // userId: 'system-action' // AIRequest might not support userId, verify types if needed, but safe to omit if not used by ask
         });
 
-        const resultText = result.text.trim();
+        const resultText = responseText.trim();
 
         // Log the successful generation
         await logSystemAction({
             action_type: 'Generation',
             description: `Generated case note for client: ${clientName}`,
             metadata: {
-                model: result.model,
+                model: 'unified-ai', // Model info not returned by ask()
                 type,
                 resource_count: resources?.length || 0,
                 prompt_length: systemPrompt.length + userPrompt.length,

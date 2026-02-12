@@ -1,4 +1,4 @@
-import { IntakeFormData } from '@/features/intake/types/intake';
+import { IntakeFormData } from '@/features/intake/intakeTypes';
 import { jsPDF } from 'jspdf';
 import { applyPlugin } from 'jspdf-autotable';
 

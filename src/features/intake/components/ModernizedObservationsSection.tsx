@@ -92,6 +92,7 @@ export const ModernizedObservationsSection: React.FC<Props> = ({ intakeId }) => 
                                 Client Statement
                             </label>
                             <ElegantTextarea
+                                label="Client Statement"
                                 name="clientStatement"
                                 value={clientStatement}
                                 onChange={(e) => setClientStatement(e.target.value)}
@@ -108,6 +109,7 @@ export const ModernizedObservationsSection: React.FC<Props> = ({ intakeId }) => 
                                 Counselor Observation
                             </label>
                             <ElegantTextarea
+                                label="Counselor Observation"
                                 name="counselorObservation"
                                 value={counselorObservation}
                                 onChange={(e) => setCounselorObservation(e.target.value)}

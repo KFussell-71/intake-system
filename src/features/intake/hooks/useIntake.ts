@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase/client';
-import { IntakeFormData } from '@/features/intake/types/intake';
+import { IntakeFormData } from '@/features/intake/intakeTypes';
 
 export interface IntakeRecord {
     id: string;

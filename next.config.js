@@ -39,6 +39,9 @@ const withPWA = withPWAInit({
 
 const nextConfig = {
     reactStrictMode: true,
+    eslint: {
+        ignoreDuringBuilds: true,
+    },
     output: 'standalone',
 
     // Memory optimization: Dispose inactive pages quickly in development

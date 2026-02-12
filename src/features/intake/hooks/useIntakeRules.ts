@@ -2,7 +2,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import { IntakeRule, applyRules } from '@/lib/rules/ruleEngine';
-import { IntakeFormData } from '@/features/intake/types/intake';
+import { IntakeFormData } from '@/features/intake/intakeTypes';
 
 export function useIntakeRules(formData: IntakeFormData | null) {
     const [rules, setRules] = useState<IntakeRule[]>([]);

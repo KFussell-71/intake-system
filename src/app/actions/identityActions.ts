@@ -5,7 +5,7 @@ import { verifyAuthentication } from '@/lib/auth/authHelpersServer';
 import { updateIntakeSection } from './modernizedIntakeActions';
 import { revalidatePath } from 'next/cache';
 
-import { IdentityData } from '@/features/intake/types/intake';
+import { IdentityData } from '@/features/intake/intakeTypes';
 
 /**
  * Server Action: Save Identity (Relational-First).

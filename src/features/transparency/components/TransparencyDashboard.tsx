@@ -13,7 +13,7 @@ export const TransparencyDashboard = () => {
 
     const loadData = async () => {
         const res = await getPublicDashboardDataAction();
-        if (res.success) setMetrics(res.data);
+        if (res.success) setMetrics(res.data || []);
     };
 
     useEffect(() => {

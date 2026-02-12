@@ -2,7 +2,7 @@ import React from 'react';
 import { Target } from 'lucide-react';
 import { ElegantInput, ElegantTextarea } from '@/components/ui/ElegantInput';
 import { GlassCard } from '@/components/ui/GlassCard';
-import { any } from '../types/intake';
+
 import { CounselorRationaleField } from './CounselorRationaleField';
 import { AISuccessSuggestions } from './AISuccessSuggestions';
 
@@ -140,7 +140,7 @@ export const IntakeStepGoals: React.FC<Props> = ({ formData, onChange, errors = 
                 </div>
 
                 <div className="space-y-8">
-                    {(formData.ispGoals || []).map((goal, index) => (
+                    {(formData.ispGoals || []).map((goal: any, index: number) => (
                         <div key={index} className="pl-4 border-l-2 border-slate-100 dark:border-white/5 space-y-4">
                             <ElegantInput
                                 id={`goal-title-${index}`}

@@ -2,7 +2,7 @@ import React from 'react';
 import { FileCheck, Calendar, Upload, CheckCircle2 } from 'lucide-react';
 import { ElegantInput, ElegantTextarea } from '@/components/ui/ElegantInput';
 import { GlassCard } from '@/components/ui/GlassCard';
-import { any } from '../types/intake';
+
 import { ActionButton } from '@/components/ui/ActionButton';
 
 interface Props {
@@ -17,8 +17,8 @@ export const DocumentVerificationSection: React.FC<Props> = ({ formData, onChang
     // Helper to render a verification card
     const renderVerificationItem = (
         title: string,
-        dateField: keyof any,
-        notesField: keyof any,
+        dateField: string,
+        notesField: string,
         hasDoc: boolean = false
     ) => {
         const isReviewed = !!formData[dateField];

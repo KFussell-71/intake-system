@@ -2,7 +2,7 @@ import React from 'react';
 import { GraduationCap } from 'lucide-react';
 import { ElegantInput } from '@/components/ui/ElegantInput';
 import { GlassCard } from '@/components/ui/GlassCard';
-import { VocationalData } from '@/features/intake/types/intake';
+import { VocationalData } from '@/features/intake/intakeTypes';
 import { FormCheckbox } from '@/features/intake/components/FormCheckbox';
 
 interface Props {

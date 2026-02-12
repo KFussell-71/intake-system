@@ -1,6 +1,6 @@
 import React from 'react';
 import { ElegantTextarea } from '@/components/ui/ElegantInput';
-import { any } from '../../types/intake';
+
 import { AlertCircle, Clock, ShieldAlert, Target } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 

@@ -68,7 +68,7 @@ export const ReferralPlanWidget: React.FC<Props> = ({ intakeId }) => {
                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
                     <div className="p-4 bg-white/50 dark:bg-slate-900/50 rounded-xl border border-indigo-100 dark:border-indigo-900/30">
                         <p className="text-sm text-slate-700 dark:text-slate-300 italic">
-                            "{plan.summary}"
+                            &quot;{plan.summary}&quot;
                         </p>
                     </div>
 
@@ -110,9 +110,9 @@ const ReferralCard: React.FC<{ referral: Referral }> = ({ referral }) => {
         <div className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all group">
             <div className="flex items-center justify-between mb-2">
                 <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full ${referral.category === 'career' ? 'bg-green-100 text-green-700' :
-                        referral.category === 'medical' ? 'bg-red-100 text-red-700' :
-                            referral.category === 'housing' ? 'bg-blue-100 text-blue-700' :
-                                'bg-slate-100 text-slate-700'
+                    referral.category === 'medical' ? 'bg-red-100 text-red-700' :
+                        referral.category === 'housing' ? 'bg-blue-100 text-blue-700' :
+                            'bg-slate-100 text-slate-700'
                     }`}>
                     {referral.category}
                 </span>

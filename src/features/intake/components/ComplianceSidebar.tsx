@@ -1,5 +1,5 @@
 import React from 'react';
-import { any } from '../types/intake';
+import { IntakeFormData } from '../intakeTypes';
 import { AlertCircle, CheckCircle2, Info, Gavel } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { EligibilityDecisionModal } from './EligibilityDecisionModal';

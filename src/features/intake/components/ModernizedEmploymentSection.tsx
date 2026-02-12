@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Loader2, Briefcase, GraduationCap, Target, Building2 } from 'lucide-react';
 import { useEmployment } from '@/features/intake/hooks/useEmployment';
-import { VocationalData } from '@/features/intake/types/intake';
+import { VocationalData } from '@/features/intake/intakeTypes';
 import { GlassCard } from '@/components/ui/GlassCard';
 
 // Panels

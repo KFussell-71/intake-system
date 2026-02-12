@@ -1,3 +1,4 @@
+import { aiService } from '@/lib/ai/UnifiedAIService';
 import { JSONResume } from './ResumeMapperService';
 
 export interface CoverLetter {
@@ -19,13 +20,7 @@ export interface CoverLetterTemplate {
 }
 
 export class CoverLetterService {
-    private aiEndpoint: string;
-    private model: string;
-
-    constructor() {
-        this.aiEndpoint = process.env.AI_ENDPOINT || 'http://localhost:11434';
-        this.model = process.env.AI_MODEL || 'llama3';
-    }
+    constructor() { }
 
     /**
      * Generate cover letter from resume and job details
@@ -38,25 +33,12 @@ export class CoverLetterService {
     ): Promise<string> {
         const prompt = this.buildCoverLetterPrompt(resume, companyName, position, jobDescription);
 
-        const response = await fetch(`${this.aiEndpoint}/api/generate`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                model: this.model,
-                prompt,
-                stream: false,
-                options: {
-                    temperature: 0.7,
-                },
-            }),
+        const responseText = await aiService.ask({
+            prompt,
+            temperature: 0.7,
         });
 
-        if (!response.ok) {
-            throw new Error(`Cover letter generation failed: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        return this.formatCoverLetter(data.response, resume, companyName, position);
+        return this.formatCoverLetter(responseText, resume, companyName, position);
     }
 
     /**

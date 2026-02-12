@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 // import { generatePDF } from '@/lib/pdf/generatePDF';
 import { marked } from 'marked';
 import DOMPurify from 'isomorphic-dompurify';
-import { any } from '../types/intake';
+
 import { cn } from '@/lib/utils';
 
 interface Props {

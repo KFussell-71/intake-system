@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { saveMedicalAction } from '@/app/actions/medicalActions';
-import { MedicalData } from '@/features/intake/types/intake';
+import { MedicalData } from '@/features/intake/intakeTypes';
 
 export function useMedical(intakeId: string) {
     const [data, setData] = useState<MedicalData | null>(null);

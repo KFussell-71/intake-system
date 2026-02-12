@@ -1,6 +1,6 @@
 import { clientRepository, ClientRepository } from '../repositories/ClientRepository';
 import { intakeRepository, IntakeRepository, IntakeAssessment, SupervisionNote } from '../repositories/IntakeRepository';
-import type { IntakeFormData } from '@/features/intake/types/intake';
+import type { IntakeFormData } from '@/features/intake/intakeTypes';
 import { supabase } from '@/lib/supabase';
 import { saveSyncTask } from '@/lib/offline/db';
 import { IntakeWorkflowService } from '@/domain/services/IntakeWorkflowService';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { MedicalData } from '../../../types/intake';
+import { MedicalData } from '../../../intakeTypes';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Brain, Pill } from 'lucide-react';
 import { ElegantTextarea } from '@/components/ui/ElegantInput';

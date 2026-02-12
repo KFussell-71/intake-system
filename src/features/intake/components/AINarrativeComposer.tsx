@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Sparkles, Loader2, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { IdentityData, VocationalData, MedicalData, ClinicalData, IntakeMetadata } from '../types/intake';
+import { IdentityData, VocationalData, MedicalData, ClinicalData, IntakeMetadata } from '../intakeTypes';
 import { generateNarrativeDraft } from '@/app/actions/generateNarrativeDraft';
 import { motion, AnimatePresence } from 'framer-motion';
 

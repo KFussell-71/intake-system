@@ -1,5 +1,5 @@
 import { aiService } from '@/lib/ai/UnifiedAIService';
-import type { IntakeFormData } from '@/features/intake/types/intake';
+import type { IntakeFormData } from '@/features/intake/intakeTypes';
 
 export class NarrativeExtractorService {
     /**
@@ -36,13 +36,13 @@ export class NarrativeExtractorService {
         `;
 
         try {
-            const aiResponse = await aiService.generateText({
+            const text = await aiService.ask({
                 prompt,
-                userId,
+                // userId,
                 temperature: 0.1
             });
 
-            return this.parseAIResponse(aiResponse.text);
+            return this.parseAIResponse(text);
         } catch (error) {
             console.error('[NarrativeExtractorService] Extraction failed:', error);
             return {};

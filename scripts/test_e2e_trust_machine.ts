@@ -169,8 +169,8 @@ async function test4_ClinicalVoiceObservations(intakeId: string) {
             .select('*')
             .eq('intake_id', intakeId);
 
-        const hasClient = allObs?.some(o => o.source === 'client');
-        const hasCounselor = allObs?.some(o => o.source === 'counselor');
+        const hasClient = allObs?.some(o => o.source === 'client') ?? false;
+        const hasCounselor = allObs?.some(o => o.source === 'counselor') ?? false;
 
         logTest('Voice Distinction', hasClient && hasCounselor,
             'Both client and counselor voices captured',
@@ -215,7 +215,7 @@ async function test5_AuditTrailLogging(intakeId: string) {
             .eq('intake_id', intakeId)
             .order('created_at', { ascending: false });
 
-        logTest('Audit Trail Retrieval', events && events.length > 0,
+        logTest('Audit Trail Retrieval', (events && events.length > 0) ?? false,
             `Retrieved ${events?.length || 0} audit events`);
 
         return true;
@@ -252,7 +252,7 @@ async function test6_SectionStatusTracking(intakeId: string) {
             .select('*')
             .eq('intake_id', intakeId);
 
-        logTest('Non-Linear Navigation', allSections && allSections.length === 4,
+        logTest('Non-Linear Navigation', (allSections && allSections.length === 4) ?? false,
             `All ${allSections?.length || 0} sections independently tracked`);
 
         return true;

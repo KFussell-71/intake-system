@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MedicalData } from '../../../types/intake';
+import { MedicalData } from '../../../intakeTypes';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Wine, Cigarette, AlertTriangle } from 'lucide-react';
 import { ElegantTextarea } from '@/components/ui/ElegantInput';

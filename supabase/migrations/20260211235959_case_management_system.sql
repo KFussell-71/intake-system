@@ -106,17 +106,39 @@ CREATE TABLE IF NOT EXISTS service_logs (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     case_id UUID NOT NULL REFERENCES cases(id) ON DELETE CASCADE,
     provider_id UUID REFERENCES profiles(id),
-    
-    service_type TEXT NOT NULL, -- e.g. "Counseling", "Housing Referral", "Transportation"
+    service_type TEXT NOT NULL,
     performed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     duration_minutes INTEGER,
-    
     notes TEXT,
     outcome TEXT,
-    
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'service_logs' AND column_name = 'case_id') THEN
+        ALTER TABLE service_logs ADD COLUMN case_id UUID NOT NULL REFERENCES cases(id) ON DELETE CASCADE;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'service_logs' AND column_name = 'provider_id') THEN
+        ALTER TABLE service_logs ADD COLUMN provider_id UUID REFERENCES profiles(id);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'service_logs' AND column_name = 'service_type') THEN
+        ALTER TABLE service_logs ADD COLUMN service_type TEXT;
+    END IF;
+     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'service_logs' AND column_name = 'performed_at') THEN
+        ALTER TABLE service_logs ADD COLUMN performed_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'service_logs' AND column_name = 'duration_minutes') THEN
+        ALTER TABLE service_logs ADD COLUMN duration_minutes INTEGER;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'service_logs' AND column_name = 'notes') THEN
+        ALTER TABLE service_logs ADD COLUMN notes TEXT;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'service_logs' AND column_name = 'outcome') THEN
+        ALTER TABLE service_logs ADD COLUMN outcome TEXT;
+    END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_service_logs_case_id ON service_logs(case_id);
 CREATE INDEX IF NOT EXISTS idx_service_logs_provider_id ON service_logs(provider_id);
@@ -127,16 +149,32 @@ CREATE INDEX IF NOT EXISTS idx_service_logs_provider_id ON service_logs(provider
 CREATE TABLE IF NOT EXISTS follow_ups (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     case_id UUID NOT NULL REFERENCES cases(id) ON DELETE CASCADE,
-    
     scheduled_date DATE NOT NULL,
     type TEXT NOT NULL CHECK (type IN ('check_in', 'assessment', 'service', 'planning')),
-    
     status TEXT NOT NULL CHECK (status IN ('scheduled', 'completed', 'missed', 'cancelled')),
     notes TEXT,
-    
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'follow_ups' AND column_name = 'case_id') THEN
+        ALTER TABLE follow_ups ADD COLUMN case_id UUID NOT NULL REFERENCES cases(id) ON DELETE CASCADE;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'follow_ups' AND column_name = 'scheduled_date') THEN
+        ALTER TABLE follow_ups ADD COLUMN scheduled_date DATE;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'follow_ups' AND column_name = 'type') THEN
+        ALTER TABLE follow_ups ADD COLUMN type TEXT CHECK (type IN ('check_in', 'assessment', 'service', 'planning'));
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'follow_ups' AND column_name = 'status') THEN
+        ALTER TABLE follow_ups ADD COLUMN status TEXT CHECK (status IN ('scheduled', 'completed', 'missed', 'cancelled'));
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'follow_ups' AND column_name = 'notes') THEN
+        ALTER TABLE follow_ups ADD COLUMN notes TEXT;
+    END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_follow_ups_case_id ON follow_ups(case_id);
 CREATE INDEX IF NOT EXISTS idx_follow_ups_date ON follow_ups(scheduled_date) WHERE status = 'scheduled';

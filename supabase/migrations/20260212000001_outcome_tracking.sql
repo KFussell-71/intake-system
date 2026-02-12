@@ -31,12 +31,14 @@ ALTER TABLE outcome_measures ENABLE ROW LEVEL SECURITY;
 ALTER TABLE outcome_records ENABLE ROW LEVEL SECURITY;
 
 -- Measures are readable by everyone, modifiable by admins (mock policy)
+DROP POLICY IF EXISTS "Measures are readable by authenticated users" ON outcome_measures;
 CREATE POLICY "Measures are readable by authenticated users"
     ON outcome_measures FOR SELECT
     TO authenticated
     USING (true);
 
 -- Records are managed by case workers
+DROP POLICY IF EXISTS "Users can insert records for their cases" ON outcome_records;
 CREATE POLICY "Users can insert records for their cases"
     ON outcome_records FOR INSERT
     TO authenticated
@@ -48,6 +50,7 @@ CREATE POLICY "Users can insert records for their cases"
         )
     );
 
+DROP POLICY IF EXISTS "Users can view records for cases" ON outcome_records;
 CREATE POLICY "Users can view records for cases"
     ON outcome_records FOR SELECT
     TO authenticated

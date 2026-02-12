@@ -1,5 +1,5 @@
 import { BaseRepository } from './BaseRepository';
-import type { IntakeFormData } from '@/features/intake/types/intake';
+import type { IntakeFormData } from '@/features/intake/intakeTypes';
 
 export interface IntakeAssessment {
     id?: string;

@@ -38,7 +38,7 @@ export async function approveReport(intakeId: string, notes?: string): Promise<{
                 /* dynamic import to avoid circular dependency if any, 
                    though service layer usually OK. */
                 const { caseService } = await import('@/services/CaseService');
-                await caseService.createCaseFromIntake(intakeData.client_id, authz.userId);
+                await caseService.createCaseFromIntake(intakeData.client_id, authz.userId!);
             }
         } catch (caseError) {
             console.error('Failed to auto-create case:', caseError);
@@ -163,7 +163,7 @@ export async function bulkApproveReports(intakeIds: string[]): Promise<{ success
             if (intakes) {
                 const { caseService } = await import('@/services/CaseService');
                 await Promise.all(intakes.map(intake =>
-                    caseService.createCaseFromIntake(intake.client_id, authz.userId)
+                    caseService.createCaseFromIntake(intake.client_id, authz.userId!)
                 ));
             }
         } catch (caseError) {

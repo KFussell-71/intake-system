@@ -1,3 +1,4 @@
+import { aiService } from '@/lib/ai/UnifiedAIService';
 import { JSONResume } from './ResumeMapperService';
 
 export interface OptimizationSuggestion {
@@ -16,29 +17,15 @@ export interface OptimizationResult {
 }
 
 export class AIResumeOptimizerService {
-    private aiEndpoint: string;
-    private model: string;
-
-    constructor() {
-        // Default to Ollama, fallback to Gemini
-        this.aiEndpoint = process.env.AI_ENDPOINT || 'http://localhost:11434';
-        this.model = process.env.AI_MODEL || 'llama3';
-    }
+    constructor() { }
 
     /**
      * Check if AI service is available
      */
     async isAvailable(): Promise<boolean> {
-        try {
-            const response = await fetch(`${this.aiEndpoint}/api/tags`, {
-                method: 'GET',
-                signal: AbortSignal.timeout(5000),
-            });
-            return response.ok;
-        } catch (error) {
-            console.warn('[AIOptimizer] Service not available:', error);
-            return false;
-        }
+        // Since we are using UnifiedAIService, availability is handled there.
+        // For individual service checks, it's safer to just return true and handle errors in generation.
+        return true;
     }
 
     /**
@@ -47,26 +34,12 @@ export class AIResumeOptimizerService {
     async optimizeResume(resume: JSONResume, targetJob?: string): Promise<OptimizationResult> {
         const prompt = this.buildOptimizationPrompt(resume, targetJob);
 
-        const response = await fetch(`${this.aiEndpoint}/api/generate`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                model: this.model,
-                prompt,
-                stream: false,
-                options: {
-                    temperature: 0.7,
-                    top_p: 0.9,
-                },
-            }),
+        const responseText = await aiService.ask({
+            prompt,
+            temperature: 0.7,
         });
 
-        if (!response.ok) {
-            throw new Error(`AI optimization failed: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        return this.parseOptimizationResponse(data.response, resume);
+        return this.parseOptimizationResponse(responseText, resume);
     }
 
     /**
@@ -104,25 +77,12 @@ Requirements:
 Generate ONLY the summary text, no additional commentary or formatting.
 `;
 
-        const response = await fetch(`${this.aiEndpoint}/api/generate`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                model: this.model,
-                prompt,
-                stream: false,
-                options: {
-                    temperature: 0.7,
-                },
-            }),
+        const responseText = await aiService.ask({
+            prompt,
+            temperature: 0.7,
         });
 
-        if (!response.ok) {
-            throw new Error(`Summary generation failed: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        return data.response.trim();
+        return responseText.trim();
     }
 
     /**
@@ -146,25 +106,12 @@ Requirements:
 Return ONLY the improved description as bullet points, one per line, starting with a dash (-).
 `;
 
-        const response = await fetch(`${this.aiEndpoint}/api/generate`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                model: this.model,
-                prompt,
-                stream: false,
-                options: {
-                    temperature: 0.7,
-                },
-            }),
+        const responseText = await aiService.ask({
+            prompt,
+            temperature: 0.7,
         });
 
-        if (!response.ok) {
-            throw new Error(`Job description improvement failed: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        return data.response.trim();
+        return responseText.trim();
     }
 
     /**
@@ -187,25 +134,12 @@ Focus on skills that are:
 Return only the skills, comma-separated, no additional text.
 `;
 
-        const response = await fetch(`${this.aiEndpoint}/api/generate`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                model: this.model,
-                prompt,
-                stream: false,
-                options: {
-                    temperature: 0.6,
-                },
-            }),
+        const responseText = await aiService.ask({
+            prompt,
+            temperature: 0.6,
         });
 
-        if (!response.ok) {
-            throw new Error(`Skill suggestion failed: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        return data.response
+        return responseText
             .split(',')
             .map((s: string) => s.trim())
             .filter((s: string) => s.length > 0);
@@ -243,28 +177,14 @@ Return suggestions as a JSON array with this format:
 Return ONLY the JSON array, no additional text.
 `;
 
-        const response = await fetch(`${this.aiEndpoint}/api/generate`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                model: this.model,
-                prompt,
-                stream: false,
-                options: {
-                    temperature: 0.5,
-                },
-            }),
+        const responseText = await aiService.ask({
+            prompt,
+            temperature: 0.5,
         });
-
-        if (!response.ok) {
-            throw new Error(`ATS optimization failed: ${response.statusText}`);
-        }
-
-        const data = await response.json();
 
         try {
             // Try to parse JSON response
-            const suggestions = JSON.parse(data.response);
+            const suggestions = JSON.parse(responseText);
             return Array.isArray(suggestions) ? suggestions : [];
         } catch (error) {
             console.warn('[AIOptimizer] Failed to parse ATS suggestions:', error);

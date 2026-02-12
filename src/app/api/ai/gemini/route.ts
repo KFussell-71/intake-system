@@ -87,10 +87,10 @@ export async function POST(req: NextRequest) {
         const sanitizedPrompt = sanitizePrompt(prompt);
 
         // Call Unified AI Service
-        const aiResponse = await aiService.generateText({
+        const text = await aiService.ask({
             prompt: sanitizedPrompt,
             temperature: Math.min(Math.max(temperature, 0), 1),
-            userId: authz.userId!
+            // userId: authz.userId!
         });
 
         // SECURITY: Audit log
@@ -98,18 +98,18 @@ export async function POST(req: NextRequest) {
             userId: authz.userId,
             action: 'AI_QUERY',
             entityType: 'ai_service',
-            entityId: aiResponse.model,
+            entityId: 'unified-model', // Model not returned by ask()
             details: {
                 promptLength: sanitizedPrompt.length,
-                responseLength: aiResponse.text.length,
-                model: aiResponse.model
+                responseLength: text.length,
+                model: 'unified-model'
             }
         });
 
         span.end();
         return NextResponse.json({
             success: true,
-            text: aiResponse.text,
+            text: text,
             rateLimit: {
                 remaining: rateLimit.remaining,
                 limit: RATE_LIMIT_MAX

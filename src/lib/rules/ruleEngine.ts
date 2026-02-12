@@ -1,4 +1,4 @@
-import { IntakeFormData } from '@/features/intake/types/intake';
+import { IntakeFormData } from '@/features/intake/intakeTypes';
 
 export interface RuleCondition {
     field: string;

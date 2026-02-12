@@ -1,7 +1,7 @@
 import React from 'react';
 import { User as UserIcon } from 'lucide-react';
 import { ElegantInput } from '@/components/ui/ElegantInput';
-import { any } from '../types/intake';
+
 import { DocumentVerificationSection } from './DocumentVerificationSection';
 import { CounselorRationaleField } from './CounselorRationaleField';
 
@@ -117,7 +117,7 @@ export const IntakeStepIdentity: React.FC<Props> = ({ formData, onChange, errors
                     Preferred Contact Method
                 </label>
                 <div className="flex gap-6">
-                    {['Phone', 'Text', 'Email'].map((method) => (
+                    {['Phone', 'Text', 'Email'].map((method: string) => (
                         <label key={method} className="flex items-center gap-2 cursor-pointer group">
                             <input
                                 type="checkbox"
@@ -126,7 +126,7 @@ export const IntakeStepIdentity: React.FC<Props> = ({ formData, onChange, errors
                                     const current = formData.preferredContactMethods || [];
                                     const updated = e.target.checked
                                         ? [...current, method]
-                                        : current.filter(m => m !== method);
+                                        : current.filter((m: string) => m !== method);
                                     onChange({
                                         target: { name: 'preferredContactMethods', value: updated }
                                     } as any);

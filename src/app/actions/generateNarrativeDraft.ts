@@ -1,5 +1,5 @@
 import { aiService } from "@/lib/ai/UnifiedAIService";
-import { IntakeFormData } from "@/features/intake/types/intake";
+import { IntakeFormData } from "@/features/intake/intakeTypes";
 import { scrubObject } from "@/lib/security/piiScrubber";
 import { PROMPTS } from "@/lib/ai/prompts";
 import { sanitizeForPrompt } from "@/lib/ai/sanitizer";
@@ -19,13 +19,14 @@ export async function generateNarrativeDraft(rawData: IntakeFormData, type: 'rat
         : PROMPTS.NARRATIVE.NOTES(data);
 
     try {
-        const result = await aiService.generateText({
+        // UnifiedAIService.ask returns a string directly
+        const responseText = await aiService.ask({
             prompt: systemPrompt + "\n\n" + userPrompt,
             temperature: 0.7,
-            userId: 'system-action' // Internal system call
+            // userId: 'system-action' 
         });
 
-        return result.text.trim();
+        return responseText.trim();
     } catch (error) {
         console.error("AI Draft Generation Error:", error);
         throw new Error("AI failed to generate draft");

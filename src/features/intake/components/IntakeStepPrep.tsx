@@ -2,7 +2,7 @@ import React from 'react';
 import { GraduationCap } from 'lucide-react';
 import { ElegantInput } from '@/components/ui/ElegantInput';
 import { FormCheckbox } from './FormCheckbox';
-import { any } from '../types/intake';
+
 import { PreparationReadinessSection } from './PreparationReadinessSection';
 import { WeeklyCheckInSection } from './WeeklyCheckInSection';
 import { CounselorRationaleField } from './CounselorRationaleField';

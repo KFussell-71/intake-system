@@ -1,7 +1,7 @@
 import { BaseRepository } from './BaseRepository';
 import { ClientAggregate, IntakeEntity } from '@/domain/entities/ClientAggregate';
 import type { CreateCaseNoteParams } from '@/features/cases/types';
-import type { IntakeFormData } from '@/features/intake/types/intake';
+import type { IntakeFormData } from '@/features/intake/intakeTypes';
 
 export interface ClientPayload {
     name: string;

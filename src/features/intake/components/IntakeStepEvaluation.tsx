@@ -1,6 +1,6 @@
 import React from 'react';
 import { Stethoscope } from 'lucide-react';
-import { any } from '../types/intake';
+
 import { FormCheckbox } from './FormCheckbox';
 import { useEffect } from 'react';
 

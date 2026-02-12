@@ -19,7 +19,11 @@ import { ReferralTracker } from '@/features/case-management/components/ReferralT
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-import { FileText, ClipboardList, Activity, LayoutDashboard, Stethoscope, TrendingUp, MessageCircle, Users } from 'lucide-react';
+import { FileText, ClipboardList, Activity, LayoutDashboard, Stethoscope, TrendingUp, MessageCircle, Users, Briefcase } from 'lucide-react';
+import { ResumeList } from '@/components/resume/ResumeList';
+import { GenerateResumeButton } from '@/components/resume/GenerateResumeButton';
+import { AIOptimizationPanel } from '@/components/resume/AIOptimizationPanel';
+import { CoverLetterGenerator } from '@/components/resume/CoverLetterGenerator';
 
 export default function CaseDetailPage() {
     const params = useParams();
@@ -129,6 +133,10 @@ export default function CaseDetailPage() {
                         <FileText className="w-4 h-4" />
                         Notes
                     </TabsTrigger>
+                    <TabsTrigger value="employment" className="gap-2 px-4">
+                        <Briefcase className="w-4 h-4" />
+                        Employment
+                    </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview" className="space-y-6">
@@ -225,6 +233,58 @@ export default function CaseDetailPage() {
                             currentUserId={userId}
                         />
                     )}
+                </TabsContent>
+
+                <TabsContent value="employment" className="space-y-6">
+                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                        <div className="xl:col-span-2 space-y-6">
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-xl font-bold flex items-center gap-2">
+                                    <Briefcase className="w-6 h-6 text-blue-600" />
+                                    Job Readiness & Resumes
+                                </h3>
+                                <GenerateResumeButton
+                                    intakeId={caseData.intake_id}
+                                    clientId={caseData.client_id}
+                                    clientName={caseData.client?.full_name || 'Client'}
+                                    onResumeGenerated={handleRefresh}
+                                />
+                            </div>
+
+                            <ResumeList
+                                clientId={caseData.client_id}
+                                refreshTrigger={refreshTrigger}
+                            />
+
+                            <CoverLetterGenerator
+                                clientId={caseData.client_id}
+                                resume={{
+                                    basics: {
+                                        name: caseData.client?.full_name || caseData.client?.name || 'Client',
+                                        email: caseData.client?.email || '',
+                                        phone: caseData.client?.phone || '',
+                                        summary: '', // AI will fill this or we can map from bio
+                                    }
+                                } as any}
+                            />
+                        </div>
+
+                        <div className="space-y-6">
+                            <AIOptimizationPanel
+                                resume={{
+                                    basics: {
+                                        name: caseData.client?.full_name || caseData.client?.name || 'Client',
+                                        summary: '',
+                                    }
+                                } as any}
+                                onApplySuggestion={(field: string, value: string) => {
+                                    toast.info(`AI Suggestion for ${field}: ${value.substring(0, 50)}...`, {
+                                        description: "Auto-apply logic is being finalized."
+                                    });
+                                }}
+                            />
+                        </div>
+                    </div>
                 </TabsContent>
             </Tabs>
         </div>

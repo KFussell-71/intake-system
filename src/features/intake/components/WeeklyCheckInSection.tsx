@@ -2,7 +2,7 @@ import React from 'react';
 import { CalendarClock, Clock } from 'lucide-react';
 import { ElegantInput, ElegantTextarea } from '@/components/ui/ElegantInput';
 import { GlassCard } from '@/components/ui/GlassCard';
-import { any } from '../types/intake';
+
 
 interface Props {
     formData: any;
@@ -105,7 +105,7 @@ export const WeeklyCheckInSection: React.FC<Props> = ({ formData, onChange }) =>
                                         const current = formData.jobSearchCommitments || [];
                                         const updated = e.target.checked
                                             ? [...current, commitment]
-                                            : current.filter(c => c !== commitment);
+                                            : current.filter((c: string) => c !== commitment);
                                         const event = {
                                             target: {
                                                 name: 'jobSearchCommitments',

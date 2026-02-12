@@ -29,16 +29,19 @@ CREATE INDEX IF NOT EXISTS idx_communication_logs_created_at ON communication_lo
 -- 3. RLS
 ALTER TABLE communication_logs ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view communication logs for cases" ON communication_logs;
 CREATE POLICY "Users can view communication logs for cases"
     ON communication_logs FOR SELECT
     TO authenticated
     USING (true);
 
+DROP POLICY IF EXISTS "Users can insert communication logs" ON communication_logs;
 CREATE POLICY "Users can insert communication logs"
     ON communication_logs FOR INSERT
     TO authenticated
     WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Users can update communication logs" ON communication_logs;
 CREATE POLICY "Users can update communication logs"
     ON communication_logs FOR UPDATE
     TO authenticated

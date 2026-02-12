@@ -1,7 +1,7 @@
 import React from 'react';
 import { Briefcase } from 'lucide-react';
 import { ElegantInput, ElegantTextarea } from '@/components/ui/ElegantInput';
-import { any } from '../types/intake';
+
 import { CounselorRationaleField } from './CounselorRationaleField';
 
 interface Props {

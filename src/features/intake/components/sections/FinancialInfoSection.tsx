@@ -1,6 +1,6 @@
 import React from 'react';
 import { ElegantInput } from '@/components/ui/ElegantInput';
-import { any } from '../../types/intake';
+
 import { CreditCard, ShieldCheck } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { motion, AnimatePresence } from 'framer-motion';

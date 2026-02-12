@@ -90,7 +90,7 @@ function checkFile(filePath: string) {
     }
 
     // Rule 5: Domain Isolation (No God Object in specialized features)
-    if (filePath.includes('src/features/') && !filePath.includes('src/features/intake/types/')) {
+    if (filePath.includes('src/features/') && !filePath.includes('src/features/intake/intakeTypes/')) {
         if (content.includes('IntakeFormData') && !filePath.endsWith('.test.ts') && !filePath.endsWith('.spec.ts')) {
             violations.push({
                 file: filePath,

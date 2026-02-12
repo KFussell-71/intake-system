@@ -1,4 +1,4 @@
-import type { IntakeFormData } from '@/features/intake/types/intake';
+import type { IntakeFormData } from '@/features/intake/intakeTypes';
 
 export interface IntakeVersion {
     data: Partial<IntakeFormData>;

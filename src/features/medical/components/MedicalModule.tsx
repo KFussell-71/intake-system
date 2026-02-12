@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Loader2, Activity } from 'lucide-react';
 import { useMedical } from '@/features/intake/hooks/useMedical';
-import { MedicalData } from '@/features/intake/types/intake';
+import { MedicalData } from '@/features/intake/intakeTypes';
 import { MedicalHistorySection } from '@/features/intake/components/sections/evaluation/MedicalHistorySection';
 import { MentalHealthHistorySection } from '@/features/intake/components/sections/evaluation/MentalHealthHistorySection';
 import { SubstanceUseSection } from '@/features/intake/components/sections/evaluation/SubstanceUseSection';

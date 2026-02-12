@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { IdentityData, VocationalData, MedicalData, ClinicalData, IntakeMetadata } from '../types/intake';
+import { IdentityData, VocationalData, MedicalData, ClinicalData, IntakeMetadata } from '../intakeTypes';
 
 type CompositeData = IdentityData & VocationalData & MedicalData & ClinicalData & IntakeMetadata & { id?: string };
 

@@ -1,6 +1,6 @@
 // SECURITY BLUE TEAM: AI Proxy Implementation
 // Removed direct GoogleGenerativeAI import to prevent key exposure
-import { IntakeFormData } from '../../features/intake/types/intake';
+import { IntakeFormData } from '../../features/intake/intakeTypes';
 import { SearchService, SearchResult } from '../services/SearchService';
 
 export interface SuccessSuggestion {

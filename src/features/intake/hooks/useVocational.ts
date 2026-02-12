@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { saveEmploymentAction } from '@/app/actions/employmentActions';
-import { VocationalData } from '@/features/intake/types/intake';
+import { VocationalData } from '@/features/intake/intakeTypes';
 
 export function useVocational(intakeId: string) {
     const [data, setData] = useState<VocationalData | null>(null);

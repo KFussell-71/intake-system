@@ -39,12 +39,30 @@ export class CommunicationService {
     }
 
     /**
+     * Get communication history for a portal client
+     */
+    async getPortalMessages(clientId: string): Promise<CommunicationLog[]> {
+        const { data, error } = await supabase
+            .from('communication_logs')
+            .select(`
+                *,
+                sender:profiles(username, email)
+            `)
+            .eq('client_id', clientId)
+            .order('created_at', { ascending: true });
+
+        if (error) throw error;
+        return data as any;
+    }
+
+    /**
      * Send a message (Simulation of external API call)
      */
     async sendMessage(data: {
         case_id: string;
         client_id?: string;
         type: 'email' | 'sms' | 'internal';
+        direction?: 'inbound' | 'outbound';
         content: string;
         subject?: string;
         recipient_contact?: string;
@@ -56,7 +74,7 @@ export class CommunicationService {
             .from('communication_logs')
             .insert({
                 ...data,
-                direction: 'outbound',
+                direction: data.direction || 'outbound',
                 status: 'sent',
                 sent_at: new Date().toISOString()
             })

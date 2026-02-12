@@ -5,7 +5,7 @@ import { Sparkles, ArrowRight, Briefcase, GraduationCap, Link2, ExternalLink } f
 import { motion, AnimatePresence } from 'framer-motion';
 import { SuccessSuggestion } from '@/lib/agents/successAssistant';
 import { intakeController } from '@/controllers/IntakeController';
-import { IdentityData, VocationalData, MedicalData, ClinicalData, IntakeMetadata } from '../types/intake';
+import { IdentityData, VocationalData, MedicalData, ClinicalData, IntakeMetadata } from '../intakeTypes';
 
 interface Props {
     formData: IdentityData & VocationalData & MedicalData & ClinicalData & IntakeMetadata;

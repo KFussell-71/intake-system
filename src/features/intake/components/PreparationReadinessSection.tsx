@@ -2,7 +2,7 @@ import React from 'react';
 import { Calendar, CheckCircle2, ListTodo } from 'lucide-react';
 import { ElegantInput, ElegantTextarea } from '@/components/ui/ElegantInput';
 import { GlassCard } from '@/components/ui/GlassCard';
-import { any } from '../types/intake';
+
 
 interface Props {
     formData: any;
@@ -14,8 +14,8 @@ export const PreparationReadinessSection: React.FC<Props> = ({ formData, onChang
     const renderItem = (
         title: string,
         subtitle: string,
-        dateField: keyof any,
-        notesField: keyof any,
+        dateField: string,
+        notesField: string,
     ) => {
         const isComplete = !!formData[dateField];
 
@@ -86,7 +86,7 @@ export const PreparationReadinessSection: React.FC<Props> = ({ formData, onChang
                                 'Construction / Trades', 'Warehouse / Logistics', 'Customer Service',
                                 'Food Service', 'Healthcare Support', 'Office / Clerical',
                                 'IT / Technical', 'Open to any'
-                            ].map((industry) => (
+                            ].map((industry: string) => (
                                 <div key={industry} className="flex items-center space-x-2">
                                     <input
                                         type="checkbox"
@@ -96,7 +96,7 @@ export const PreparationReadinessSection: React.FC<Props> = ({ formData, onChang
                                             const current = formData.industryPreferences || [];
                                             const updated = e.target.checked
                                                 ? [...current, industry]
-                                                : current.filter(i => i !== industry);
+                                                : current.filter((i: string) => i !== industry);
                                             const event = {
                                                 target: {
                                                     name: 'industryPreferences',
@@ -138,7 +138,7 @@ export const PreparationReadinessSection: React.FC<Props> = ({ formData, onChang
                                 Employment Type
                             </label>
                             <div className="flex gap-4 mt-2">
-                                {['Full-Time', 'Part-Time', 'Temporary'].map((type) => (
+                                {['Full-Time', 'Part-Time', 'Temporary'].map((type: string) => (
                                     <div key={type} className="flex items-center space-x-2">
                                         <input
                                             type="checkbox"
@@ -148,7 +148,7 @@ export const PreparationReadinessSection: React.FC<Props> = ({ formData, onChang
                                                 const current = formData.employmentType || [];
                                                 const updated = e.target.checked
                                                     ? [...current, type]
-                                                    : current.filter(t => t !== type);
+                                                    : current.filter((t: string) => t !== type);
                                                 const event = {
                                                     target: {
                                                         name: 'employmentType',
@@ -175,7 +175,7 @@ export const PreparationReadinessSection: React.FC<Props> = ({ formData, onChang
                                 'Customer Service', 'Manual Labor', 'Computer / Tech',
                                 'Leadership / Supervision', 'Time Management', 'Communication',
                                 'Problem Solving', 'Safety Awareness'
-                            ].map((skill) => (
+                            ].map((skill: string) => (
                                 <div key={skill} className="flex items-center space-x-2">
                                     <input
                                         type="checkbox"
@@ -185,7 +185,7 @@ export const PreparationReadinessSection: React.FC<Props> = ({ formData, onChang
                                             const current = formData.transferableSkills || [];
                                             const updated = e.target.checked
                                                 ? [...current, skill]
-                                                : current.filter(s => s !== skill);
+                                                : current.filter((s: string) => s !== skill);
                                             const event = {
                                                 target: {
                                                     name: 'transferableSkills',
@@ -235,7 +235,7 @@ export const PreparationReadinessSection: React.FC<Props> = ({ formData, onChang
                         'Limited Work History', 'Gaps in Employment', 'Lack of Certifications',
                         'Childcare', 'Health/Mental Health', 'Substance Recovery',
                         'Identification/Documents', 'None Identified'
-                    ].map((barrier) => (
+                    ].map((barrier: string) => (
                         <div key={barrier} className="flex items-center space-x-2">
                             <input
                                 type="checkbox"
@@ -256,7 +256,7 @@ export const PreparationReadinessSection: React.FC<Props> = ({ formData, onChang
                                     const current = formData.barriers || [];
                                     const updated = e.target.checked
                                         ? [...current, barrier]
-                                        : current.filter(b => b !== barrier);
+                                        : current.filter((b: string) => b !== barrier);
 
                                     // Construct synthetic event
                                     const event = {
@@ -292,7 +292,7 @@ export const PreparationReadinessSection: React.FC<Props> = ({ formData, onChang
                         'Resume Development or Update', 'Job Applications Assistance', 'Interview Preparation',
                         'Job Leads/Employer Referrals', 'Work Clothing/PPE', 'Transportation Assistance',
                         'Training or Certification Referral', 'Background-Friendly Employer Referrals', 'Case Management Check-Ins'
-                    ].map((service) => (
+                    ].map((service: string) => (
                         <div key={service} className="flex items-center space-x-2">
                             <input
                                 type="checkbox"
@@ -302,7 +302,7 @@ export const PreparationReadinessSection: React.FC<Props> = ({ formData, onChang
                                     const current = formData.supportServices || [];
                                     const updated = e.target.checked
                                         ? [...current, service]
-                                        : current.filter(s => s !== service);
+                                        : current.filter((s: string) => s !== service);
                                     const event = {
                                         target: {
                                             name: 'supportServices',

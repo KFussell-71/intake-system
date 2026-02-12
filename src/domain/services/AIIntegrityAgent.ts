@@ -41,14 +41,14 @@ export class AIIntegrityAgent {
         `;
 
         try {
-            const aiResponse = await aiService.generateText({
+            const text = await aiService.ask({
                 prompt,
-                userId,
+                // userId,
                 temperature: 0.2 // Keep it analytical
             });
 
             // Attempt to parse JSON from AI response
-            const issues: IntegrityIssue[] = this.parseAIResponse(aiResponse.text);
+            const issues: IntegrityIssue[] = AIIntegrityAgent.parseAIResponse(text);
 
             // Publish Domain Event
             await DomainEventBus.publish({
@@ -119,13 +119,13 @@ export class AIIntegrityAgent {
         `;
 
         try {
-            const aiResponse = await aiService.generateText({
+            const text = await aiService.ask({
                 prompt,
-                userId,
+                // userId,
                 temperature: 0.1
             });
 
-            const match = aiResponse.text.match(/\{[\s\S]*\}/);
+            const match = text.match(/\{[\s\S]*\}/);
             const result = match ? JSON.parse(match[0]) : { score: 0 };
             const score = result.score || 0;
 

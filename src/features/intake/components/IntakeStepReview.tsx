@@ -1,7 +1,7 @@
 import React from 'react';
 import { FileCheck, AlertCircle, Download, Upload, Eye } from 'lucide-react';
 import { ElegantInput, ElegantTextarea } from '@/components/ui/ElegantInput';
-import { IdentityData, VocationalData, MedicalData, ClinicalData, IntakeMetadata } from '../types/intake';
+import { IdentityData, VocationalData, MedicalData, ClinicalData, IntakeMetadata } from '../intakeTypes';
 import { AISuccessSuggestions } from './AISuccessSuggestions';
 import { CounselorRationaleField } from './CounselorRationaleField';
 import { AINarrativeComposer } from './AINarrativeComposer';

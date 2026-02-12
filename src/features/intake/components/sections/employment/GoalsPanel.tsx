@@ -2,7 +2,7 @@ import React from 'react';
 import { Target } from 'lucide-react';
 import { ElegantInput, ElegantTextarea } from '@/components/ui/ElegantInput';
 import { GlassCard } from '@/components/ui/GlassCard';
-import { VocationalData } from '@/features/intake/types/intake';
+import { VocationalData } from '@/features/intake/intakeTypes';
 
 interface Props {
     formData: VocationalData;

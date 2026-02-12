@@ -1,7 +1,7 @@
 import { intakeService, IntakeService } from '../services/IntakeService';
 import { validateIntakeLogic } from '@/lib/agents/complianceAgent';
 import { generateSuccessSuggestions } from '@/lib/agents/successAssistant';
-import type { IntakeFormData } from '@/features/intake/types/intake';
+import type { IntakeFormData } from '@/features/intake/intakeTypes';
 import type { IntakeAssessment } from '../repositories/IntakeRepository';
 
 export class IntakeController {

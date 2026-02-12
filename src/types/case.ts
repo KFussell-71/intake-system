@@ -10,10 +10,12 @@ export interface Case {
     start_date: string;
     closed_date?: string;
     closure_reason?: string;
+    intake_id: string;
     created_at: string;
     updated_at: string;
     client?: {
         name: string;
+        full_name?: string;
         email?: string;
         phone?: string;
     };

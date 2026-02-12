@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import { saveIdentityAction } from '@/app/actions/identityActions';
-import { IdentityData } from '@/features/intake/types/intake';
+import { IdentityData } from '@/features/intake/intakeTypes';
 
 export function useIdentity(intakeId: string) {
     const [data, setData] = useState<IdentityData | null>(null);

@@ -1,7 +1,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { ReportGenerator } from '../src/lib/pdf/ReportGenerator';
-import { IntakeFormData } from '../src/features/intake/types/intake';
+import { IntakeFormData } from '../src/features/intake/intakeTypes';
 import fs from 'fs';
 import path from 'path';
 

@@ -1,4 +1,4 @@
-import { FormSchema } from "./components/SchemaForm";
+import { FormSchema } from "./types";
 
 export const PHQ9_SCHEMA: FormSchema = {
     id: 'phq-9',

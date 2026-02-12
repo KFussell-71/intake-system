@@ -244,13 +244,11 @@ Master Application
 
     // Use Unified AI Service
     try {
-        const output = await aiService.generateText({
+        const text = await aiService.ask({
             prompt: LOCKED_SYSTEM_PROMPT + "\n\n" + userPrompt,
             temperature: 0.2,
-            userId: 'system-agent'
+            // userId: 'system-agent'
         });
-
-        const text = output.text;
 
         // SECURITY: Validate output for injection attempts (BLUE TEAM REMEDIATION)
         const isValid = validateAIOutput(text);

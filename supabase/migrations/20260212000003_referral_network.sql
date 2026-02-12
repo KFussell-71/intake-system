@@ -38,11 +38,13 @@ CREATE INDEX IF NOT EXISTS idx_service_providers_category ON service_providers(c
 ALTER TABLE service_providers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE referrals ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Anyone can view active providers" ON service_providers;
 CREATE POLICY "Anyone can view active providers"
     ON service_providers FOR SELECT
     TO authenticated
     USING (true);
 
+DROP POLICY IF EXISTS "Users can manage referrals for cases" ON referrals;
 CREATE POLICY "Users can manage referrals for cases"
     ON referrals FOR ALL
     TO authenticated

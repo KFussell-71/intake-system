@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { Sparkles, Loader2, CheckCircle, AlertCircle, Wand2 } from 'lucide-react';
-import { aiResumeOptimizerService, OptimizationSuggestion } from '@/services/AIResumeOptimizerService';
+import { generateSummaryAction, optimizeForATSAction } from '@/app/actions/aiEmploymentActions';
+import { OptimizationSuggestion } from '@/services/AIResumeOptimizerService';
 import { JSONResume } from '@/services/ResumeMapperService';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { toast } from 'sonner';
@@ -20,28 +21,24 @@ export function AIOptimizationPanel({ resume, onApplySuggestion }: Props) {
     const [suggestions, setSuggestions] = useState<OptimizationSuggestion[]>([]);
 
     const checkAIAvailability = async () => {
-        const available = await aiResumeOptimizerService.isAvailable();
-        setAiAvailable(available);
-        return available;
+        // Simplified for client side - actual availability will be handled by server actions
+        return true;
     };
 
     const handleGenerateSummary = async () => {
         setLoading(true);
         try {
-            const available = await checkAIAvailability();
-            if (!available) {
-                toast.error('AI service not available', {
-                    description: 'Please ensure Ollama is running on localhost:11434',
-                });
-                return;
-            }
-
-            const summary = await aiResumeOptimizerService.generateSummary(
+            const result = await generateSummaryAction(
                 resume,
                 targetJob || undefined
             );
-            setGeneratedSummary(summary);
-            toast.success('Professional summary generated!');
+
+            if (result.success && result.summary) {
+                setGeneratedSummary(result.summary);
+                toast.success('Professional summary generated!');
+            } else {
+                throw new Error(result.error || 'Failed to generate summary');
+            }
         } catch (error) {
             console.error('[AIOptimization] Error:', error);
             toast.error('Failed to generate summary', {
@@ -62,15 +59,14 @@ export function AIOptimizationPanel({ resume, onApplySuggestion }: Props) {
     const handleOptimizeForATS = async () => {
         setLoading(true);
         try {
-            const available = await checkAIAvailability();
-            if (!available) {
-                toast.error('AI service not available');
-                return;
-            }
+            const result = await optimizeForATSAction(resume);
 
-            const atsSuggestions = await aiResumeOptimizerService.optimizeForATS(resume);
-            setSuggestions(atsSuggestions);
-            toast.success(`Found ${atsSuggestions.length} ATS optimization suggestions`);
+            if (result.success && result.suggestions) {
+                setSuggestions(result.suggestions);
+                toast.success(`Found ${result.suggestions.length} ATS optimization suggestions`);
+            } else {
+                throw new Error(result.error || 'Failed to optimize for ATS');
+            }
         } catch (error) {
             console.error('[AIOptimization] Error:', error);
             toast.error('Failed to optimize for ATS');

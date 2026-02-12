@@ -88,14 +88,14 @@ export class ClinicalResourceCoordinator {
         `;
 
         try {
-            const response = await aiService.generateText({
+            const text = await aiService.ask({
                 prompt,
-                userId,
+                // userId,
                 temperature: 0.2
             });
 
             // Parse response
-            const cleanedText = response.text.replace(/```json/g, '').replace(/```/g, '').trim();
+            const cleanedText = text.replace(/```json/g, '').replace(/```/g, '').trim();
             const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
 
             if (jsonMatch) {

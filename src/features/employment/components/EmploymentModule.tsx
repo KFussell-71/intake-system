@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Loader2, Briefcase } from 'lucide-react';
 import { useVocational } from '../../intake/hooks/useVocational';
-import { VocationalData } from '@/features/intake/types/intake';
+import { VocationalData } from '@/features/intake/intakeTypes';
 import { VocationalHistoryPanel } from '@/features/intake/components/sections/employment/VocationalHistoryPanel';
 import { GoalsPanel } from '@/features/intake/components/sections/employment/GoalsPanel';
 import { PrepPanel } from '@/features/intake/components/sections/employment/PrepPanel';

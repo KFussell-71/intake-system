@@ -39,6 +39,8 @@ DROP POLICY IF EXISTS "Staff can insert intakes" ON intakes;
 DROP POLICY IF EXISTS "Staff can update own intakes" ON intakes;
 DROP POLICY IF EXISTS "Staff can delete own intakes" ON intakes;
 DROP POLICY IF EXISTS "Users can view their own intakes" ON intakes;
+DROP POLICY IF EXISTS "Staff can view assigned intakes" ON intakes;
+DROP POLICY IF EXISTS "Admins can delete intakes" ON intakes;
 
 -- 6. Re-create STRICT RLS Policies
 

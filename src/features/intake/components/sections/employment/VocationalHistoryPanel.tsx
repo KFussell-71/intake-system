@@ -2,7 +2,7 @@ import React from 'react';
 import { Briefcase, GraduationCap, Hammer } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ElegantInput, ElegantTextarea } from '@/components/ui/ElegantInput';
-import { VocationalData } from '@/features/intake/types/intake';
+import { VocationalData } from '@/features/intake/intakeTypes';
 
 interface Props {
     formData: VocationalData;

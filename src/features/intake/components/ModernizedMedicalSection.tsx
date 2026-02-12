@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useMedical } from '../hooks/useMedical';
-import { MedicalData } from '../../types/intake';
+import type { MedicalData } from '../intakeTypes';
 import { MedicalHistorySection } from './sections/evaluation/MedicalHistorySection';
 import { MentalHealthHistorySection } from './sections/evaluation/MentalHealthHistorySection';
 import { SubstanceUseSection } from './sections/evaluation/SubstanceUseSection';
@@ -24,52 +24,7 @@ export const ModernizedMedicalSection: React.FC<Props> = ({ intakeId }) => {
         }
     }, [data, localData]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        if (!localData) return;
 
-        const { name, value, type } = e.target;
-        const checked = (e.target as HTMLInputElement).checked;
-        const newValue = type === 'checkbox' ? checked : value;
-
-        // 1. Update Local UI immediately
-        setLocalData(prev => prev ? ({ ...prev, [name]: newValue }) : null);
-
-        // 2. Decide Save Strategy
-        // Checkboxes/Selects -> Immediate Save
-        // Text Inputs -> Debounce handled by useMedical? No, useMedical sends immediately.
-        // We really should debounce here.
-
-        // Since useMedical doesn't debounce, let's just trigger save.
-        // For text inputs, this might be spammy but acceptable for MVP
-        // or we can add a simple timeout logic here if performance suffers.
-        // Given 'ModernizedIntakeStepIdentity' does similar logic (save on blur/change), 
-        // let's stick to immediate save for now but rely on React's event batching.
-
-        // Actually, for text fields, we should probably debounce.
-        // But implementing full debounce inside this component without a library is verbose.
-        // Let's rely on the user pausing typing or blur?
-        // Let's implement a simple timeout.
-
-        // Wait, saving on every keystroke is bad.
-        // Let's modify saveMedical call.
-
-        if (type === 'checkbox' || type === 'select-one') {
-            saveMedical({ [name]: newValue } as any);
-        } else {
-            // For text, we update local state, but don't save immediately.
-            // Ideally we save on blur. But sub-components don't expose onBlur easily.
-            // So we use a timeout.
-            const timeoutId = setTimeout(() => {
-                saveMedical({ [name]: newValue } as any);
-            }, 1000);
-
-            // This closes over the specific value for this specific call.
-            // Race condition: if user types 'a', 'b', 'c' fast:
-            // 3 timeouts created. All fire.
-            // We need to clear previous timeout. 
-            // We can't clear inside this function easily without a ref.
-        }
-    };
 
     // Ref-based debounce
     const debounceRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -81,7 +36,7 @@ export const ModernizedMedicalSection: React.FC<Props> = ({ intakeId }) => {
         const checked = (e.target as HTMLInputElement).checked;
         const newValue = type === 'checkbox' ? checked : value;
 
-        setLocalData(prev => prev ? ({ ...prev, [name]: newValue }) : null);
+        setLocalData((prev: MedicalData | null) => prev ? ({ ...prev, [name]: newValue }) : null);
 
         if (type === 'checkbox' || type === 'select-one') {
             if (debounceRef.current) clearTimeout(debounceRef.current);

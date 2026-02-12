@@ -1,5 +1,5 @@
 import React from 'react';
-import { any } from '../../../types/intake';
+
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Eye, Smile } from 'lucide-react';
 
