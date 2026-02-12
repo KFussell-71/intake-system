@@ -40,12 +40,15 @@ export default function DashboardPage() {
     const [stats, setStats] = useState<DashboardStats | null>(null);
 
     useEffect(() => {
+        let isMounted = true;
+
         const initDashboard = async () => {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) {
                 router.push('/login');
                 return;
             }
+            if (!isMounted) return;
             setUser(session.user);
 
             // Fetch role
@@ -54,18 +57,25 @@ export default function DashboardPage() {
                 .select('role')
                 .eq('id', session.user.id)
                 .single();
+            if (!isMounted) return;
             setRole(profile?.role || 'staff');
 
             // Fetch real stats
             const statsResult = await dashboardController.getStats();
-            if (statsResult.success && statsResult.data) {
+            if (isMounted && statsResult.success && statsResult.data) {
                 // Assert type safety here since controller returns generic data wrapper
                 setStats(statsResult.data as DashboardStats);
             }
 
-            setLoading(false);
+            if (isMounted) {
+                setLoading(false);
+            }
         };
         initDashboard();
+
+        return () => {
+            isMounted = false;
+        };
     }, [router]);
 
     const handleLogout = async () => {

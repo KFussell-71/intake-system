@@ -15,6 +15,8 @@ export default function DirectoryPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let isMounted = true;
+
         const fetchClients = async () => {
             setLoading(true);
             // SECURITY: Fetch only necessary columns - explicitly exclude ssn_last_four
@@ -42,7 +44,7 @@ export default function DirectoryPage() {
                 `)
                 .order('created_at', { ascending: false });
 
-            if (data) {
+            if (isMounted && data) {
                 // Map to latest intake info
                 const processed = data.map(c => ({
                     ...c,
@@ -52,9 +54,15 @@ export default function DirectoryPage() {
                 }));
                 setClients(processed);
             }
-            setLoading(false);
+            if (isMounted) {
+                setLoading(false);
+            }
         };
         fetchClients();
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     const filteredClients = clients.filter(client =>

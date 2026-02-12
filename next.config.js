@@ -41,8 +41,15 @@ const nextConfig = {
     reactStrictMode: true,
     output: 'standalone',
 
-    webpack: (config, { dev }) => {
-        if (!dev) {
+    // Memory optimization: Dispose inactive pages quickly in development
+    onDemandEntries: {
+        maxInactiveAge: 25 * 1000, // Dispose inactive pages after 25 seconds
+        pagesBufferLength: 2, // Keep only 2 pages in memory
+    },
+
+    webpack: (config, { dev, isServer }) => {
+        // Only obfuscate client-side production builds
+        if (!dev && !isServer) {
             config.plugins.push(
                 new WebpackObfuscator({
                     rotateStringArray: true,
@@ -51,6 +58,13 @@ const nextConfig = {
                 }, [])
             );
         }
+
+        // Reduce memory usage with deterministic module IDs
+        config.optimization = {
+            ...config.optimization,
+            moduleIds: 'deterministic',
+        };
+
         return config;
     },
 
@@ -68,9 +82,9 @@ const nextConfig = {
     // Performance optimizations
     // swcMinify is enabled by default in Next.js 13+
 
-    // Experimental features for better performance
+    // Experimental features for better performance and memory usage
     experimental: {
-        optimizePackageImports: ['lucide-react', 'recharts'],
+        optimizePackageImports: ['lucide-react', 'recharts', 'framer-motion'],
     },
 
     // SECURITY: Defense-in-Depth Headers
