@@ -164,6 +164,19 @@ export default function DirectoryPage() {
                                     {client.latest_intake ? `Last update: ${new Date(client.latest_intake.report_date).toLocaleDateString()}` : 'Added ' + new Date(client.created_at).toLocaleDateString()}
                                 </span>
                                 <div className="flex gap-2">
+                                    {/* Continue Intake Button for Draft Intakes */}
+                                    {client.latest_intake?.status === 'draft' && (
+                                        <button
+                                            className="px-3 py-1.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all text-xs font-medium shadow-sm"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                router.push(`/modernized-intake/${client.latest_intake.id}`);
+                                            }}
+                                            title="Continue this intake"
+                                        >
+                                            Continue Intake
+                                        </button>
+                                    )}
                                     <InviteToPortalButton
                                         clientId={client.id}
                                         clientName={client.name}
