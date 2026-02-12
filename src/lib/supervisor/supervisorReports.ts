@@ -26,6 +26,25 @@ export async function approveReport(intakeId: string, notes?: string): Promise<{
             return { success: false, error };
         }
 
+        // Auto-create Case (Longitudinal Tracking)
+        try {
+            const { data: intakeData } = await supabase
+                .from('intakes')
+                .select('client_id')
+                .eq('id', intakeId)
+                .single();
+
+            if (intakeData) {
+                /* dynamic import to avoid circular dependency if any, 
+                   though service layer usually OK. */
+                const { caseService } = await import('@/services/CaseService');
+                await caseService.createCaseFromIntake(intakeData.client_id, authz.userId);
+            }
+        } catch (caseError) {
+            console.error('Failed to auto-create case:', caseError);
+            // Non-blocking: We still return success for the approval itself
+        }
+
         const logResult = await logSupervisorAction({
             action_type: 'approve',
             target_id: intakeId,
@@ -132,6 +151,23 @@ export async function bulkApproveReports(intakeIds: string[]): Promise<{ success
 
         if (error || (data && !data.success)) {
             return { success: false, error: error || data?.error };
+        }
+
+        // Auto-create Cases for bulk approved
+        try {
+            const { data: intakes } = await supabase
+                .from('intakes')
+                .select('id, client_id')
+                .in('id', intakeIds);
+
+            if (intakes) {
+                const { caseService } = await import('@/services/CaseService');
+                await Promise.all(intakes.map(intake =>
+                    caseService.createCaseFromIntake(intake.client_id, authz.userId)
+                ));
+            }
+        } catch (caseError) {
+            console.error('Failed to bulk auto-create cases:', caseError);
         }
 
         const logResult = await logSupervisorAction({
