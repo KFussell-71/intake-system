@@ -34,16 +34,22 @@ export class ReportRepository extends BaseRepository {
 
             // Calculate a score from 1-10 based on completed prep items
             let score = 5; // Base score
-            const prep = (intake.data as any).preEmploymentPrep;
-            if (prep) {
-                if (prep.resumeComplete) score += 2;
-                if (prep.interviewSkills) score += 1;
-                if (prep.jobSearchAssistance) score += 1;
+
+            // Safety check: ensure intake.data exists before accessing properties
+            if (intake.data && typeof intake.data === 'object') {
+                const prep = (intake.data as any).preEmploymentPrep;
+                if (prep) {
+                    if (prep.resumeComplete) score += 2;
+                    if (prep.interviewSkills) score += 1;
+                    if (prep.jobSearchAssistance) score += 1;
+                }
             }
-            const services = (intake.data as any).supportiveServices;
-            if (services) {
-                if (services.transportation) score += 0.5;
-                if (services.housing) score += 0.5;
+            if (intake.data && typeof intake.data === 'object') {
+                const services = (intake.data as any).supportiveServices;
+                if (services) {
+                    if (services.transportation) score += 0.5;
+                    if (services.housing) score += 0.5;
+                }
             }
 
             if (!monthlyScores[month]) {
