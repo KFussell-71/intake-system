@@ -6,8 +6,10 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { IntakeReportEditor } from './IntakeReportEditor';
 import { DocumentList } from '@/components/documents/DocumentList';
 import { FileUploadZone } from '@/components/documents/FileUploadZone';
-import { FileText, FolderOpen, Mail } from 'lucide-react';
+import { FileText, FolderOpen, Mail, FileUser } from 'lucide-react';
 import InviteToPortalButton from '@/features/clients/components/InviteToPortalButton';
+import { GenerateResumeButton } from '@/components/resume/GenerateResumeButton';
+import { ResumeList } from '@/components/resume/ResumeList';
 
 interface ReportViewProps {
     clientId: string;
@@ -18,6 +20,8 @@ export function ReportView({ clientId }: ReportViewProps) {
     const [clientData, setClientData] = useState<any>(null);
     const [portalAccess, setPortalAccess] = useState<any>(null);
     const [refreshDocs, setRefreshDocs] = useState(0);
+    const [refreshResumes, setRefreshResumes] = useState(0);
+    const [latestIntakeId, setLatestIntakeId] = useState<string | null>(null);
 
     useEffect(() => {
         // Fetch User and Client Data
@@ -42,6 +46,16 @@ export function ReportView({ clientId }: ReportViewProps) {
                 .eq('client_id', clientId)
                 .single();
             setPortalAccess(access);
+
+            // Fetch latest intake ID for resume generation
+            const { data: latestIntake } = await supabase
+                .from('intakes')
+                .select('id')
+                .eq('client_id', clientId)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+            setLatestIntakeId(latestIntake?.id || null);
         };
 
         fetchData();
@@ -80,6 +94,10 @@ export function ReportView({ clientId }: ReportViewProps) {
                             <TabsTrigger value="documents" className="gap-2 px-4">
                                 <FolderOpen className="w-4 h-4" />
                                 Documents
+                            </TabsTrigger>
+                            <TabsTrigger value="resume" className="gap-2 px-4">
+                                <FileUser className="w-4 h-4" />
+                                Resume
                             </TabsTrigger>
                         </TabsList>
                     </div>
@@ -121,6 +139,28 @@ export function ReportView({ clientId }: ReportViewProps) {
                         <div className="lg:col-span-2">
                             <DocumentList clientId={clientId} refreshTrigger={refreshDocs} />
                         </div>
+                    </div>
+                </TabsContent>
+
+                <TabsContent value="resume" className="mt-0 space-y-6">
+                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+                        <div className="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 className="font-semibold text-lg dark:text-white">Client Resume</h3>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                                    Generate professional resumes from intake data
+                                </p>
+                            </div>
+                            {latestIntakeId && clientData && (
+                                <GenerateResumeButton
+                                    intakeId={latestIntakeId}
+                                    clientId={clientId}
+                                    clientName={clientData.name}
+                                    onResumeGenerated={() => setRefreshResumes(prev => prev + 1)}
+                                />
+                            )}
+                        </div>
+                        <ResumeList clientId={clientId} refreshTrigger={refreshResumes} />
                     </div>
                 </TabsContent>
             </Tabs>
