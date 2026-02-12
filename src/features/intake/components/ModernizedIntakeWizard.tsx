@@ -7,6 +7,7 @@ import { ModernizedEmploymentSection } from './ModernizedEmploymentSection';
 import { ModernizedBarriersSection } from './ModernizedBarriersSection';
 import { ModernizedObservationsSection } from './ModernizedObservationsSection';
 import { ModernizedConsentSection } from './ModernizedConsentSection';
+import { IntakeStepReview } from './IntakeStepReview';
 import { IntakeTaskSidebar } from './IntakeTaskSidebar';
 import { AuditHistoryModal } from './AuditHistoryModal';
 import { GlassCard } from '@/components/ui/GlassCard';
@@ -22,9 +23,9 @@ interface Props {
     intakeId: string;
 }
 
-type Step = 'dashboard' | 'identity' | 'medical' | 'employment' | 'barriers' | 'observations' | 'consent';
+type Step = 'dashboard' | 'identity' | 'medical' | 'employment' | 'barriers' | 'observations' | 'consent' | 'review';
 
-const ALL_STEPS: Step[] = ['identity', 'medical', 'employment', 'barriers', 'observations', 'consent'];
+const ALL_STEPS: Step[] = ['identity', 'medical', 'employment', 'barriers', 'observations', 'consent', 'review'];
 
 export const ModernizedIntakeWizard: React.FC<Props> = ({ intakeId }) => {
     const router = useRouter();
@@ -66,6 +67,14 @@ export const ModernizedIntakeWizard: React.FC<Props> = ({ intakeId }) => {
                 return <ModernizedObservationsSection intakeId={intakeId} />;
             case 'consent':
                 return <ModernizedConsentSection intakeId={intakeId} />;
+            case 'review':
+                return <IntakeStepReview
+                    formData={(intake?.data || {}) as any}
+                    onChange={() => { }}
+                    setFormData={() => { }}
+                    intakeId={intakeId}
+                    isReadOnly={false}
+                />;
             default:
                 return null;
         }
@@ -80,6 +89,7 @@ export const ModernizedIntakeWizard: React.FC<Props> = ({ intakeId }) => {
             case 'barriers': return 'Barriers to Employment';
             case 'observations': return 'Clinical Observations';
             case 'consent': return 'Release of Information';
+            case 'review': return 'Review & Finalize';
         }
     };
 

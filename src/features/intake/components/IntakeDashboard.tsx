@@ -157,6 +157,7 @@ export const IntakeDashboard: React.FC<Props> = ({ intakeId, onNavigate }) => {
                     </Button>
                     <Button
                         disabled={visibleSections.some(s => getStatus(s.id) !== 'complete')}
+                        onClick={() => onNavigate('review')}
                         className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:shadow-xl transition-all"
                     >
                         Finalize & Submit
