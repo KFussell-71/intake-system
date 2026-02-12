@@ -28,15 +28,16 @@ export function useIdentity(intakeId: string) {
                 .eq('id', intakeId)
                 .single();
 
-            if (intakeError) throw intakeError;
+            // Handle "not found" errors gracefully - this is expected for new intakes
+            if (intakeError && (intakeError as any).code !== 'PGRST116') {
+                throw intakeError;
+            }
 
-            if (!intake) {
-                // If this is a new intake, we might not have a record yet
-                if (intakeId !== 'new') {
-                    throw new Error('Intake not found');
-                }
+            if (!intake || (intakeError as any)?.code === 'PGRST116') {
+                // Initialize with empty/default state for new intakes
+                // This handles both intakeId === 'new' and newly created UUIDs without records
+                console.log(`[useIdentity] No intake found for ${intakeId}, initializing with defaults`);
 
-                // For 'new' intake, initialize with empty/default state
                 setData({
                     clientName: '',
                     ssnLastFour: '',
@@ -58,6 +59,7 @@ export function useIdentity(intakeId: string) {
                     referralSource: '',
                     referralContact: ''
                 });
+                setLoading(false);
                 return;
             }
 
