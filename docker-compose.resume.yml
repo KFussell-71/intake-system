@@ -1,0 +1,102 @@
+version: '3.8'
+
+services:
+  # Reactive Resume Application
+  resume-app:
+    image: amruthpillai/reactive-resume:latest
+    container_name: reactive-resume-app
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      # Database Connection
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@resume-db:5432/reactive_resume
+
+      # Application URLs
+      PUBLIC_URL: ${RESUME_PUBLIC_URL:-http://localhost:3001}
+      STORAGE_URL: ${RESUME_STORAGE_URL:-http://localhost:9000}
+
+      # Authentication
+      SECRET_KEY: ${RESUME_SECRET_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRY_TIME: 604800
+
+      # Email (Optional - for password reset)
+      MAIL_FROM: ${MAIL_FROM:-noreply@example.com}
+      SMTP_URL: ${SMTP_URL}
+
+      # Storage
+      STORAGE_ENDPOINT: resume-storage
+      STORAGE_PORT: 9000
+      STORAGE_REGION: us-east-1
+      STORAGE_BUCKET: resumes
+      STORAGE_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      STORAGE_SECRET_KEY: ${MINIO_SECRET_KEY}
+      STORAGE_USE_SSL: false
+
+      # Chrome/Printer
+      CHROME_URL: ws://resume-printer:3000
+
+      # Disable public registration (staff only)
+      PUBLIC_REGISTRATION: false
+
+    depends_on:
+      - resume-db
+      - resume-storage
+      - resume-printer
+    networks:
+      - resume-network
+
+  # PostgreSQL Database
+  resume-db:
+    image: postgres:16-alpine
+    container_name: reactive-resume-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: reactive_resume
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - resume-db-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - resume-network
+
+  # MinIO Storage
+  resume-storage:
+    image: minio/minio:latest
+    container_name: reactive-resume-storage
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - resume-storage-data:/data
+    networks:
+      - resume-network
+
+  # Chrome/Printer Service for PDF Generation
+  resume-printer:
+    image: ghcr.io/amruthpillai/reactive-resume/printer:latest
+    container_name: reactive-resume-printer
+    restart: unless-stopped
+    environment:
+      PUBLIC_URL: ${RESUME_PUBLIC_URL:-http://localhost:3001}
+      CHROME_TOKEN: ${CHROME_TOKEN}
+    ports:
+      - "8080:8080"
+    networks:
+      - resume-network
+
+networks:
+  resume-network:
+    driver: bridge
+
+volumes:
+  resume-db-data:
+  resume-storage-data:

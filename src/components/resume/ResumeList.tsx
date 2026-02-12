@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { resumeRepository, ClientResume } from '@/repositories/ResumeRepository';
-import { FileText, Download, ExternalLink, Calendar, Trash2, Eye } from 'lucide-react';
+import { reactiveResumeService } from '@/services/ReactiveResumeService';
+import { FileText, Download, ExternalLink, Calendar, Trash2, Eye, Edit } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { toast } from 'sonner';
 
@@ -135,6 +136,18 @@ export function ResumeList({ clientId, refreshTrigger }: Props) {
                                 </div>
 
                                 <div className="flex items-center gap-2">
+                                    {/* Edit in Reactive Resume (if from reactive-resume) */}
+                                    {resume.metadata?.source === 'reactive-resume' && (
+                                        <button
+                                            onClick={() => window.open(reactiveResumeService.getEditorUrl(resume.resume_id), '_blank')}
+                                            className="p-2 hover:bg-purple-100 rounded-lg transition-colors"
+                                            title="Edit in Reactive Resume"
+                                        >
+                                            <Edit className="w-4 h-4 text-purple-600" />
+                                        </button>
+                                    )}
+
+                                    {/* View Resume */}
                                     <button
                                         onClick={() => handleViewResume(resume)}
                                         className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
@@ -142,6 +155,20 @@ export function ResumeList({ clientId, refreshTrigger }: Props) {
                                     >
                                         <Eye className="w-4 h-4 text-slate-600" />
                                     </button>
+
+                                    {/* Download PDF (if available) */}
+                                    {resume.pdf_url && (
+                                        <a
+                                            href={resume.pdf_url}
+                                            download
+                                            className="p-2 hover:bg-blue-100 rounded-lg transition-colors"
+                                            title="Download PDF"
+                                        >
+                                            <FileText className="w-4 h-4 text-blue-600" />
+                                        </a>
+                                    )}
+
+                                    {/* Download JSON */}
                                     <button
                                         onClick={() => handleDownloadJSON(resume)}
                                         className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
@@ -149,16 +176,8 @@ export function ResumeList({ clientId, refreshTrigger }: Props) {
                                     >
                                         <Download className="w-4 h-4 text-slate-600" />
                                     </button>
-                                    {resume.pdf_url && (
-                                        <a
-                                            href={resume.pdf_url}
-                                            download
-                                            className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
-                                            title="Download PDF"
-                                        >
-                                            <FileText className="w-4 h-4 text-slate-600" />
-                                        </a>
-                                    )}
+
+                                    {/* Delete */}
                                     <button
                                         onClick={() => handleDelete(resume.id)}
                                         className="p-2 hover:bg-red-100 rounded-lg transition-colors"
@@ -171,12 +190,23 @@ export function ResumeList({ clientId, refreshTrigger }: Props) {
 
                             {/* Resume Format Badge */}
                             <div className="mt-3 flex items-center gap-2">
-                                <span className="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded">
-                                    JSON Resume Format
+                                <span className={`text-xs px-2 py-1 rounded ${resume.metadata?.format === 'pdf'
+                                        ? 'bg-purple-100 text-purple-700'
+                                        : 'bg-slate-100 text-slate-600'
+                                    }`}>
+                                    {resume.metadata?.format === 'pdf' ? 'PDF Resume' : 'JSON Resume Format'}
                                 </span>
-                                <span className="text-xs text-slate-400">
-                                    Compatible with rxresu.me, JSON Resume, and other builders
-                                </span>
+                                {resume.metadata?.source === 'reactive-resume' && (
+                                    <span className="text-xs px-2 py-1 bg-purple-50 text-purple-600 rounded flex items-center gap-1">
+                                        <ExternalLink className="w-3 h-3" />
+                                        Reactive Resume
+                                    </span>
+                                )}
+                                {resume.metadata?.format === 'json' && (
+                                    <span className="text-xs text-slate-400">
+                                        Compatible with rxresu.me, JSON Resume, and other builders
+                                    </span>
+                                )}
                             </div>
                         </GlassCard>
                     ))}
