@@ -59,6 +59,14 @@ const nextConfig = {
             );
         }
 
+        // Fix isomorphic-dompurify ENOENT error in Next.js 15
+        if (isServer) {
+            config.externals = config.externals || [];
+            config.externals.push({
+                'isomorphic-dompurify': 'commonjs isomorphic-dompurify'
+            });
+        }
+
         // Reduce memory usage with deterministic module IDs
         config.optimization = {
             ...config.optimization,
