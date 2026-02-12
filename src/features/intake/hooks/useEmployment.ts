@@ -24,10 +24,15 @@ export function useEmployment(intakeId: string) {
                 .eq('id', intakeId)
                 .single();
 
-            if (intakeError) throw intakeError;
+            // Handle "not found" errors gracefully - this is expected for new intakes
+            if (intakeError && (intakeError as any).code !== 'PGRST116') {
+                throw intakeError;
+            }
 
-            if (!intake) {
-                if (intakeId !== 'new') throw new Error('Intake not found');
+            if (!intake || (intakeError as any)?.code === 'PGRST116') {
+                // Initialize with empty/default state for new intakes
+                console.log(`[useEmployment] No intake found for ${intakeId}, initializing with defaults`);
+
                 setData({
                     employmentGoals: '',
                     educationGoals: '',
