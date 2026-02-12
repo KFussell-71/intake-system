@@ -134,7 +134,7 @@ export async function getClientDocuments(clientId: string) {
         .from('documents')
         .select('*')
         .eq('client_id', clientId)
-        .is('deleted_at', null)
+        .or('deleted_at.is.null')
         .order('created_at', { ascending: false });
 
     return { data, error };
@@ -240,7 +240,7 @@ export async function getDocumentVersions(documentId: string) {
         .from('documents')
         .select('*')
         .or(`id.eq.${documentId},parent_document_id.eq.${documentId}`)
-        .is('deleted_at', null)
+        .or('deleted_at.is.null')
         .order('version', { ascending: false });
 
     return { data, error };
