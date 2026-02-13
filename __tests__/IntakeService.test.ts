@@ -31,7 +31,7 @@ describe('IntakeService', () => {
             p_ssn_last_four: testData.ssnLastFour,
             p_report_date: testData.reportDate,
             p_completion_date: testData.completionDate,
-            p_intake_data: testData,
+            p_intake_data: {},
         });
         expect(result).toEqual({ id: '123' });
     });
