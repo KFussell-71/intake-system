@@ -80,17 +80,20 @@ export async function getPortalClientData() {
         .limit(1)
         .single();
 
-    // 6. Fetch milestones (use actual column names from schema)
+    // 6. Fetch milestones (Visual Journey)
     const { data: milestones } = await supabase
         .from('tracking_milestones')
         .select(`
             id,
             milestone_name,
             completion_date,
+            step_order,
+            description,
             created_at
         `)
         .eq('client_id', clientLink.client_id)
-        .order('created_at', { ascending: false });
+        .order('step_order', { ascending: true })
+        .order('created_at', { ascending: true });
 
     // 7. Fetch documents (metadata only, not content)
     // Use actual column names from schema (type, not document_type)
@@ -105,7 +108,20 @@ export async function getPortalClientData() {
         .eq('client_id', clientLink.client_id)
         .order('uploaded_at', { ascending: false });
 
-    // 8. Return sanitized data
+    // 8. Fetch document requests
+    const { data: documentRequests } = await supabase
+        .from('document_requests')
+        .select(`
+            id,
+            name,
+            description,
+            status,
+            requested_at
+        `)
+        .eq('client_id', clientLink.client_id)
+        .order('requested_at', { ascending: false });
+
+    // 9. Return sanitized data
     return {
         success: true,
         error: null,
@@ -126,6 +142,7 @@ export async function getPortalClientData() {
             } : null,
             milestones: milestones || [],
             documents: documents || [],
+            documentRequests: documentRequests || [],
             accessInfo: {
                 expiresAt: clientLink.expires_at
             }

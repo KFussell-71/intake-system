@@ -326,6 +326,26 @@ export const PreparationReadinessSection: React.FC<Props> = ({ formData, onChang
                             className="bg-white/50"
                         />
                     </div>
+
+                    {/* RSA Service Category */}
+                    <div className="col-span-1 md:col-span-2 lg:col-span-3 mt-4 pt-4 border-t border-slate-100 dark:border-white/5">
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            RSA-911 Service Category
+                        </label>
+                        <select
+                            name="rsaServiceCategory"
+                            value={formData.rsaServiceCategory || ''}
+                            onChange={onChange}
+                            className="w-full px-3 py-2 bg-white/50 border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                        >
+                            <option value="">Select Category...</option>
+                            <option value="career_services">Career Services</option>
+                            <option value="training_services">Training Services</option>
+                            <option value="pre_ets">Pre-Employment Transition Services (Pre-ETS)</option>
+                            <option value="other">Other Supportive Services</option>
+                        </select>
+                        <p className="text-xs text-slate-500 mt-1">Required for federal reporting if services are provided.</p>
+                    </div>
                 </div>
             </GlassCard>
 

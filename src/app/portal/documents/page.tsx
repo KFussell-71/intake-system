@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { uploadPortalDocument } from '@/app/actions/portal/uploadPortalDocument';
+import { getPortalClientData } from '@/app/actions/portal/getPortalClientData';
+import { DocumentRequestCard } from '@/features/portal/components/DocumentRequestCard';
 
 /**
  * PORTAL DOCUMENTS PAGE
@@ -19,8 +21,21 @@ export default function PortalDocuments() {
     const [file, setFile] = useState<File | null>(null);
     const [uploading, setUploading] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+    const [requests, setRequests] = useState<any[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const alertRef = useRef<HTMLDivElement>(null);
+
+    // Fetch requests on mount
+    const fetchRequests = async () => {
+        const result = await getPortalClientData();
+        if (result.success && result.data) {
+            setRequests(result.data.documentRequests || []);
+        }
+    };
+
+    useEffect(() => {
+        fetchRequests();
+    }, []);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
@@ -94,6 +109,9 @@ export default function PortalDocuments() {
         }
     };
 
+    const pendingRequests = requests.filter(r => r.status === 'pending');
+    const completedRequests = requests.filter(r => r.status === 'uploaded');
+
     return (
         <div className="space-y-8">
             {/* Header */}
@@ -116,8 +134,8 @@ export default function PortalDocuments() {
                     role="alert"
                     tabIndex={-1}
                     className={`p-4 rounded-xl ${message.type === 'success'
-                            ? 'bg-emerald-500/10 border border-emerald-500/20'
-                            : 'bg-red-500/10 border border-red-500/20'
+                        ? 'bg-emerald-500/10 border border-emerald-500/20'
+                        : 'bg-red-500/10 border border-red-500/20'
                         }`}
                 >
                     <div className="flex items-center gap-3">
@@ -137,8 +155,39 @@ export default function PortalDocuments() {
                 </div>
             )}
 
-            {/* Upload Form */}
+            {/* REQUESTED DOCUMENTS SECTION */}
+            {(pendingRequests.length > 0 || completedRequests.length > 0) && (
+                <div className="space-y-4">
+                    <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                        Requested by Caseworker
+                    </h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {pendingRequests.map(request => (
+                            <DocumentRequestCard
+                                key={request.id}
+                                request={request}
+                                onUploadComplete={() => {
+                                    setMessage({ type: 'success', text: `Successfully uploaded ${request.name}` });
+                                    fetchRequests();
+                                }}
+                            />
+                        ))}
+                        {completedRequests.map(request => (
+                            <DocumentRequestCard
+                                key={request.id}
+                                request={request}
+                                onUploadComplete={() => { }}
+                            />
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* General Upload Form */}
             <div className="bg-slate-800/50 border border-white/10 rounded-2xl p-6">
+                <h2 className="text-lg font-semibold text-white mb-4">General Upload</h2>
                 <div className="space-y-6">
                     {/* File Input */}
                     <div>

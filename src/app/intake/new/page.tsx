@@ -62,7 +62,10 @@ export default function NewIntakePage() {
         clearDraft,
         isReadOnly,
         toggleEditMode,
-        draftId
+        draftId,
+        isConflict,
+        serverData,
+        resolveConflict
     } = useIntakeForm();
 
     const [error, setError] = useState('');
@@ -368,6 +371,15 @@ export default function NewIntakePage() {
                 localData={conflictTask?.data?.data || conflictTask?.data || {}}
                 serverData={serverDataForConflict || {}}
                 onResolve={handleResolveConflict}
+            />
+
+            {/* Phase 9: Online Optimistic Locking Conflict */}
+            <ConflictResolutionModal
+                isOpen={isConflict}
+                onClose={() => resolveConflict()} // Default to reload
+                localData={formData}
+                serverData={serverData?.data || serverData || {}}
+                onResolve={resolveConflict}
             />
         </div>
     );

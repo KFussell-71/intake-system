@@ -36,6 +36,14 @@ export interface IdentityMetadata {
     referralSource: string;
     referralContact: string;
     sectionStatus?: 'not_started' | 'in_progress' | 'complete' | 'waived';
+
+    // RSA-911 Compliance Fields
+    applicationDate?: string;
+    eligibilityDate?: string;
+    ipeDate?: string;
+    closureDate?: string;
+    closureReason?: string;
+    disabilitySignificance?: 'most_significant' | 'significant' | 'not_significant';
 }
 
 export type IdentityData = IdentityBasic & IdentityDemographics & IdentitySocial & IdentityEmergency & IdentityMetadata;
@@ -117,6 +125,10 @@ export interface MedicalGeneral {
     primaryCarePhysicianContact: string;
     medicalComments: string;
     medicalEmploymentImpact: string;
+
+    // RELATIONAL PROMOTION (Phase 9.2)
+    primaryDiagnosisCode: string;
+    mobilityStatus: 'independent' | 'cane_walker' | 'wheelchair' | 'assisted' | 'other';
 }
 
 export interface MedicalMentalHealth {
@@ -246,6 +258,7 @@ export interface ClinicalAssessment {
 
     supportServices: string[];
     supportServicesOther: string;
+    rsaServiceCategory?: string; // New RSA-911 Field
     assessmentSummary: string;
 }
 
@@ -296,6 +309,14 @@ export interface IntakeMetadata {
     issuePhysicalDanger: string;
     issueDesiredOutcome: string;
     medicalPsychNotes: string; // Often shared
+
+    // RSA-911 Compliance Fields
+    applicationDate?: string;
+    eligibilityDate?: string;
+    ipeDate?: string;
+    closureDate?: string;
+    closureReason?: string;
+    disabilitySignificance?: 'most_significant' | 'significant' | 'not_significant';
 }
 
 // BACKWARD COMPATIBILITY: Re-assemble the God Object

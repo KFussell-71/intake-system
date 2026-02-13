@@ -4,6 +4,7 @@ import { getPortalClientData } from '@/app/actions/portal/getPortalClientData';
 import { getPortalMessagesAction, sendPortalMessageAction } from '@/app/actions/portal/messageActions';
 import { MessageCenter } from '@/features/portal/components/MessageCenter';
 import { PortalConcierge } from '@/features/portal/components/PortalConcierge';
+import { JourneyMap } from '@/features/portal/components/JourneyMap';
 
 /**
  * PORTAL DASHBOARD
@@ -42,7 +43,7 @@ export default async function PortalHome() {
         );
     }
 
-    const { client, intake, milestones, documents, accessInfo } = data;
+    const { client, intake, milestones, documents, documentRequests, accessInfo } = data;
 
     return (
         <div className="space-y-8">
@@ -147,43 +148,24 @@ export default async function PortalHome() {
                         </Link>
                     </div>
 
-                    {/* Recent Milestones */}
-                    {milestones.length > 0 && (
-                        <div className="bg-slate-800/50 border border-white/10 rounded-xl p-6">
-                            <h2 className="text-lg font-semibold text-white mb-4">Latest Progress</h2>
-                            <div className="space-y-3">
-                                {milestones.slice(0, 3).map((milestone: any) => (
-                                    <div
-                                        key={milestone.id}
-                                        className="flex items-center gap-3 p-3 bg-slate-900/50 rounded-lg"
-                                    >
-                                        {milestone.completion_date ? (
-                                            <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                                </svg>
-                                            </div>
-                                        ) : (
-                                            <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                            </div>
-                                        )}
-                                        <div className="flex-1">
-                                            <p className="text-sm text-white font-medium">{milestone.milestone_name}</p>
-                                            <p className="text-[10px] text-slate-400 uppercase tracking-wider">
-                                                {milestone.completion_date
-                                                    ? `Achieved ${new Date(milestone.completion_date).toLocaleDateString()}`
-                                                    : 'Active Phase'
-                                                }
-                                            </p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+                    {/* Recent Milestones (Journey Map) */}
+                    <div className="bg-slate-800/30 border border-white/5 rounded-2xl p-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-lg font-semibold text-white">Your Journey</h2>
+                            <Link href="/portal/status" className="text-sm text-blue-400 hover:text-blue-300">
+                                View Full Status
+                            </Link>
                         </div>
-                    )}
+                        {milestones.length > 0 ? (
+                            <JourneyMap milestones={milestones.slice(0, 3)} />
+                        ) : (
+                            <div className="text-center py-4">
+                                <p className="text-sm text-slate-400">
+                                    No milestones yet. Check back soon for updates!
+                                </p>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Right Column: Support */}
@@ -214,7 +196,11 @@ export default async function PortalHome() {
             </div>
 
             {/* AI Assistant Widget */}
-            <PortalConcierge />
+            <PortalConcierge
+                clientName={client.name}
+                milestones={milestones}
+                documentRequests={documentRequests || []}
+            />
         </div>
     );
 }

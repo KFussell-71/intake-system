@@ -16,7 +16,9 @@ import {
     Clock,
     BarChart3,
     Activity,
-    Eye
+    Eye,
+    Briefcase,
+    ShieldCheck
 } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ActionButton } from '@/components/ui/ActionButton';
@@ -309,6 +311,20 @@ export default function DashboardPage() {
 
                         <GlassCard
                             hoverable
+                            onClick={() => router.push('/follow-ups')}
+                            className="flex flex-col justify-between border-l-4 border-l-amber-500"
+                        >
+                            <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center mb-4">
+                                <Clock className="w-5 h-5 text-amber-500" />
+                            </div>
+                            <div>
+                                <h3 className="font-bold mb-1">Follow-ups</h3>
+                                <p className="text-xs text-slate-500">Daily Tasks</p>
+                            </div>
+                        </GlassCard>
+
+                        <GlassCard
+                            hoverable
                             onClick={() => router.push('/documents')}
                             className="flex flex-col justify-between border-l-4 border-l-blue-500"
                         >
@@ -374,6 +390,34 @@ export default function DashboardPage() {
                             <div>
                                 <h3 className="font-bold mb-1">Transparency</h3>
                                 <p className="text-xs text-slate-500">Public Trust</p>
+                            </div>
+                        </GlassCard>
+
+                        <GlassCard
+                            hoverable
+                            onClick={() => router.push('/cases')}
+                            className="flex flex-col justify-between border-l-4 border-l-indigo-500"
+                        >
+                            <div className="w-10 h-10 bg-indigo-500/10 rounded-xl flex items-center justify-center mb-4">
+                                <Briefcase className="w-5 h-5 text-indigo-500" />
+                            </div>
+                            <div>
+                                <h3 className="font-bold mb-1">My Cases</h3>
+                                <p className="text-xs text-slate-500">Active Caseload</p>
+                            </div>
+                        </GlassCard>
+
+                        <GlassCard
+                            hoverable
+                            onClick={() => router.push('/auditor/reports')}
+                            className="flex flex-col justify-between border-l-4 border-l-slate-900 dark:border-l-white"
+                        >
+                            <div className="w-10 h-10 bg-slate-900/10 dark:bg-white/10 rounded-xl flex items-center justify-center mb-4">
+                                <ShieldCheck className="w-5 h-5 text-slate-900 dark:text-white" />
+                            </div>
+                            <div>
+                                <h3 className="font-bold mb-1">Auditor Portal</h3>
+                                <p className="text-xs text-slate-500">Compliance & Review</p>
                             </div>
                         </GlassCard>
                     </motion.div>

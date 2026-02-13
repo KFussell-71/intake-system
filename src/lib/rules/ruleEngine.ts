@@ -7,9 +7,10 @@ export interface RuleCondition {
 }
 
 export interface RuleAction {
-    action: 'hide_step' | 'show_step' | 'require_field' | 'set_value';
+    action: 'hide_step' | 'show_step' | 'require_field' | 'set_value' | 'validate';
     target: string; // step name or field name
     value?: any;
+    errorMessage?: string; // For validation actions
 }
 
 export interface IntakeRule {
@@ -50,19 +51,32 @@ function getNestedValue(obj: any, path: string): any {
     }, obj);
 }
 
+export interface ValidationError {
+    field: string;
+    message: string;
+    ruleId: string;
+}
+
 export function applyRules(rules: IntakeRule[], data: IntakeFormData | any) {
     const effects = {
         hiddenSteps: new Set<string>(),
         requiredFields: new Set<string>(),
+        validationErrors: [] as ValidationError[],
     };
 
     rules.forEach(rule => {
         if (evaluateRule(rule, data)) {
-            const { action, target } = rule.action_json;
+            const { action, target, errorMessage } = rule.action_json;
             if (action === 'hide_step') {
                 effects.hiddenSteps.add(target);
             } else if (action === 'require_field') {
                 effects.requiredFields.add(target);
+            } else if (action === 'validate') {
+                effects.validationErrors.push({
+                    field: target,
+                    message: errorMessage || 'Validation failed',
+                    ruleId: rule.id
+                });
             }
         }
     });

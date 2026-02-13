@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getPortalClientData } from '@/app/actions/portal/getPortalClientData';
+import { JourneyMap } from '@/features/portal/components/JourneyMap';
 
 /**
  * PORTAL STATUS PAGE
@@ -78,89 +79,23 @@ export default async function PortalStatus() {
 
             {/* Milestones List */}
             <div className="space-y-6">
-                {/* Achieved Milestones */}
-                {achievedMilestones.length > 0 && (
-                    <div>
-                        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            Completed Milestones
-                        </h2>
-                        <div className="space-y-3">
-                            {achievedMilestones.map((milestone) => (
-                                <div
-                                    key={milestone.id}
-                                    className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-4"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                            </svg>
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="text-white font-medium">{milestone.milestone_name}</p>
-                                            {milestone.completion_date && (
-                                                <p className="text-sm text-emerald-400/70">
-                                                    Achieved {new Date(milestone.completion_date).toLocaleDateString()}
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
+                <h2 className="text-lg font-semibold text-white mb-4">Journey Map</h2>
+                <div className="bg-slate-800/30 border border-white/5 rounded-2xl p-6">
+                    {milestones.length > 0 ? (
+                        <JourneyMap milestones={milestones} />
+                    ) : (
+                        <div className="text-center py-8">
+                            <div className="w-12 h-12 mx-auto rounded-full bg-slate-700 flex items-center justify-center mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                            </div>
+                            <p className="text-slate-400">
+                                No milestones have been set yet. Your Employment Specialist will update your progress as your case develops.
+                            </p>
                         </div>
-                    </div>
-                )}
-
-                {/* In Progress Milestones */}
-                {inProgressMilestones.length > 0 && (
-                    <div>
-                        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            In Progress
-                        </h2>
-                        <div className="space-y-3">
-                            {inProgressMilestones.map((milestone) => (
-                                <div
-                                    key={milestone.id}
-                                    className="bg-slate-800/50 border border-white/10 rounded-xl p-4"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0">
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="text-white font-medium">{milestone.milestone_name}</p>
-                                            <p className="text-sm text-slate-400">
-                                                In progress
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* No Milestones */}
-                {milestones.length === 0 && (
-                    <div className="bg-slate-800/50 border border-white/10 rounded-xl p-8 text-center">
-                        <div className="w-12 h-12 mx-auto rounded-full bg-slate-700 flex items-center justify-center mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                            </svg>
-                        </div>
-                        <p className="text-slate-400">
-                            No milestones have been set yet. Your Employment Specialist will update your progress as your case develops.
-                        </p>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
 
             {/* Help Info */}

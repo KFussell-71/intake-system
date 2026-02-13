@@ -79,6 +79,34 @@ export const MedicalHistorySection: React.FC<Props> = ({ formData, onChange, isR
                                         rows={2}
                                         readOnly={isReadOnly}
                                     />
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                        <ElegantInput
+                                            label="Primary Diagnosis Code (e.g. ICD-10)"
+                                            name="primaryDiagnosisCode"
+                                            value={formData.primaryDiagnosisCode || ''}
+                                            onChange={onChange}
+                                            placeholder="Enter code..."
+                                            readOnly={isReadOnly}
+                                        />
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                                                Mobility Status
+                                            </label>
+                                            <select
+                                                name="mobilityStatus"
+                                                value={formData.mobilityStatus || 'independent'}
+                                                onChange={onChange}
+                                                disabled={isReadOnly}
+                                                className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                                            >
+                                                <option value="independent">Independent</option>
+                                                <option value="cane_walker">Uses Cane/Walker</option>
+                                                <option value="wheelchair">Wheelchair User</option>
+                                                <option value="assisted">Requires Assistance</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                         </div>

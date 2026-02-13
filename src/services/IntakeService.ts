@@ -58,7 +58,7 @@ export class IntakeService {
         }
     }
 
-    async saveIntakeProgress(intakeId: string, data: Partial<IntakeFormData>, editComment?: string) {
+    async saveIntakeProgress(intakeId: string, data: Partial<IntakeFormData>, editComment?: string, expectedVersion?: number) {
         if (this.isOffline()) {
             await saveSyncTask({ type: 'INTAKE_UPDATE', data: { intakeId, data, summary: editComment } });
             return { success: true, offline: true };
@@ -70,22 +70,31 @@ export class IntakeService {
 
             // DDD: Load and orchestrate
             const raw = await this.intakeRepo.getIntakeById(intakeId);
-            const entity = new IntakeEntity(intakeId, raw.data, raw.status);
+            const entity = new IntakeEntity(intakeId, raw.data, raw.status, [], raw.version);
 
-            // SME: State Transition & Domain Events
+            // SME: State Transition & Domain Events (Now includes version check)
             await IntakeWorkflowService.saveProgress(entity, data, editComment || "Progressive Save", user.id);
 
             // Relational Persistence strategy:
             // We NO LONGER call saveIntakeProgressAtomic as the primary sink for domain data.
-            // Instead, we should call domain-specific persistence or just rely on the actions
-            // for the Next.js frontend, and this service for the backend/SDK.
+            // But we DO need to sync the main record with the expected version.
+            const result = await this.intakeRepo.saveIntakeProgressAtomic(
+                intakeId,
+                data,
+                editComment || "Progressive Save",
+                user.id,
+                expectedVersion
+            );
 
-            // For now, to maintain compatibility without the God Object, 
-            // we'll update the status and log the event.
-            await this.intakeRepo.updateIntakeStatus(intakeId, 'draft');
+            if (result && !result.success && result.error === 'CONFLICT') {
+                return { success: false, error: 'CONFLICT', message: result.message };
+            }
 
-            return { success: true };
+            return { success: true, data: result };
         } catch (error: any) {
+            if (error.message?.includes('version mismatch')) {
+                return { success: false, error: 'CONFLICT', message: error.message };
+            }
             console.warn('Network save failed, saving to offline queue:', error);
             await saveSyncTask({ type: 'INTAKE_UPDATE', data: { intakeId, data, summary: editComment } });
             return { success: true, offline: true };
@@ -147,6 +156,7 @@ export class IntakeService {
             return {
                 ...intake?.data,
                 ...assessment,
+                version: intake?.version,
                 updated_at: assessment?.updated_at || intake?.updated_at
             };
         } catch (error) {

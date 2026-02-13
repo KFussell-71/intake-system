@@ -56,6 +56,10 @@ export const medicalSchema = z.object({
 
     substanceComments: z.string().optional().or(z.literal('')),
     substanceEmploymentImpact: z.string().optional().or(z.literal('')),
+
+    // RELATIONAL PROMOTION (Phase 9.2)
+    primaryDiagnosisCode: z.string().optional().or(z.literal('')),
+    mobilityStatus: z.enum(['independent', 'cane_walker', 'wheelchair', 'assisted', 'other']).default('independent'),
 });
 
 export const medicalSubmissionSchema = medicalSchema.extend({

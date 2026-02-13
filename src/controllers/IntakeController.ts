@@ -23,10 +23,10 @@ export class IntakeController {
         return await this.service.saveAssessment(assessment);
     }
 
-    async saveDraft(data: Partial<IntakeFormData>, intakeId?: string) {
+    async saveDraft(data: Partial<IntakeFormData>, intakeId?: string, expectedVersion?: number) {
         try {
             // This now calls the service which handles auth and repo RPC
-            const result = await this.service.saveIntakeProgress(intakeId || '', data, "Draft Save");
+            const result = await this.service.saveIntakeProgress(intakeId || '', data, "Draft Save", expectedVersion);
             return { success: true, data: result };
         } catch (error) {
             console.error('Draft save error:', error);
@@ -58,9 +58,9 @@ export class IntakeController {
         }
     }
 
-    async saveIntakeProgress(intakeId: string, data: Partial<IntakeFormData>, editComment?: string) {
+    async saveIntakeProgress(intakeId: string, data: Partial<IntakeFormData>, editComment?: string, expectedVersion?: number) {
         try {
-            const result = await this.service.saveIntakeProgress(intakeId, data, editComment);
+            const result = await this.service.saveIntakeProgress(intakeId, data, editComment, expectedVersion);
             return { success: true, data: result };
         } catch (error) {
             return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };

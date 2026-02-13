@@ -79,7 +79,9 @@ export function useMedical(intakeId: string) {
                     drugPriorTx: false,
                     drugPriorTxDetails: '',
                     substanceComments: '',
-                    substanceEmploymentImpact: ''
+                    substanceEmploymentImpact: '',
+                    primaryDiagnosisCode: '',
+                    mobilityStatus: 'independent'
                 });
                 return;
             }
@@ -157,7 +159,9 @@ export function useMedical(intakeId: string) {
                 drugPriorTxDetails: relational?.drug_prior_tx_details || '',
 
                 substanceComments: relational?.substance_comments || '',
-                substanceEmploymentImpact: relational?.substance_employment_impact || ''
+                substanceEmploymentImpact: relational?.substance_employment_impact || '',
+                primaryDiagnosisCode: relational?.primary_diagnosis_code || '',
+                mobilityStatus: relational?.mobility_status || 'independent'
             });
 
         } catch (err: any) {

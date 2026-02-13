@@ -145,6 +145,50 @@ export const ModernizedIntakeStepIdentity: React.FC<Props> = ({ intakeId, onComp
                 />
             </div>
 
+            <hr className="border-slate-100 dark:border-white/5" />
+
+            {/* RSA-911 Program Dates */}
+            <div className="pt-4">
+                <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-300 mb-4 flex items-center gap-2">
+                    <span className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full">RSA-911</span>
+                    Program Dates
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg border border-slate-100 dark:border-white/5">
+                    <ElegantInput
+                        label="Application Date"
+                        name="applicationDate"
+                        value={formData.applicationDate}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        type="date"
+                    />
+                    <ElegantInput
+                        label="Eligibility Date"
+                        name="eligibilityDate"
+                        value={formData.eligibilityDate}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        type="date"
+                    />
+                    <ElegantInput
+                        label="IPE Date"
+                        name="ipeDate"
+                        value={formData.ipeDate}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        type="date"
+                    />
+                    <ElegantInput
+                        label="Closure Date"
+                        name="closureDate"
+                        value={formData.closureDate}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        type="date"
+                    />
+                </div>
+            </div>
+
             <div className="flex justify-end pt-4">
                 <Button
                     variant="ghost"

@@ -12,7 +12,8 @@ export class IntakeEntity {
         public readonly id: string,
         private _data: IntakeFormData,
         private _status: 'draft' | 'submitted' | 'approved' | 'archived',
-        private _versions: IntakeVersion[] = []
+        private _versions: IntakeVersion[] = [],
+        public readonly version: number = 1
     ) { }
 
     get data() { return { ...this._data }; }

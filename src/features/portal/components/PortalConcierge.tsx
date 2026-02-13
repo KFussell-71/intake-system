@@ -5,18 +5,35 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, X, MessageCircle, Send, Bot } from 'lucide-react';
 import { getConciergeResponseAction } from '@/app/actions/portal/getConciergeResponseAction';
 
-export const PortalConcierge = () => {
+interface Props {
+    clientName: string;
+    milestones: any[];
+    documentRequests: any[];
+}
+
+export const PortalConcierge = ({ clientName, milestones, documentRequests }: Props) => {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<{ role: 'ai' | 'user'; content: string }[]>([
-        { role: 'ai', content: 'Hi! I am your AI Portal Concierge. How can I help you today?' }
+        { role: 'ai', content: `Hi ${clientName.split(' ')[0]}! I'm your AI Concierge. How can I help you regarding your milestones or documents today?` }
     ]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleSend = async () => {
-        if (!input.trim() || isLoading) return;
+    // Generate suggested questions based on context
+    const activeMilestone = milestones.find((m: any) => !m.completion_date);
+    const pendingDocs = documentRequests.filter((d: any) => d.status === 'pending');
 
-        const userMsg = input;
+    const suggestions = [
+        activeMilestone ? `What does "${activeMilestone.milestone_name}" involve?` : null,
+        pendingDocs.length > 0 ? `Why do I need to upload a ${pendingDocs[0].name}?` : null,
+        "What is my next step?",
+        "Contact my caseworker"
+    ].filter(Boolean) as string[];
+
+    const handleSend = async (text?: string) => {
+        const userMsg = text || input;
+        if (!userMsg.trim() || isLoading) return;
+
         setMessages(prev => [...prev, { role: 'user', content: userMsg }]);
         setInput('');
         setIsLoading(true);
@@ -98,6 +115,21 @@ export const PortalConcierge = () => {
                                     </div>
                                 </div>
                             )}
+
+                            {/* Suggested Questions (only show if no loading and last msg is AI) */}
+                            {!isLoading && messages[messages.length - 1]?.role === 'ai' && (
+                                <div className="flex flex-wrap gap-2 mt-4">
+                                    {suggestions.map((s, i) => (
+                                        <button
+                                            key={i}
+                                            onClick={() => handleSend(s)}
+                                            className="text-[10px] px-2 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/20 transition-colors"
+                                        >
+                                            {s}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         {/* Input Area */}
@@ -112,7 +144,7 @@ export const PortalConcierge = () => {
                                     className="w-full bg-slate-950 border border-white/10 rounded-xl pl-4 pr-10 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/50"
                                 />
                                 <button
-                                    onClick={handleSend}
+                                    onClick={() => handleSend()}
                                     disabled={!input.trim() || isLoading}
                                     className="absolute right-2 top-1.5 p-1 text-slate-400 hover:text-indigo-400 transition-colors disabled:opacity-50"
                                 >

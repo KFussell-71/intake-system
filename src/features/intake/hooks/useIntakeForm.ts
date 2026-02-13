@@ -194,6 +194,8 @@ const initialFormData: CompositeData = {
     primaryCarePhysicianContact: '',
     medicalComments: '',
     medicalEmploymentImpact: '',
+    primaryDiagnosisCode: '',
+    mobilityStatus: 'independent',
     assessmentSummary: '',
 
     // Performance & Audit tracking
@@ -209,7 +211,10 @@ export function useIntakeForm() {
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
     const [loadingDraft, setLoadingDraft] = useState(true);
     const [draftId, setDraftId] = useState<string | null>(null);
+    const [version, setVersion] = useState<number>(1);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+    const [isConflict, setIsConflict] = useState(false);
+    const [serverData, setServerData] = useState<any>(null);
 
     // SME Fix: Review Mode
     const [isReadOnly, setIsReadOnly] = useState(false);
@@ -219,17 +224,16 @@ export function useIntakeForm() {
     useEffect(() => {
         let mounted = true;
         const loadDraft = async () => {
-            // Only load if we haven't already (simple check to avoid overwrite)
-            // In a real app we might ask user "Resume draft?"
             try {
                 const { intakeController } = await import('@/controllers/IntakeController');
                 const result = await intakeController.loadLatestDraft();
 
-                if (mounted && result.success && result.data) {
+                if (mounted && result.success && result.data?.found) {
                     console.log('Draft loaded', result.data);
                     setFormData((prev: CompositeData) => ({ ...prev, ...result.data.data }));
                     setDraftId(result.data.intake_id);
-                    setLastSaved(new Date(result.data.last_saved));
+                    setVersion(result.data.version || 1);
+                    setLastSaved(new Date());
                 }
             } catch (e) {
                 console.error('Failed to load draft', e);
@@ -242,33 +246,85 @@ export function useIntakeForm() {
         return () => { mounted = false; };
     }, []);
 
+    // Effect to fetch server data on conflict
+    useEffect(() => {
+        if (isConflict && draftId) {
+            const fetchServer = async () => {
+                try {
+                    const { intakeController } = await import('@/controllers/IntakeController');
+                    const sData = await intakeController.fetchServerData(draftId);
+                    setServerData(sData);
+                } catch (e) {
+                    console.error('Failed to fetch server data for conflict', e);
+                }
+            };
+            fetchServer();
+        }
+    }, [isConflict, draftId]);
+
+    // Conflict Resolver
+    const resolveConflict = useCallback(async (manualResolvedData?: any) => {
+        if (!draftId) return;
+        try {
+            const { intakeController } = await import('@/controllers/IntakeController');
+
+            if (manualResolvedData) {
+                setFormData(manualResolvedData);
+                // We need to get the NEW version after manual resolution
+                const sData = await intakeController.fetchServerData(draftId);
+                setVersion(sData?.version || version + 1);
+                setIsConflict(false);
+                setServerData(null);
+                setHasUnsavedChanges(true); // Allow auto-save to try again with new version
+                return;
+            }
+
+            const result = await intakeController.loadLatestDraft();
+            if (result.success && result.data?.found) {
+                setVersion(result.data.version);
+                setIsConflict(false);
+                setServerData(null);
+            }
+        } catch (e) {
+            console.error('Failed to resolve conflict', e);
+        }
+    }, [draftId, version]);
+
     // Auto-Save Effect (Debounced 3s for Server)
     useEffect(() => {
-        // Skip auto-save during initial load
-        if (loadingDraft) return;
+        // Skip auto-save during initial load or if in conflict
+        if (loadingDraft || isConflict || !hasUnsavedChanges) return;
 
         const timeoutId = setTimeout(async () => {
-            // Only save if dirty? For now just save periodically if changed.
             try {
                 const { intakeController } = await import('@/controllers/IntakeController');
-                // Don't save empty init state if no changes? 
-                // We'll trust the debouncing to only fire on updates.
 
-                const result = await intakeController.saveDraft(formData, draftId || undefined) as any;
+                const result = await intakeController.saveDraft(
+                    formData,
+                    draftId || undefined,
+                    version
+                ) as any;
+
                 if (result.success) {
                     setLastSaved(new Date());
                     setHasUnsavedChanges(false);
                     if (result.data?.intake_id && !draftId) {
                         setDraftId(result.data.intake_id);
                     }
+                    if (result.data?.version) {
+                        setVersion(result.data.version);
+                    }
+                } else if (result.error === 'CONFLICT') {
+                    setIsConflict(true);
+                    console.error('Optimistic locking conflict detected');
                 }
             } catch (e) {
                 console.error('Auto-save failed', e);
             }
-        }, 3000); // 3s debounce for server
+        }, 3000);
 
         return () => clearTimeout(timeoutId);
-    }, [formData, loadingDraft, draftId]);
+    }, [formData, loadingDraft, draftId, version, isConflict, hasUnsavedChanges]);
 
     // Protect against accidental close
     useEffect(() => {
@@ -324,6 +380,10 @@ export function useIntakeForm() {
         hasUnsavedChanges,
         isReadOnly,
         toggleEditMode,
-        draftId
+        draftId,
+        isConflict,
+        serverData,
+        resolveConflict,
+        version
     };
 }

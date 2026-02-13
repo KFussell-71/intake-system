@@ -33,7 +33,8 @@ const ALLOWED_MIME_TYPES = [
 export async function uploadPortalDocument(
     fileName: string,
     fileContent: string, // Base64 encoded
-    contentType: string
+    contentType: string,
+    requestId?: string
 ) {
     const supabase = await createClient();
 
@@ -109,16 +110,37 @@ export async function uploadPortalDocument(
     // 9. Create document record
     // Note: Portal users aren't in profiles table, so we use url to track upload source
     // and don't set uploaded_by (which references profiles)
-    const { error: docError } = await supabase
+    const { data: newDoc, error: docError } = await supabase
         .from('documents')
         .insert({
             client_id: clientId,
             name: sanitizedFileName,
-            type: contentType,  // Use 'type' column (not document_type)
+            type: contentType,
             url: filePath,
             size: fileBuffer.length
-            // uploaded_by is NOT set - portal users aren't in profiles table
-        });
+        })
+        .select()
+        .single();
+
+    if (docError || !newDoc) {
+        console.error('[PORTAL] Document record error:', docError);
+        // Don't fail - file is uploaded
+    } else if (requestId) {
+        // 10. Link to Document Request
+        const { error: reqError } = await supabase
+            .from('document_requests')
+            .update({
+                status: 'uploaded',
+                document_id: newDoc.id,
+                // We keep requested_at as the original request time
+            })
+            .eq('id', requestId)
+            .eq('client_id', clientId);
+
+        if (reqError) {
+            console.error('[PORTAL] Failed to link document to request:', reqError);
+        }
+    }
 
     if (docError) {
         console.error('[PORTAL] Document record error:', docError);
