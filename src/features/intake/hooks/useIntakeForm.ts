@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { useOfflineDraft } from '@/hooks/useOfflineDraft';
 import { IdentityData, VocationalData, MedicalData, ClinicalData, IntakeMetadata } from '../intakeTypes';
 
 type CompositeData = IdentityData & VocationalData & MedicalData & ClinicalData & IntakeMetadata & { id?: string };
@@ -216,20 +217,36 @@ export function useIntakeForm() {
     const [isConflict, setIsConflict] = useState(false);
     const [serverData, setServerData] = useState<any>(null);
 
+    // Feature: Mobile-First Offline Support
+    // Automatically saves drafts to IndexedDB when network is redundant or absent
+    const { checkDraft } = useOfflineDraft('new_intake_draft', formData, hasUnsavedChanges);
+
     // SME Fix: Review Mode
     const [isReadOnly, setIsReadOnly] = useState(false);
     const toggleEditMode = useCallback(() => setIsReadOnly(prev => !prev), []);
 
-    // Initial Load - Check for server-side draft
+    // Initial Load - Check for server-side draft OR offline draft
     useEffect(() => {
         let mounted = true;
         const loadDraft = async () => {
             try {
+                // 1. Try Offline Draft first (Fastest / Field mode)
+                const offlineData = await checkDraft();
+                if (offlineData) {
+                    console.log('Loaded offline draft');
+                    if (mounted) {
+                        setFormData((prev: CompositeData) => ({ ...prev, ...offlineData }));
+                        setLoadingDraft(false);
+                        return; // Prioritize local work if found
+                    }
+                }
+
+                // 2. Fallback to Server Draft
                 const { intakeController } = await import('@/controllers/IntakeController');
                 const result = await intakeController.loadLatestDraft();
 
                 if (mounted && result.success && result.data?.found) {
-                    console.log('Draft loaded', result.data);
+                    console.log('Draft loaded from server', result.data);
                     setFormData((prev: CompositeData) => ({ ...prev, ...result.data.data }));
                     setDraftId(result.data.intake_id);
                     setVersion(result.data.version || 1);

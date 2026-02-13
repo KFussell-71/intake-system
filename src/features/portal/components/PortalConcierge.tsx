@@ -30,6 +30,25 @@ export const PortalConcierge = ({ clientName, milestones, documentRequests }: Pr
         "Contact my caseworker"
     ].filter(Boolean) as string[];
 
+    // Concierge 2.0: Proactive Nudges
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            if (activeMilestone && messages.length === 1) {
+                setMessages(prev => [...prev, {
+                    role: 'ai',
+                    content: `Heads up! Your next milestone is "${activeMilestone.milestone_name}". Would you like to know how to complete it?`
+                }]);
+                // Auto-open if crucial (optional, mostly annoying, so skipping for now)
+            } else if (pendingDocs.length > 0 && messages.length === 1) {
+                setMessages(prev => [...prev, {
+                    role: 'ai',
+                    content: `I noticed you have ${pendingDocs.length} pending document(s). I can help you with the upload process.`
+                }]);
+            }
+        }, 3000); // 3-second delay for "thinking" or "noticing"
+        return () => clearTimeout(timer);
+    }, [activeMilestone, pendingDocs, messages.length]);
+
     const handleSend = async (text?: string) => {
         const userMsg = text || input;
         if (!userMsg.trim() || isLoading) return;
@@ -62,7 +81,14 @@ export const PortalConcierge = ({ clientName, milestones, documentRequests }: Pr
                 className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/20 flex items-center justify-center text-white z-50 border border-white/20"
             >
                 {isOpen ? <X className="w-6 h-6" /> : <Sparkles className="w-6 h-6" />}
-                {!isOpen && (
+                {/* Visual Cue for Unread Nudge */}
+                {!isOpen && messages.length > 1 && (
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500 text-[10px] items-center justify-center font-bold">1</span>
+                    </span>
+                )}
+                {!isOpen && messages.length === 1 && (
                     <span className="absolute -top-1 -right-1 flex h-3 w-3">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>

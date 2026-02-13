@@ -39,6 +39,9 @@ import { GlobalSearchDialog } from "@/components/search/GlobalSearchDialog";
 import { NetworkStatus } from "@/components/ui/NetworkStatus";
 import { Toaster } from 'sonner';
 
+import { TrainingProvider } from "@/features/training/context/TrainingContext";
+import { TrainingOverlay } from "@/features/training/components/TrainingOverlay";
+
 export default function RootLayout({
     children,
 }: Readonly<{
@@ -53,13 +56,16 @@ export default function RootLayout({
                     enableSystem
                     disableTransitionOnChange
                 >
-                    <NetworkStatus />
-                    <GlobalSearchDialog />
-                    <PWARegister />
-                    <ErrorBoundary>
-                        {children}
-                        <Toaster />
-                    </ErrorBoundary>
+                    <TrainingProvider>
+                        <NetworkStatus />
+                        <GlobalSearchDialog />
+                        <PWARegister />
+                        <TrainingOverlay />
+                        <ErrorBoundary>
+                            {children}
+                            <Toaster />
+                        </ErrorBoundary>
+                    </TrainingProvider>
                 </ThemeProvider>
             </body>
         </html>
