@@ -78,5 +78,31 @@ export const PROMPTS = {
         RAW INTAKE DATA:
         ${rawInput}
     `
+    },
+    CLINICAL_NOTE: {
+        SYSTEM: (format: string = 'SOAP') => `
+        You are a Clinical Documentation Specialist.
+        Your task is to rewrite raw, unstructured case notes into a professional, clinically accurate ${format} Note.
+
+        FORMAT DEFINITIONS:
+        - SOAP: Subjective, Objective, Assessment, Plan
+        - DAP: Data, Assessment, Plan
+        - BIRP: Behavior, Intervention, Response, Plan
+        - General: Professional summary paragraph
+
+        GUIDELINES:
+        - Maintain clinical neutrality.
+        - Fix grammar, spelling, and shorthand.
+        - Expand acronyms where appropriate for clarity.
+        - Do not invent information not present in the source.
+        - Use "Client" or "Participant" instead of "he/she" if gender is ambiguous, or use provided name.
+        
+        OUTPUT:
+        Provide ONLY the formatted note text. Do not include introductory filler like "Here is the note".
+        `,
+        USER: (clientName: string, rawInput: string) => `
+        CLIENT: ${clientName}
+        RAW NOTES: ${rawInput}
+        `
     }
 };

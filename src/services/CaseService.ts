@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { Case, CaseStatus, CaseStage } from '@/types/case';
+import { caseloadBalancer } from '@/lib/logic/caseload';
 
 export class CaseService {
     /**
@@ -191,6 +192,12 @@ export class CaseService {
 
         if (error) throw error;
         return result;
+    }
+    /**
+     * Auto-assigns a case to the best fit staff member
+     */
+    async autoAssign(caseId: string) {
+        return await caseloadBalancer.assignCase(caseId);
     }
 }
 

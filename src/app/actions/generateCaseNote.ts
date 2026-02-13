@@ -9,37 +9,57 @@ import { PROMPTS } from "@/lib/ai/prompts";
 import { sanitizeForPrompt } from "@/lib/ai/sanitizer";
 import { scrubPII } from "@/lib/security/piiScrubber";
 
-export async function generateCaseNote(rawInput: string, type: 'SOAP' | 'DAP' | 'General', clientName: string) {
-    // Fetch resources from DB dynamically
-    let resources = await getResources();
+export async function generateCaseNote(rawInput: string, type: string, clientName: string) {
+    // Determine if this is a "Resource Coordination" request or a "Clinical Note" request
+    // The previous implementation assumed everything was "Resource Coordinator".
+    // We'll use the 'type' to distinguish. 
+    // If type is SOAP, DAP, BIRP, or General, use CLINICAL_NOTE.
+    // If implied Resource Linkage (legacy), use RESOURCE_COORDINATOR.
 
-    // Fallback to static file if DB returns empty (e.g. migration not run yet)
-    if (!resources || resources.length === 0) {
-        console.warn("Using static AV_RESOURCES fallback");
-        resources = AV_RESOURCES;
-    }
+    const isClinicalNote = ['SOAP', 'DAP', 'BIRP', 'General'].includes(type) || type === 'Clinical';
 
-    // Construct the resource map string for the system prompt
-    const resourceMapString = resources.map(r =>
-        `- ${r.name} (${r.address}). Phone: ${r.phone}. Notes: ${r.notes} [Triggers: ${r.triggers?.join(", ")}]`
-    ).join("\n");
+    let systemPrompt = "";
+    let userPrompt = "";
+    let resources: any[] = [];
 
-    const systemPrompt = PROMPTS.RESOURCE_COORDINATOR.SYSTEM(type, resourceMapString);
     // RED TEAM REMEDIATION: Sanitize user input to prevent Prompt Injection
     // PURPLE TEAM REMEDIATION: Scrub PII before sending to AI
-    const userPrompt = PROMPTS.RESOURCE_COORDINATOR.USER(
-        sanitizeForPrompt(scrubPII(clientName)),
-        sanitizeForPrompt(scrubPII(rawInput))
-    );
+    const cleanClientName = sanitizeForPrompt(scrubPII(clientName));
+    const cleanInput = sanitizeForPrompt(scrubPII(rawInput));
+
+    if (isClinicalNote) {
+        systemPrompt = PROMPTS.CLINICAL_NOTE.SYSTEM(type);
+        userPrompt = PROMPTS.CLINICAL_NOTE.USER(cleanClientName, cleanInput);
+    } else {
+        // Legacy / Resource Coordinator Flow
+
+        // Fetch resources from DB dynamically
+        // Note: Using 'any' cast for now as resourceActions return type might vary in strict mode
+        // In real impl, import Resource type.
+        const dbResources = await getResources();
+        resources = dbResources || [];
+
+        // Fallback to static file if DB returns empty
+        if (!resources || resources.length === 0) {
+            console.warn("Using static AV_RESOURCES fallback");
+            resources = AV_RESOURCES;
+        }
+
+        // Construct the resource map string
+        const resourceMapString = resources.map((r: any) =>
+            `- ${r.name} (${r.address}). Phone: ${r.phone}. Notes: ${r.notes} [Triggers: ${r.triggers?.join(", ")}]`
+        ).join("\n");
+
+        systemPrompt = PROMPTS.RESOURCE_COORDINATOR.SYSTEM(type, resourceMapString);
+        userPrompt = PROMPTS.RESOURCE_COORDINATOR.USER(cleanClientName, cleanInput);
+    }
 
     try {
-        console.log(`Generating case note using UnifiedAIService`);
+        console.log(`Generating ${isClinicalNote ? 'Clinical Note' : 'Resource Plan'} using UnifiedAIService`);
 
-        // UnifiedAIService.ask returns a string directly
         const responseText = await aiService.ask({
             prompt: systemPrompt + "\n\n" + userPrompt,
-            temperature: 0.1,
-            // userId: 'system-action' // AIRequest might not support userId, verify types if needed, but safe to omit if not used by ask
+            temperature: isClinicalNote ? 0.3 : 0.1, // Slightly more creative for phrasing notes, strict for resources
         });
 
         const resultText = responseText.trim();
@@ -47,11 +67,11 @@ export async function generateCaseNote(rawInput: string, type: 'SOAP' | 'DAP' | 
         // Log the successful generation
         await logSystemAction({
             action_type: 'Generation',
-            description: `Generated case note for client: ${clientName}`,
+            description: `Generated ${type} for client: ${clientName}`,
             metadata: {
-                model: 'unified-ai', // Model info not returned by ask()
+                model: 'unified-ai',
                 type,
-                resource_count: resources?.length || 0,
+                mode: isClinicalNote ? 'clinical' : 'resource',
                 prompt_length: systemPrompt.length + userPrompt.length,
                 response_length: resultText.length
             }
@@ -63,8 +83,8 @@ export async function generateCaseNote(rawInput: string, type: 'SOAP' | 'DAP' | 
 
         // Log the failure
         await logSystemAction({
-            action_type: 'Correction', // logging as correction/error
-            description: `Failed to generate case note for client: ${clientName}`,
+            action_type: 'Correction',
+            description: `Failed to generate ${type} for client: ${clientName}`,
             metadata: { error: error.message }
         });
 

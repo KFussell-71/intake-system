@@ -81,7 +81,21 @@ export function ScheduleAppointmentDialog({ open, onOpenChange, clientId, defaul
 
                     <div className="space-y-2">
                         <Label htmlFor="type">Type</Label>
-                        <Select name="type" required defaultValue="follow_up">
+                        <Select
+                            name="type"
+                            required
+                            defaultValue="follow_up"
+                            onValueChange={(val) => {
+                                if (val === 'video_call') {
+                                    // Auto-generate Jitsi link
+                                    const uniqueRoom = `intake-${clientId.slice(0, 8)}-${Date.now()}`;
+                                    const link = `${window.location.origin}/meet/${uniqueRoom}`;
+                                    // Use a ref or simple document query to set the location input if not using controlled state
+                                    const locInput = document.getElementById('location') as HTMLInputElement;
+                                    if (locInput) locInput.value = link;
+                                }
+                            }}
+                        >
                             <SelectTrigger>
                                 <SelectValue placeholder="Select type" />
                             </SelectTrigger>
@@ -90,6 +104,7 @@ export function ScheduleAppointmentDialog({ open, onOpenChange, clientId, defaul
                                 <SelectItem value="follow_up">Follow Up</SelectItem>
                                 <SelectItem value="service_planning">Service Planning</SelectItem>
                                 <SelectItem value="crisis">Crisis Intervention</SelectItem>
+                                <SelectItem value="video_call">Video Call 📹</SelectItem>
                                 <SelectItem value="other">Other</SelectItem>
                             </SelectContent>
                         </Select>
