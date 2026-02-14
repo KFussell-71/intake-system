@@ -70,7 +70,13 @@ export class IntakeService {
 
             // DDD: Load and orchestrate
             const raw = await this.intakeRepo.getIntakeById(intakeId);
-            const entity = new IntakeEntity(intakeId, raw.data, raw.status, [], raw.version);
+            if (!raw) {
+                // If the intake doesn't exist, we can't save progress on it.
+                // This might happen if the ID is invalid or the initial create failed.
+                throw new Error(`Intake not found: ${intakeId}`);
+            }
+
+            const entity = new IntakeEntity(intakeId, raw.data || {}, raw.status, [], raw.version);
 
             // SME: State Transition & Domain Events (Now includes version check)
             await IntakeWorkflowService.saveProgress(entity, data, editComment || "Progressive Save", user.id);

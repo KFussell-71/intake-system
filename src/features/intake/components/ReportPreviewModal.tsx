@@ -1,11 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { X, FileText, CheckCircle, AlertTriangle, Loader2, Edit3, ArrowRight, Printer, Download } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { X, FileText, CheckCircle, AlertTriangle, Loader2, Edit3, ArrowRight, Printer, Download, Eye, Edit } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-// Removed static import to prevent SSR issues with jsdom/html2canvas
-// import { generatePDF } from '@/lib/pdf/generatePDF';
 import { marked } from 'marked';
 import DOMPurify from 'isomorphic-dompurify';
 
@@ -35,6 +33,8 @@ export function ReportPreviewModal({ open, onOpenChange, formData, onSubmit, onJ
     const [reportMarkdown, setReportMarkdown] = useState<string>(''); // Store markdown for PDF generation
     const [error, setError] = useState<string | null>(null);
     const [detectedSections, setDetectedSections] = useState<{ title: string, step: number }[]>([]);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedMarkdown, setEditedMarkdown] = useState('');
 
     useEffect(() => {
         if (open) {
@@ -45,6 +45,8 @@ export function ReportPreviewModal({ open, onOpenChange, formData, onSubmit, onJ
             setReportMarkdown('');
             setError(null);
             setDetectedSections([]);
+            setIsEditing(false);
+            setEditedMarkdown('');
         }
     }, [open]);
 
@@ -68,6 +70,7 @@ export function ReportPreviewModal({ open, onOpenChange, formData, onSubmit, onJ
             const cleanHtml = DOMPurify.sanitize(rawHtml as string);
             setReportHtml(cleanHtml);
             setReportMarkdown(data.markdown); // Save for PDF generation
+            setEditedMarkdown(data.markdown);
 
             // Extract Sections for Quick Nav
             extractSections(data.markdown);
@@ -75,10 +78,15 @@ export function ReportPreviewModal({ open, onOpenChange, formData, onSubmit, onJ
         } catch (err: any) {
             console.error('Preview Error:', err);
             setError(err.message || 'Failed to generate report preview.');
-        } finally {
-            setLoading(false);
+            setIsEditing(false); // Reset edit mode
         }
     };
+
+    // Live preview of edits
+    const effectiveReportHtml = useMemo(() => {
+        const md = isEditing ? editedMarkdown : (reportMarkdown || '');
+        return DOMPurify.sanitize(marked(md) as string);
+    }, [reportMarkdown, editedMarkdown, isEditing]);
 
     const extractSections = (markdown: string) => {
         // Find headers roughly matching our map
@@ -111,60 +119,104 @@ export function ReportPreviewModal({ open, onOpenChange, formData, onSubmit, onJ
     };
 
     const handleDownloadPDF = async () => {
-        if (!reportMarkdown) return;
+        const contentToPrint = isEditing ? editedMarkdown : reportMarkdown;
+        if (!contentToPrint) return;
+
         try {
-            const { generatePDF } = await import('@/lib/pdf/generatePDF');
-            const pdfBlob = await generatePDF(reportMarkdown);
-            const url = URL.createObjectURL(pdfBlob);
+            setLoading(true);
+            const response = await fetch('/api/generate-pdf', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    markdown: contentToPrint,
+                    isDraft: true // Always draft in preview
+                })
+            });
+
+            if (!response.ok) throw new Error('Failed to generate PDF');
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
             link.download = `Draft_Report_${formData.clientName || 'Client'}.pdf`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+            window.URL.revokeObjectURL(url);
         } catch (err) {
             console.error('PDF Error:', err);
             alert('Failed to generate PDF. Please try again.');
+        } finally {
+            setLoading(false);
         }
     };
 
     const handlePrint = () => {
-        // Create a hidden iframe to print just the report content
         const printWindow = window.open('', '_blank');
-        if (!printWindow) {
-            alert('Please allow popups to print.');
-            return;
+        if (printWindow) {
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Print Report</title>
+                        <link rel="stylesheet" href="/styles/dor-report.css">
+                        <style>
+                            body { font-family: serif; padding: 2rem; max-width: 800px; margin: 0 auto; }
+                            @media print { body { padding: 0; } }
+                        </style>
+                    </head>
+                    <body>
+                        ${effectiveReportHtml}
+                        <script>
+                            window.onload = () => {
+                                window.print();
+                                window.onafterprint = () => window.close();
+                            }
+                        </script>
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
         }
-        printWindow.document.write(`
-            <html>
-                <head>
-                    <title>Print Report</title>
-                    <style>
-                        body { font-family: sans-serif; padding: 40px; }
-                        h1 { text-align: center; text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 10px; }
-                        h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top: 30px; }
-                        p { line-height: 1.6; margin-bottom: 15px; }
-                        .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 100px; color: rgba(0,0,0,0.05); font-weight: bold; z-index: -1; }
-                    </style>
-                </head>
-                <body>
-                    <div class="watermark">DRAFT</div>
-                    ${reportHtml}
-                    <script>
-                        window.onload = function() { window.print(); window.close(); }
-                    </script>
-                </body>
-            </html>
-        `);
-        printWindow.document.close();
+    };
+
+    const handleSubmit = async () => {
+        try {
+            setLoading(true);
+            const { generateEmploymentReport } = await import('@/app/actions/generateEmploymentReport');
+
+            // If we are editing, we pass the override.
+            // We need the clientId. It might not be in formData.
+            // We should add a clientID prop to this modal.
+            // For now, let's assume it's passed or in formData (we'll fix parent next)
+            const clientId = (formData as any).clientId || (formData as any).id;
+
+            if (!clientId) {
+                alert("Missing Client ID. Cannot finalize.");
+                return;
+            }
+
+            const result = await generateEmploymentReport(clientId, isEditing ? editedMarkdown : undefined);
+
+            if (result.status === 'generated') {
+                onSubmit(); // Close modal
+                alert('Report finalized and saved successfully!');
+            } else {
+                alert('Failed to finalize report: ' + JSON.stringify(result));
+            }
+        } catch (err) {
+            console.error('Submission Error:', err);
+            alert('Failed to submit report.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="w-full max-w-6xl h-[90vh] flex flex-col p-0 gap-0 bg-surface dark:bg-surface-dark border-slate-200 dark:border-white/10 overflow-hidden">
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-white/10 bg-surface dark:bg-surface-dark z-10">
+                <DialogHeader className="flex flex-row items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-white/10 bg-surface dark:bg-surface-dark z-10">
                     <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-full bg-yellow-500/10 flex items-center justify-center shrink-0">
                             <AlertTriangle className="h-5 w-5 text-yellow-500" />
@@ -178,15 +230,33 @@ export function ReportPreviewModal({ open, onOpenChange, formData, onSubmit, onJ
                             </p>
                         </div>
                     </div>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => onOpenChange(false)}
-                        className="text-slate-400 hover:text-primary"
-                    >
-                        <X className="h-5 w-5" />
-                    </Button>
-                </div>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setIsEditing(!isEditing)}
+                        >
+                            {isEditing ? <Eye className="w-4 h-4 mr-2" /> : <Edit className="w-4 h-4 mr-2" />}
+                            {isEditing ? "Preview" : "Edit Report"}
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={handlePrint} disabled={!reportMarkdown && !editedMarkdown}>
+                            <Printer className="w-4 h-4 mr-2" />
+                            Print
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={handleDownloadPDF} disabled={!reportMarkdown && !editedMarkdown}>
+                            <Download className="w-4 h-4 mr-2" />
+                            Download PDF
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => onOpenChange(false)}
+                            className="text-slate-400 hover:text-primary"
+                        >
+                            <X className="h-5 w-5" />
+                        </Button>
+                    </div>
+                </DialogHeader>
 
                 <div className="flex flex-1 overflow-hidden">
 
@@ -244,7 +314,15 @@ export function ReportPreviewModal({ open, onOpenChange, formData, onSubmit, onJ
                                     </div>
                                 </div>
 
-                                <div dangerouslySetInnerHTML={{ __html: reportHtml }} />
+                                {isEditing ? (
+                                    <textarea
+                                        className="w-full h-[60vh] p-4 font-mono text-sm bg-slate-50 dark:bg-slate-900 border rounded focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
+                                        value={editedMarkdown}
+                                        onChange={(e) => setEditedMarkdown(e.target.value)}
+                                    />
+                                ) : (
+                                    <div dangerouslySetInnerHTML={{ __html: effectiveReportHtml }} />
+                                )}
                             </div>
                         )}
                     </div>
@@ -257,7 +335,7 @@ export function ReportPreviewModal({ open, onOpenChange, formData, onSubmit, onJ
                     </Button>
                     <div className="flex gap-4">
                         <Button
-                            onClick={onSubmit}
+                            onClick={handleSubmit}
                             disabled={loading || !!error}
                             className="bg-primary text-white shadow-xl shadow-primary/20 hover:bg-primary/90"
                         >
@@ -269,10 +347,10 @@ export function ReportPreviewModal({ open, onOpenChange, formData, onSubmit, onJ
 
                 {/* Print/Download Toolbar - added in footer left side */}
                 <div className="absolute bottom-4 left-6 z-20 flex gap-2">
-                    <Button variant="outline" size="sm" onClick={handlePrint} disabled={!reportHtml}>
+                    <Button variant="outline" size="sm" onClick={handlePrint} disabled={!editedMarkdown && !reportMarkdown}>
                         <Printer className="w-4 h-4 mr-2" /> Print
                     </Button>
-                    <Button variant="outline" size="sm" onClick={handleDownloadPDF} disabled={!reportMarkdown}>
+                    <Button variant="outline" size="sm" onClick={handleDownloadPDF} disabled={!reportMarkdown && !editedMarkdown}>
                         <Download className="w-4 h-4 mr-2" /> Download PDF
                     </Button>
                 </div>

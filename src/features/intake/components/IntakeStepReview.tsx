@@ -16,6 +16,7 @@ interface Props {
     errors?: Record<string, string>;
     onFileSelect?: (file: File | null) => void;
     intakeId?: string | null;
+    clientId?: string;
     isReadOnly?: boolean;
 }
 
@@ -25,7 +26,8 @@ export const IntakeStepReview: React.FC<Props> = ({
     setFormData,
     errors = {},
     onFileSelect,
-    intakeId
+    intakeId,
+    clientId
 }) => {
     const [showPreview, setShowPreview] = React.useState(false);
 
@@ -55,7 +57,7 @@ export const IntakeStepReview: React.FC<Props> = ({
             <ReportPreviewModal
                 open={showPreview}
                 onOpenChange={setShowPreview}
-                formData={formData}
+                formData={{ ...formData, clientId: clientId || intakeId }}
                 onSubmit={() => setShowPreview(false)}
             />
 

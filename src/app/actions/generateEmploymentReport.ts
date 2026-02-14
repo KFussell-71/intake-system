@@ -7,7 +7,7 @@ import { runDorAgent } from "@/lib/agents/dorAgent";
 import { logReportGenerated } from "@/lib/audit";
 import { v4 as uuidv4 } from "uuid";
 
-export async function generateEmploymentReport(clientId: string) {
+export async function generateEmploymentReport(clientId: string, overrideMarkdown?: string) {
     // 1. Strict Auth Verification
     const { user, supabase } = await requireAuth();
 
@@ -47,8 +47,11 @@ export async function generateEmploymentReport(clientId: string) {
         };
     }
 
-    // 4. AI generation
-    const markdown = await runDorAgent(bundle);
+    // 4. AI generation (or use override)
+    let markdown = overrideMarkdown;
+    if (!markdown) {
+        markdown = await runDorAgent(bundle);
+    }
 
     // 5. Generate Official State PDF Artifact
     let pdfUrl = '';

@@ -73,6 +73,7 @@ export const ModernizedIntakeWizard: React.FC<Props> = ({ intakeId }) => {
                     onChange={() => { }}
                     setFormData={() => { }}
                     intakeId={intakeId}
+                    clientId={intake?.client_id}
                     isReadOnly={false}
                 />;
             default:

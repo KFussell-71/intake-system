@@ -13,7 +13,7 @@ interface Props {
 
 export const PortalConcierge = ({ clientName, milestones, documentRequests }: Props) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [messages, setMessages] = useState<{ role: 'ai' | 'user'; content: string }[]>([
+    const [messages, setMessages] = useState<{ role: 'ai' | 'user'; content: string; action?: { label: string; url: string } }[]>([
         { role: 'ai', content: `Hi ${clientName.split(' ')[0]}! I'm your AI Concierge. How can I help you regarding your milestones or documents today?` }
     ]);
     const [input, setInput] = useState('');
@@ -36,13 +36,14 @@ export const PortalConcierge = ({ clientName, milestones, documentRequests }: Pr
             if (activeMilestone && messages.length === 1) {
                 setMessages(prev => [...prev, {
                     role: 'ai',
-                    content: `Heads up! Your next milestone is "${activeMilestone.milestone_name}". Would you like to know how to complete it?`
+                    content: `Heads up! Your next milestone is "${activeMilestone.milestone_name}". Would you like to know how to complete it?`,
+                    action: { label: "View Roadmap", url: "/portal" }
                 }]);
-                // Auto-open if crucial (optional, mostly annoying, so skipping for now)
             } else if (pendingDocs.length > 0 && messages.length === 1) {
                 setMessages(prev => [...prev, {
                     role: 'ai',
-                    content: `I noticed you have ${pendingDocs.length} pending document(s). I can help you with the upload process.`
+                    content: `I noticed you have ${pendingDocs.length} pending document(s). I can help you with the upload process.`,
+                    action: { label: "Go to Documents", url: "/portal/documents" }
                 }]);
             }
         }, 3000); // 3-second delay for "thinking" or "noticing"
@@ -119,15 +120,23 @@ export const PortalConcierge = ({ clientName, milestones, documentRequests }: Pr
                         {/* Messages Area */}
                         <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-white/10">
                             {messages.map((msg, idx) => (
-                                <div key={idx} className={`flex ${msg.role === 'ai' ? 'justify-start' : 'justify-end'}`}>
+                                <div key={idx} className={`flex flex-col ${msg.role === 'ai' ? 'items-start' : 'items-end'}`}>
                                     <div className={`
-                                        max-w-[85%] p-3 rounded-xl text-xs
+                                        max-w-[85%] p-3 rounded-xl text-xs mb-1
                                         ${msg.role === 'ai'
                                             ? 'bg-slate-800 text-slate-200 border border-white/5 rounded-bl-none'
                                             : 'bg-indigo-600 text-white rounded-br-none'}
                                     `}>
                                         {msg.content}
                                     </div>
+                                    {msg.action && (
+                                        <a
+                                            href={msg.action.url}
+                                            className="px-3 py-1.5 bg-indigo-500/20 border border-indigo-500/50 rounded-lg text-indigo-300 text-[10px] font-bold hover:bg-indigo-500/30 transition-colors flex items-center gap-1"
+                                        >
+                                            {msg.action.label} <Send className="w-3 h-3 -rotate-45" />
+                                        </a>
+                                    )}
                                 </div>
                             ))}
                             {isLoading && (
