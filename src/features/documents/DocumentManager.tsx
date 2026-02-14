@@ -9,6 +9,8 @@ import { createClient } from '@/lib/supabase';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { SignaturePad } from '@/components/ui/SignaturePad';
 
+import { FormSignerModal } from './FormSignerModal';
+
 interface DocumentManagerProps {
     clientId: string;
 }
@@ -19,6 +21,7 @@ export function DocumentManager({ clientId }: DocumentManagerProps) {
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState('');
     const [showSignaturePad, setShowSignaturePad] = useState(false);
+    const [showFormSigner, setShowFormSigner] = useState(false);
     const [signatureData, setSignatureData] = useState('');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -121,6 +124,17 @@ export function DocumentManager({ clientId }: DocumentManagerProps) {
                         className="hidden"
                         accept="application/pdf,image/*,.doc,.docx"
                     />
+
+                    {/* New Sign Form Button */}
+                    <ActionButton
+                        size="sm"
+                        variant="primary"
+                        onClick={() => setShowFormSigner(true)}
+                        icon={<div className="w-4 h-4 border-2 border-current rounded-sm flex items-center justify-center text-[10px] font-bold">Pf</div>}
+                    >
+                        Sign Form
+                    </ActionButton>
+
                     <ActionButton
                         size="sm"
                         variant="secondary"
@@ -128,7 +142,7 @@ export function DocumentManager({ clientId }: DocumentManagerProps) {
                         isLoading={uploading}
                         icon={<PenTool className="w-4 h-4" />}
                     >
-                        Sign
+                        Upload Sig
                     </ActionButton>
                     <ActionButton
                         size="sm"
@@ -140,6 +154,16 @@ export function DocumentManager({ clientId }: DocumentManagerProps) {
                     </ActionButton>
                 </div>
             </div>
+
+            {/* Form Signer Modal */}
+            <FormSignerModal
+                clientId={clientId}
+                isOpen={showFormSigner}
+                onClose={() => setShowFormSigner(false)}
+                onSuccess={() => {
+                    loadDocuments();
+                }}
+            />
 
             {/* ... Error & Loading ... */}
             {error && (
