@@ -6,6 +6,7 @@ import { ActionButton } from '@/components/ui/ActionButton';
 import { Search, MapPin, ExternalLink, Sparkles } from 'lucide-react';
 import { findResourcesAction } from '@/app/actions/resources/findResources';
 import { toast } from 'sonner';
+import { VoiceInput } from '@/components/ui/VoiceInput';
 
 export function ResourceFinder() {
     const [query, setQuery] = useState('');
@@ -48,16 +49,19 @@ export function ResourceFinder() {
                     onChange={(e) => setQuery(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                     placeholder="Describe the need..."
-                    className="w-full px-6 py-4 rounded-full border-2 border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-lg shadow-sm bg-white dark:bg-slate-800 transition-all"
+                    className="w-full pl-6 pr-24 py-4 rounded-full border-2 border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-lg shadow-sm bg-white dark:bg-slate-800 transition-all"
                 />
-                <button
-                    onClick={handleSearch}
-                    disabled={isLoading || !query.trim()}
-                    className="absolute right-2 top-2 bottom-2 bg-blue-600 text-white rounded-full px-6 flex items-center gap-2 hover:bg-blue-700 disabled:opacity-50 transition-colors font-medium"
-                >
-                    {isLoading ? <Sparkles className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
-                    Find Resources
-                </button>
+                <div className="absolute right-2 top-2 bottom-2 flex items-center gap-2">
+                    <VoiceInput onTranscript={(text) => setQuery(prev => (prev ? prev + ' ' : '') + text)} />
+                    <button
+                        onClick={handleSearch}
+                        disabled={isLoading || !query.trim()}
+                        className="bg-blue-600 text-white rounded-full px-6 h-full flex items-center gap-2 hover:bg-blue-700 disabled:opacity-50 transition-colors font-medium"
+                    >
+                        {isLoading ? <Sparkles className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
+                        <span className="hidden sm:inline">Find</span>
+                    </button>
+                </div>
             </div>
 
             {/* Results Display */}

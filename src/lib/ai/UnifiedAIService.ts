@@ -1,6 +1,7 @@
 import { AIProvider, AIRequest, AIResponse } from './types';
 import { GeminiProvider } from './providers/GeminiProvider';
 import { LocalAIProvider } from './providers/LocalAIProvider';
+import { MockAIProvider } from './providers/MockAIProvider';
 
 export class UnifiedAIService {
     private primaryProvider: AIProvider;
@@ -8,35 +9,12 @@ export class UnifiedAIService {
 
     constructor() {
         // SME: Strategy Pattern for AI Providers with Fallback
-        const ollamaUrl = process.env.NEXT_PUBLIC_OLLAMA_URL || process.env.OLLAMA_URL || (process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:11434' : '');
-        const ollamaModel = process.env.NEXT_PUBLIC_OLLAMA_MODEL || process.env.OLLAMA_MODEL || 'mistral-small';
-        const geminiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
 
-        // Initialize Primary (Ollama)
-        if (ollamaUrl) {
-            console.log(`[UnifiedAIService] Primary: Local AI Provider (Ollama) with model: ${ollamaModel}`);
-            this.primaryProvider = new LocalAIProvider(ollamaUrl, ollamaModel);
-        } else {
-            // If no local AI, try to make Gemini primary
-            if (geminiKey) {
-                console.log('[UnifiedAIService] Primary: Gemini AI Provider (No Local AI configured)');
-                this.primaryProvider = new GeminiProvider(geminiKey);
-            } else {
-                console.warn('AI Provider configuration missing. AI features may be disabled.');
-                this.primaryProvider = {
-                    name: 'null-provider',
-                    generate: async () => 'AI service unavailable'
-                };
-            }
-        }
-
-        // Initialize Fallback (Gemini) if Primary is Ollama and we have a key
-        if (this.primaryProvider.name === 'ollama' && geminiKey) {
-            console.log('[UnifiedAIService] Fallback: Gemini AI Provider configured');
-            this.fallbackProvider = new GeminiProvider(geminiKey);
-        }
+        // FORCE MOCK FOR DEMO/LOW-RESOURCE
+        console.log('[UnifiedAIService] Forcing MockAIProvider for resource optimization.');
+        this.primaryProvider = new MockAIProvider();
+        this.fallbackProvider = null;
     }
-
     async ask(req: AIRequest): Promise<string> {
         const start = Date.now();
 

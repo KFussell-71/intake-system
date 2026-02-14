@@ -33,6 +33,7 @@ import { StaffingForecastWidget } from '@/features/dashboard/components/Staffing
 import { PolicySimulator } from '@/features/simulation/components/PolicySimulator';
 import { ComparabilityWidget } from '@/features/comparability/components/ComparabilityWidget';
 import { DashboardStats } from '@/types/dashboard';
+import { Greeting } from '@/features/dashboard/components/Greeting';
 
 export default function DashboardPage() {
     const router = useRouter();
@@ -183,9 +184,7 @@ export default function DashboardPage() {
                                     <span className="inline-block px-3 py-1 bg-white/10 text-white/80 text-[10px] font-bold uppercase tracking-wider rounded-full mb-4">
                                         {isSupervisor ? 'Supervisor Dashboard' : 'My Workspace'}
                                     </span>
-                                    <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
-                                        Good morning,<br />{user?.email?.split('@')[0]}
-                                    </h2>
+                                    <Greeting user={user} />
                                     <p className="text-white/60 max-w-md text-lg">
                                         {isSupervisor
                                             ? `Team currently managing ${activeCases} active intakes across ${stats?.staffWorkload.length || 0} staff members.`
