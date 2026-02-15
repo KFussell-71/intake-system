@@ -20,12 +20,11 @@ const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
  * note: This is async because cookies() is async in Next.js 15+.
  */
 export async function createClient() {
-    /* 
     // Mock override if needed
     if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_ALLOW_MOCK_AUTH === 'true') {
         return createMockSupabase();
     }
-    */
+
 
     if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
         throw new Error(

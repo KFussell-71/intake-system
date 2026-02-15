@@ -8,8 +8,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Wand2, Save, FileText, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
+import { useRouter } from 'next/navigation';
 import { generateCaseNote } from '@/app/actions/generateCaseNote';
 import { saveCaseNoteAction } from '@/app/actions/caseManagementActions';
+
 
 // Note Type Definition
 interface CaseNote {
@@ -33,10 +35,12 @@ interface CaseNotesFeedProps {
 }
 
 export function CaseNotesFeed({ notes, clientId, currentUserId }: CaseNotesFeedProps) {
+    const router = useRouter();
     const [isGenerating, setIsGenerating] = useState(false);
     const [noteContent, setNoteContent] = useState('');
     const [noteType, setNoteType] = useState<'general' | 'clinical' | 'incident' | 'administrative'>('clinical');
     const [error, setError] = useState('');
+
 
     const handleAIGenerate = async () => {
         if (!noteContent.trim()) return;
@@ -62,6 +66,7 @@ export function CaseNotesFeed({ notes, clientId, currentUserId }: CaseNotesFeedP
             if (result && result.success) {
                 setNoteContent('');
                 setNoteType('clinical');
+                router.refresh();
                 // Optional: Toast success
             } else {
                 setError(result?.message || 'Failed to save');
@@ -71,6 +76,7 @@ export function CaseNotesFeed({ notes, clientId, currentUserId }: CaseNotesFeedP
             setError('Failed to connect to server');
         }
     };
+
 
     return (
         <div className="space-y-6">
@@ -157,8 +163,11 @@ export function CaseNotesFeed({ notes, clientId, currentUserId }: CaseNotesFeedP
                                 </span>
                             </div>
                             <span className="text-xs text-slate-400">
-                                {format(new Date(note.created_at), 'MMM d, yyyy • h:mm a')}
+                                {note.created_at && !isNaN(new Date(note.created_at).getTime())
+                                    ? format(new Date(note.created_at), 'MMM d, yyyy • h:mm a')
+                                    : 'Date N/A'}
                             </span>
+
                         </div>
                         <div className="prose prose-sm max-w-none text-slate-700 dark:text-slate-300">
                             {note.type === 'incident' && <AlertTriangle className="w-5 h-5 text-red-500 mb-2" />}

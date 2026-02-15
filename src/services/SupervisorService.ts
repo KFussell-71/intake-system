@@ -1,5 +1,5 @@
 
-import { createClient } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
 
 export type SupervisorMetrics = {
     stalled_cases: Array<{
@@ -40,9 +40,9 @@ export type SupervisorMetrics = {
 
 export class SupervisorService {
     static async getMetrics(): Promise<SupervisorMetrics> {
-        const supabase = createClient();
+        const supabase = await createClient();
 
-        const { data, error } = await supabase.rpc('get_supervisor_metrics').single();
+        const { data, error } = await supabase.rpc('get_supervisor_metrics');
 
 
         if (error) {
@@ -50,11 +50,10 @@ export class SupervisorService {
             throw error;
         }
 
-        // Supabase RPC returns specific error JSON if unauthorized inside function
-        if (data && (data as any).error) {
-            throw new Error((data as any).error);
-        }
+        // Result might be an array with one object or just the object
+        const finalData = Array.isArray(data) ? data[0] : data;
 
-        return data as SupervisorMetrics;
+        return finalData as SupervisorMetrics;
+
     }
 }

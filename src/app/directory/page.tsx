@@ -133,8 +133,11 @@ export default function DirectoryPage() {
                         <GlassCard
                             key={client.id}
                             className="group relative flex flex-col p-6 hover:translate-y-[-4px] transition-all duration-300 cursor-pointer border border-white/20 dark:border-white/5"
-                            onClick={() => router.push(`/reports/${client.id}`)}
+                            onClick={() => router.push(`/clients/${client.id}`)}
                         >
+
+
+
                             <div className="flex items-start justify-between mb-4">
                                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-primary/20">
                                     {client.name?.charAt(0) || 'U'}
@@ -208,7 +211,7 @@ export default function DirectoryPage() {
                         </div>
                     )}
                 </div>
-            </main>
-        </div>
+            </main >
+        </div >
     );
 }

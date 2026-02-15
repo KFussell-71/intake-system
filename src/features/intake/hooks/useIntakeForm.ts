@@ -1,6 +1,8 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useOfflineDraft } from '@/hooks/useOfflineDraft';
 import { IdentityData, VocationalData, MedicalData, ClinicalData, IntakeMetadata } from '../intakeTypes';
+import { saveBackup } from '@/lib/offline/db';
+import { toast } from 'sonner';
 
 type CompositeData = IdentityData & VocationalData & MedicalData & ClinicalData & IntakeMetadata & { id?: string };
 
@@ -208,6 +210,13 @@ const initialFormData: CompositeData = {
 
 export function useIntakeForm() {
     const [formData, setFormData] = useState<CompositeData>(initialFormData);
+    const formDataRef = useRef(formData);
+
+    // Keep ref in sync
+    useEffect(() => {
+        formDataRef.current = formData;
+    }, [formData]);
+
     const [currentStep, setCurrentStep] = useState(0);
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
     const [loadingDraft, setLoadingDraft] = useState(true);
@@ -342,6 +351,29 @@ export function useIntakeForm() {
 
         return () => clearTimeout(timeoutId);
     }, [formData, loadingDraft, draftId, version, isConflict, hasUnsavedChanges]);
+
+    // Safety Backup: 5 Minute Interval
+    // Persists a distinct snapshot to 'intake-backups' every 5 minutes
+    useEffect(() => {
+        const backupInterval = setInterval(async () => {
+            try {
+                const currentData = formDataRef.current;
+                // Ensure we have minimal data to warrant a backup (client name or > 5 keys)
+                if (currentData.clientName || Object.keys(currentData).length > 20) {
+                    await saveBackup('new_intake_draft', currentData);
+                    toast.success('Safety Backup Saved', {
+                        description: 'A dedicated restore point has been created.',
+                        duration: 3000
+                    });
+                    console.log('[Backup] Safety snapshot created');
+                }
+            } catch (e) {
+                console.error('[Backup] Failed to create safety snapshot', e);
+            }
+        }, 5 * 60 * 1000); // 5 minutes
+
+        return () => clearInterval(backupInterval);
+    }, []); // Empty dependency array ensures interval persists regardless of renders
 
     // Protect against accidental close
     useEffect(() => {

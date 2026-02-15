@@ -17,6 +17,13 @@ interface IntakeDraft {
     updatedAt: number;
 }
 
+interface IntakeBackup {
+    id: string;
+    formId: string;
+    data: any;
+    createdAt: number;
+}
+
 interface IntakeDB extends DBSchema {
     'sync-queue': {
         key: string;
@@ -27,10 +34,15 @@ interface IntakeDB extends DBSchema {
         key: string;
         value: IntakeDraft;
     };
+    'intake-backups': {
+        key: string;
+        value: IntakeBackup;
+        indexes: { 'by-form': string; 'by-date': number };
+    };
 }
 
 const DB_NAME = 'intake-offline-db';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 let dbPromise: Promise<IDBPDatabase<IntakeDB>> | null = null;
 
@@ -39,12 +51,22 @@ export const getDB = () => {
 
     if (!dbPromise) {
         dbPromise = openDB<IntakeDB>(DB_NAME, DB_VERSION, {
-            upgrade(db) {
-                const syncStore = db.createObjectStore('sync-queue', { keyPath: 'id' });
-                syncStore.createIndex('by-status', 'status');
-                syncStore.createIndex('by-created', 'createdAt');
+            upgrade(db, oldVersion, newVersion, transaction) {
+                // Version 1 Stores
+                if (oldVersion < 1) {
+                    const syncStore = db.createObjectStore('sync-queue', { keyPath: 'id' });
+                    syncStore.createIndex('by-status', 'status');
+                    syncStore.createIndex('by-created', 'createdAt');
 
-                db.createObjectStore('intake-drafts', { keyPath: 'id' });
+                    db.createObjectStore('intake-drafts', { keyPath: 'id' });
+                }
+
+                // Version 2 Stores - Safety Backups
+                if (oldVersion < 2) {
+                    const backupStore = db.createObjectStore('intake-backups', { keyPath: 'id' });
+                    backupStore.createIndex('by-form', 'formId');
+                    backupStore.createIndex('by-date', 'createdAt');
+                }
             },
         });
     }
@@ -107,4 +129,25 @@ export const getDraft = async (id: string) => {
     const db = await getDB();
     if (!db) return null;
     return db.get('intake-drafts', id);
+};
+
+export const saveBackup = async (formId: string, data: any) => {
+    const db = await getDB();
+    if (!db) return;
+
+    const backup: IntakeBackup = {
+        id: crypto.randomUUID(),
+        formId,
+        data,
+        createdAt: Date.now()
+    };
+
+    await db.put('intake-backups', backup);
+    return backup;
+};
+
+export const getBackups = async (formId: string) => {
+    const db = await getDB();
+    if (!db) return [];
+    return db.getAllFromIndex('intake-backups', 'by-form', formId);
 };

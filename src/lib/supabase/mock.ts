@@ -18,7 +18,9 @@ interface MockState {
     consent_signatures: any[];
     clients: any[];
     cases: any[];
+    case_notes: any[];
 }
+
 
 // --- Initial Seed Data (Demo Mode) ---
 const SEED_USER = {
@@ -169,9 +171,11 @@ class MockDataManager {
             observations: [],
             consent_documents: [],
             consent_signatures: [],
-            cases: [...SEED_CASES]
+            cases: [...SEED_CASES],
+            case_notes: []
         };
     }
+
 
     reset() {
         console.log('[MOCK] Resetting to Blank State');
@@ -191,9 +195,11 @@ class MockDataManager {
             consent_documents: [],
             consent_signatures: [],
             clients: [],
-            cases: []
+            cases: [],
+            case_notes: []
         };
     }
+
 
     seed() {
         console.log('[MOCK] Restoring Demo Data');
@@ -215,8 +221,10 @@ class MockDataManager {
         if (table === 'consent_documents') return this.state.consent_documents || [];
         if (table === 'consent_signatures') return this.state.consent_signatures || [];
         if (table === 'cases') return this.state.cases || [];
+        if (table === 'case_notes') return this.state.case_notes || [];
         return [];
     }
+
 
     // Helper for bundle
     getBundle() {
@@ -298,18 +306,46 @@ export const createMockSupabase = () => {
                 return { data: mockManager.getBundle(), error: null };
             }
 
-            if (fn === 'get_my_workload') {
-                const intakes = mockManager.getTable('intakes');
+            if (fn === 'get_supervisor_metrics') {
                 return {
                     data: [{
-                        active_cases: mockManager.getTable('clients').length,
-                        pending_reviews: intakes.filter(i => i.status === 'awaiting_review').length
+                        stalled_cases: [
+                            { id: 'c1', name: 'John Doe', days_since_last_contact: 15, risk_score: 85 },
+                            { id: 'c3', name: 'Bob Smith', days_since_last_contact: 20, risk_score: 92 }
+                        ],
+                        compliance_gaps: {
+                            unsigned_intakes: 5,
+                            overdue_reviews: 3,
+                            missing_docs: 12
+                        },
+                        goal_drift: [
+                            { id: 'g1', client_name: 'John Doe', goal_title: 'Obtain GED', target_date: '2026-01-15', days_past: 30 },
+                            { id: 'g2', client_name: 'Jane Smith', goal_title: 'Find Part-time Job', target_date: '2026-02-01', days_past: 14 }
+                        ],
+                        upcoming_exits: [
+                            { id: 'e1', client_name: 'Alice Cooper', exit_date: '2026-03-05', placement_confirmed: true },
+                            { id: 'e2', client_name: 'Charlie Brown', exit_date: '2026-03-15', placement_confirmed: false }
+                        ],
+                        pipeline_velocity: [
+                            { stage: 'intake', avg_days: 12, case_count: 45 },
+                            { stage: 'assessment', avg_days: 14, case_count: 38 },
+                            { stage: 'planning', avg_days: 11, case_count: 32 },
+                            { stage: 'service_delivery', avg_days: 15, case_count: 28 },
+                            { stage: 'review', avg_days: 18, case_count: 25 }
+                        ],
+
+                        caseload_stats: [
+                            { worker_name: 'James Jones', active_cases: 12, capacity: 15 },
+                            { worker_name: 'Sarah Smith', active_cases: 14, capacity: 15 },
+                            { worker_name: 'Mike Johnson', active_cases: 8, capacity: 15 }
+                        ]
                     }],
                     error: null
                 };
             }
 
             return { data: [], error: null };
+
         },
         from: (table: string) => {
             const queryBuilder: any = {

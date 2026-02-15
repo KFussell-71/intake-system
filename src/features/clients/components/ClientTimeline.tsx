@@ -54,16 +54,19 @@ export function ClientTimeline({ events }: ClientTimelineProps) {
                                     {event.title}
                                     {event.status && (
                                         <span className={`text-xs px-2 py-0.5 rounded-full ${event.status === 'approved' ? 'bg-green-100 text-green-700' :
-                                                event.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                                                    'bg-slate-100 text-slate-600'
+                                            event.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                                                'bg-slate-100 text-slate-600'
                                             }`}>
                                             {event.status}
                                         </span>
                                     )}
                                 </h4>
                                 <p className="text-xs text-slate-500 font-medium">
-                                    {format(new Date(event.date), 'MMMM d, yyyy • h:mm a')}
+                                    {event.date && !isNaN(new Date(event.date).getTime())
+                                        ? format(new Date(event.date), 'MMMM d, yyyy • h:mm a')
+                                        : 'Date N/A'}
                                 </p>
+
                             </div>
                             <ChevronRight className="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>

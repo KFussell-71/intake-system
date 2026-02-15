@@ -1,5 +1,7 @@
+"use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Timer } from 'lucide-react';
 
@@ -33,9 +35,10 @@ export function PipelineVelocity({ data }: { data: Metric[] }) {
                                 dataKey="stage"
                                 type="category"
                                 width={100}
-                                tickFormatter={(val) => val.charAt(0).toUpperCase() + val.slice(1).replace('_', ' ')}
+                                tickFormatter={(val) => (val && typeof val === 'string') ? (val.charAt(0).toUpperCase() + val.slice(1).replace('_', ' ')) : 'Unknown'}
                                 tick={{ fontSize: 12 }}
                             />
+
                             <Tooltip
                                 cursor={{ fill: 'transparent' }}
                                 contentStyle={{ borderRadius: '8px' }}
@@ -48,10 +51,11 @@ export function PipelineVelocity({ data }: { data: Metric[] }) {
                 <div className="grid grid-cols-3 gap-2 mt-4 text-center text-xs text-muted-foreground">
                     {sortedData.map((d, i) => (
                         <div key={i} className="flex flex-col border rounded p-1 shadow-sm">
-                            <span className="font-semibold">{d.avg_days}d</span>
-                            <span className="capitalize">{d.stage.replace('_', ' ')}</span>
+                            <span className="font-semibold">{d.avg_days || 0}d</span>
+                            <span className="capitalize">{(d.stage || 'unknown').replace('_', ' ')}</span>
                         </div>
                     ))}
+
                 </div>
             </CardContent>
         </Card>

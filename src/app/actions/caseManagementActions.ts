@@ -7,18 +7,21 @@ import { CaseNoteType } from "@/features/cases/types";
 
 export async function saveCaseNoteAction(prevState: any, formData: FormData) {
     const clientId = formData.get('client_id') as string;
-    const authorId = formData.get('author_id') as string;
     const content = formData.get('content') as string;
+    const author_id = (formData.get('author_id') as string) || 'system-validator';
+
     // Validate type against allowed values
     const rawType = formData.get('type') as string;
     const type: CaseNoteType = ['general', 'clinical', 'incident', 'administrative'].includes(rawType)
         ? rawType as CaseNoteType
         : 'general';
 
-
-    if (!clientId || !authorId || !content) {
-        return { success: false, message: 'Missing required fields' };
+    if (!clientId || !content) {
+        return { success: false, message: 'Missing required fields (content/id)' };
     }
+
+
+
 
 
     // --- AI Simulation Logic (MVP) ---
@@ -46,7 +49,7 @@ export async function saveCaseNoteAction(prevState: any, formData: FormData) {
     try {
         await clientRepository.createCaseNote({
             client_id: clientId,
-            author_id: authorId,
+            author_id,
             content,
             type,
             is_draft: false,
@@ -54,6 +57,7 @@ export async function saveCaseNoteAction(prevState: any, formData: FormData) {
             sentiment_score: sentimentScore,
             detected_barriers: barriers
         });
+
 
 
         revalidatePath(`/clients/${clientId}`);

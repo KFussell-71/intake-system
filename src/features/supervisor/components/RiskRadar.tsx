@@ -36,15 +36,16 @@ export function RiskRadar({ clients }: { clients: StalledClient[] }) {
                                 <div className="flex items-center gap-3">
                                     <Avatar className="h-9 w-9">
                                         <AvatarFallback className="bg-red-200 text-red-800 text-xs">
-                                            {client.client_name.substring(0, 2).toUpperCase()}
+                                            {client.client_name?.substring(0, 2).toUpperCase() || '??'}
                                         </AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <p className="font-medium text-sm">{client.client_name}</p>
-                                        <p className="text-xs text-muted-foreground truncate max-w-[150px]" title={client.assigned_to}>
+                                        <p className="font-medium text-sm">{client.client_name || 'Unknown Client'}</p>
+                                        <p className="text-xs text-muted-foreground truncate max-w-[150px]" title={client.assigned_to || ''}>
                                             {client.assigned_to || 'Unassigned'}
                                         </p>
                                     </div>
+
                                 </div>
                                 <div className="text-right">
                                     <div className="flex items-center justify-end text-red-600 font-bold text-sm gap-1">
