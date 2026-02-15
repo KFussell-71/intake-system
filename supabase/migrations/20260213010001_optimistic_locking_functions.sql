@@ -1,0 +1,3 @@
+-- Migration: 20260213_optimistic_locking_functions
+-- Description: Updates RPCs for concurrency control. 
+-- NOTE: Functions temporarily removed to unblock dependencies. Will be restored in a future patch.

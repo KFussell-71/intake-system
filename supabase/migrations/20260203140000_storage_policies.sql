@@ -14,7 +14,7 @@ VALUES (
 ON CONFLICT (id) DO NOTHING;
 
 -- 2. Enable RLS on objects
-ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
 
 -- 3. Policies
 

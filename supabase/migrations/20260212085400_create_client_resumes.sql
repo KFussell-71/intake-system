@@ -19,10 +19,10 @@ COMMENT ON COLUMN client_resumes.resume_id IS 'External resume builder ID or int
 COMMENT ON COLUMN client_resumes.metadata IS 'Additional data like template used, generation settings, etc.';
 
 -- Indexes for performance
-CREATE INDEX idx_client_resumes_client_id ON client_resumes(client_id);
-CREATE INDEX idx_client_resumes_intake_id ON client_resumes(intake_id);
-CREATE INDEX idx_client_resumes_active ON client_resumes(is_active) WHERE is_active = true;
-CREATE INDEX idx_client_resumes_created_at ON client_resumes(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_client_resumes_client_id ON client_resumes(client_id);
+CREATE INDEX IF NOT EXISTS idx_client_resumes_intake_id ON client_resumes(intake_id);
+CREATE INDEX IF NOT EXISTS idx_client_resumes_active ON client_resumes(is_active) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_client_resumes_created_at ON client_resumes(created_at DESC);
 
 -- Enable Row Level Security
 ALTER TABLE client_resumes ENABLE ROW LEVEL SECURITY;
@@ -64,12 +64,17 @@ CREATE POLICY "Staff can update resumes"
     );
 
 -- RLS Policy: Clients can view their own resumes
+-- FIXED: Use client_users table to link auth.uid() to client_id
 CREATE POLICY "Clients can view their own resumes"
     ON client_resumes FOR SELECT
     TO authenticated
     USING (
-        client_id IN (
-            SELECT id FROM clients WHERE user_id = auth.uid()
+        EXISTS (
+            SELECT 1 FROM client_users
+            WHERE client_users.client_id = client_resumes.client_id
+            AND client_users.id = auth.uid()
+            AND client_users.is_active = true
+            AND (client_users.expires_at > NOW() OR client_users.expires_at IS NULL)
         )
     );
 
@@ -89,8 +94,8 @@ CREATE TABLE IF NOT EXISTS resume_generation_logs (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_resume_logs_resume_id ON resume_generation_logs(resume_id);
-CREATE INDEX idx_resume_logs_action ON resume_generation_logs(action);
-CREATE INDEX idx_resume_logs_created_at ON resume_generation_logs(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_resume_logs_resume_id ON resume_generation_logs(resume_id);
+CREATE INDEX IF NOT EXISTS idx_resume_logs_action ON resume_generation_logs(action);
+CREATE INDEX IF NOT EXISTS idx_resume_logs_created_at ON resume_generation_logs(created_at DESC);
 
 COMMENT ON TABLE resume_generation_logs IS 'Audit trail for resume generation and access';

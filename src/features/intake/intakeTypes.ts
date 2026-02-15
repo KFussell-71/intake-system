@@ -317,6 +317,7 @@ export interface IntakeMetadata {
     closureDate?: string;
     closureReason?: string;
     disabilitySignificance?: 'most_significant' | 'significant' | 'not_significant';
+    signature?: string;
 }
 
 // BACKWARD COMPATIBILITY: Re-assemble the God Object

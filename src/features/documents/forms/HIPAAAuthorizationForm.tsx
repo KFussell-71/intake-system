@@ -52,14 +52,15 @@ export const HIPAAAuthorizationForm: React.FC<Props> = ({ clientData, onSubmit, 
         }));
     }, []);
 
-    const handleSignatureChange = useCallback((dataUrl: string) => {
+    const handleSignatureChange = useCallback((dataUrl: string | null) => {
         setFormData(prev => ({
             ...prev,
-            signatureDataUrl: dataUrl,
+            signatureDataUrl: dataUrl || '',
             signatureDate: dataUrl ? new Date().toISOString() : '',
             updatedAt: new Date().toISOString(),
         }));
     }, []);
+
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

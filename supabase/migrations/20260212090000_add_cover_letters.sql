@@ -17,9 +17,9 @@ CREATE TABLE IF NOT EXISTS cover_letters (
 COMMENT ON TABLE cover_letters IS 'Stores generated job-specific cover letters for clients';
 
 -- Indexes for performance
-CREATE INDEX idx_cover_letters_client_id ON cover_letters(client_id);
-CREATE INDEX idx_cover_letters_intake_id ON cover_letters(intake_id);
-CREATE INDEX idx_cover_letters_created_at ON cover_letters(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_cover_letters_client_id ON cover_letters(client_id);
+CREATE INDEX IF NOT EXISTS idx_cover_letters_intake_id ON cover_letters(intake_id);
+CREATE INDEX IF NOT EXISTS idx_cover_letters_created_at ON cover_letters(created_at DESC);
 
 -- Enable Row Level Security
 ALTER TABLE cover_letters ENABLE ROW LEVEL SECURITY;
@@ -37,12 +37,17 @@ CREATE POLICY "Staff can manage all cover letters"
     );
 
 -- RLS Policy: Clients can view their own cover letters
+-- FIXED: Use client_users table to link auth.uid() to client_id
 CREATE POLICY "Clients can view their own cover letters"
     ON cover_letters FOR SELECT
     TO authenticated
     USING (
-        client_id IN (
-            SELECT id FROM clients WHERE user_id = auth.uid()
+        EXISTS (
+            SELECT 1 FROM client_users
+            WHERE client_users.client_id = cover_letters.client_id
+            AND client_users.id = auth.uid()
+            AND client_users.is_active = true
+            AND (client_users.expires_at > NOW() OR client_users.expires_at IS NULL)
         )
     );
 

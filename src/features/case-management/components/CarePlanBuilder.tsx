@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { CarePlan, CarePlanGoal, CarePlanAction, GoalCategory } from '@/types/case';
+import confetti from 'canvas-confetti';
 import { carePlanService } from '@/services/CarePlanService';
 import { GlassCard } from '@/components/ui/GlassCard';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Plus, Target, CheckCircle2, Circle, ArrowRight, User, Trash2, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -84,7 +86,72 @@ export function CarePlanBuilder({ caseId }: Props) {
         }
     };
 
-    if (loading) return <div className="animate-pulse h-64 bg-slate-100 rounded-xl" />;
+
+    const handleToggleAction = async (goalId: string, action: CarePlanAction) => {
+        const newStatus = action.status === 'completed' ? 'pending' : 'completed';
+        try {
+            // Optimistic update
+            setGoals(goals.map(g =>
+                g.id === goalId
+                    ? {
+                        ...g,
+                        actions: g.actions.map(a =>
+                            a.id === action.id ? { ...a, status: newStatus } : a
+                        )
+                    }
+                    : g
+            ));
+
+            await carePlanService.updateAction(action.id, { status: newStatus });
+
+            if (newStatus === 'completed') {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+                toast.success('Great job! Step completed.');
+            }
+        } catch (error) {
+            console.error('Failed to update action:', error);
+            toast.error('Failed to update status');
+            // Revert on failure (could refetch)
+            loadPlan();
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                    <Skeleton className="h-8 w-32" />
+                    <Skeleton className="h-10 w-28" />
+                </div>
+                <div className="grid gap-6">
+                    <GlassCard className="p-0 overflow-hidden">
+                        <div className="p-4 border-b border-slate-100 dark:border-slate-800">
+                            <Skeleton className="h-6 w-3/4 mb-2" />
+                            <Skeleton className="h-4 w-1/2" />
+                        </div>
+                        <div className="p-4 space-y-3">
+                            <Skeleton className="h-4 w-full" />
+                            <Skeleton className="h-4 w-5/6" />
+                        </div>
+                    </GlassCard>
+                    <GlassCard className="p-0 overflow-hidden">
+                        <div className="p-4 border-b border-slate-100 dark:border-slate-800">
+                            <Skeleton className="h-6 w-3/4 mb-2" />
+                            <Skeleton className="h-4 w-1/2" />
+                        </div>
+                        <div className="p-4 space-y-3">
+                            <Skeleton className="h-4 w-full" />
+                            <Skeleton className="h-4 w-5/6" />
+                        </div>
+                    </GlassCard>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
@@ -186,7 +253,10 @@ export function CarePlanBuilder({ caseId }: Props) {
                         <div className="p-4 bg-white space-y-3">
                             {goal.actions.map((action) => (
                                 <div key={action.id} className="flex items-start gap-3 text-sm group">
-                                    <button className="mt-0.5 text-slate-400 hover:text-green-600 transition-colors">
+                                    <button
+                                        onClick={() => handleToggleAction(goal.id, action)}
+                                        className="mt-0.5 text-slate-400 hover:text-green-600 transition-colors"
+                                    >
                                         {action.status === 'completed'
                                             ? <CheckCircle2 className="w-4 h-4 text-green-600" />
                                             : <Circle className="w-4 h-4" />

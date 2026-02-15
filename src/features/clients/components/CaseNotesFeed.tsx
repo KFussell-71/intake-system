@@ -21,7 +21,10 @@ interface CaseNote {
         role: string;
     };
     created_at: string;
+    sentiment_label?: 'positive' | 'neutral' | 'negative';
+    detected_barriers?: string[];
 }
+
 
 interface CaseNotesFeedProps {
     notes: CaseNote[];
@@ -161,7 +164,35 @@ export function CaseNotesFeed({ notes, clientId, currentUserId }: CaseNotesFeedP
                             {note.type === 'incident' && <AlertTriangle className="w-5 h-5 text-red-500 mb-2" />}
                             <p className="whitespace-pre-wrap">{note.content}</p>
                         </div>
+
+                        {/* AI Insights Section */}
+                        {(note.sentiment_label || (note.detected_barriers && note.detected_barriers.length > 0)) && (
+                            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap gap-2 items-center">
+                                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider mr-1">AI Insights:</span>
+
+                                {/* Sentiment Badge */}
+                                {note.sentiment_label && (
+                                    <Badge variant="secondary" className={`
+                                        ${note.sentiment_label === 'negative' ? 'bg-red-100 text-red-700 border-red-200' : ''}
+                                        ${note.sentiment_label === 'positive' ? 'bg-green-100 text-green-700 border-green-200' : ''}
+                                        ${note.sentiment_label === 'neutral' ? 'bg-slate-100 text-slate-600 border-slate-200' : ''}
+                                    `}>
+                                        {note.sentiment_label === 'negative' && '⚠️ '}
+                                        {note.sentiment_label === 'positive' && '✅ '}
+                                        Sentiment: {note.sentiment_label.charAt(0).toUpperCase() + note.sentiment_label.slice(1)}
+                                    </Badge>
+                                )}
+
+                                {/* Barrier Badges */}
+                                {note.detected_barriers?.map((barrier, i) => (
+                                    <Badge key={i} variant="outline" className="border-orange-200 text-orange-700 bg-orange-50">
+                                        🚧 {barrier} Barrier
+                                    </Badge>
+                                ))}
+                            </div>
+                        )}
                     </Card>
+
                 ))}
             </div>
         </div>

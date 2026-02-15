@@ -19,33 +19,41 @@ ALTER TABLE availability_blocks ENABLE ROW LEVEL SECURITY;
 -- Policies
 
 -- 1. Staff can view their own blocks
+DROP POLICY IF EXISTS "Users can view their own blocks" ON availability_blocks;
 CREATE POLICY "Users can view their own blocks"
   ON availability_blocks
   FOR SELECT
   USING (auth.uid() = user_id);
 
 -- 2. Staff can insert their own blocks
+DROP POLICY IF EXISTS "Users can insert their own blocks" ON availability_blocks;
 CREATE POLICY "Users can insert their own blocks"
   ON availability_blocks
   FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
 -- 3. Staff can update their own blocks
+DROP POLICY IF EXISTS "Users can update their own blocks" ON availability_blocks;
 CREATE POLICY "Users can update their own blocks"
   ON availability_blocks
   FOR UPDATE
   USING (auth.uid() = user_id);
 
 -- 4. Staff can delete their own blocks
+DROP POLICY IF EXISTS "Users can delete their own blocks" ON availability_blocks;
 CREATE POLICY "Users can delete their own blocks"
   ON availability_blocks
   FOR DELETE
   USING (auth.uid() = user_id);
 
+
+-- 5. Public/System read access (for slot calculation)
 -- 5. Public/System read access (for slot calculation)
 -- allowing all authenticated users to read is often easiest for the client-side fetch,
 -- but strictly we might want to hide "title". For now, we allow read.
+DROP POLICY IF EXISTS "All authenticated users can view blocks" ON availability_blocks;
 CREATE POLICY "All authenticated users can view blocks"
   ON availability_blocks
   FOR SELECT
   USING (auth.role() = 'authenticated');
+

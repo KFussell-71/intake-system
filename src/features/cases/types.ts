@@ -13,7 +13,11 @@ export interface CaseNote {
     author?: {
         username: string;
         role: string;
-    }
+    },
+    // AI Fields
+    sentiment_score?: number;
+    sentiment_label?: 'positive' | 'neutral' | 'negative';
+    detected_barriers?: string[];
 }
 
 export interface CreateCaseNoteParams {
@@ -22,4 +26,8 @@ export interface CreateCaseNoteParams {
     content: string;
     type: CaseNoteType;
     is_draft?: boolean;
+    sentiment_score?: number;
+    sentiment_label?: 'positive' | 'neutral' | 'negative';
+    detected_barriers?: string[];
 }
+

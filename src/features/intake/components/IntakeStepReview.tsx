@@ -8,6 +8,7 @@ import { AINarrativeComposer } from './AINarrativeComposer';
 import { AIIntegrityReview } from './AIIntegrityReview';
 import { ReferralPlanWidget } from './ReferralPlanWidget';
 import { ReportPreviewModal } from './ReportPreviewModal';
+import { SignaturePad } from '@/components/ui/SignaturePad';
 
 interface Props {
     formData: IdentityData & VocationalData & MedicalData & ClinicalData & IntakeMetadata;
@@ -128,8 +129,22 @@ export const IntakeStepReview: React.FC<Props> = ({
                     <FileCheck className="w-5 h-5 text-indigo-500" />
                     Signature & Finalization
                 </h3>
+
+                <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Client Signature</label>
+                    <SignaturePad
+                        onSignatureChange={(sig: string | null) => setFormData((prev: any) => ({ ...prev, signature: sig }))}
+                        defaultValue={formData.signature}
+                    />
+                    <p className="text-xs text-slate-500">
+                        By signing, I certify that the information provided is true and accurate to the best of my knowledge.
+                    </p>
+                </div>
+
+                <hr className="border-slate-200 dark:border-slate-700" />
+
                 <p className="text-sm text-slate-500">
-                    Please preview the AI Report, then download the packet for signature.
+                    Alternatively, you can download the packet, sign it manually, and upload it below.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">

@@ -5,7 +5,9 @@ export interface AIRequest {
     temperature?: number;
     // Keeping optional metadata for telemetry if needed, but strict to user core request
     userId?: string;
+    format?: 'json' | 'text';
 }
+
 
 export interface AIResponse {
     text: string;

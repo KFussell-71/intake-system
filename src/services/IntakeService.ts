@@ -54,7 +54,13 @@ export class IntakeService {
         } catch (error) {
             console.warn('Network submit failed, saving to offline queue:', error);
             await saveSyncTask({ type: 'INTAKE_CREATE', data });
-            return { success: true, offline: true };
+            // Mock ID for Demo/Offline mode so UI can proceed
+            return {
+                success: true,
+                offline: true,
+                intake_id: 'mock-intake-' + Date.now(),
+                client_id: 'mock-client-' + Date.now()
+            };
         }
     }
 

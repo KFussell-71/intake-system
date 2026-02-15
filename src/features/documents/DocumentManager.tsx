@@ -188,7 +188,8 @@ export function DocumentManager({ clientId }: DocumentManagerProps) {
                         <DialogTitle>Capture Signature</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4">
-                        <SignaturePad onSignatureChange={setSignatureData} />
+                        <SignaturePad onSignatureChange={(sig: string | null) => setSignatureData(sig || '')} />
+
                         <div className="flex justify-end space-x-2">
                             <ActionButton onClick={handleSignatureSave} isLoading={uploading} disabled={!signatureData}>
                                 Save Signature

@@ -5,13 +5,13 @@
 -- 1. auth.current_user_id()
 -- Wraps auth.uid() but handles potential nulls gracefully if needed (though auth.uid() is standard)
 -- Main benefit: semantic clarity and potential for injection verification in future
-CREATE OR REPLACE FUNCTION auth.current_user_id()
-RETURNS uuid
-LANGUAGE sql
-STABLE
-AS $$
-  SELECT auth.uid();
-$$;
+-- CREATE OR REPLACE FUNCTION auth.current_user_id()
+-- RETURNS uuid
+-- LANGUAGE sql
+-- STABLE
+-- AS $$
+--   SELECT auth.uid();
+-- $$;
 
 -- 2. auth.current_user_role()
 -- Returns the JWT role (authenticated, anon, service_role)

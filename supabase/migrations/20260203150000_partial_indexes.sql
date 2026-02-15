@@ -19,6 +19,11 @@ BEGIN
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'documents' AND column_name = 'deleted_at') THEN
         ALTER TABLE documents ADD COLUMN deleted_at timestamptz DEFAULT NULL;
     END IF;
+
+    -- Documents (Ensure created_at exists for index)
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'documents' AND column_name = 'created_at') THEN
+        ALTER TABLE documents ADD COLUMN created_at timestamptz DEFAULT NOW();
+    END IF;
 END $$;
 
 -- 2. Create Partial Indexes for Active Records

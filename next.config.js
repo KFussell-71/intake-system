@@ -6,7 +6,7 @@ import WebpackObfuscator from 'webpack-obfuscator';
 
 const withPWA = withPWAInit({
     dest: 'public',
-    disable: process.env.NODE_ENV === 'development',
+    disable: process.env.NODE_ENV === 'development', // Disable in dev to save resources
     // ... existing PWA config ...
     register: true,
     skipWaiting: true,
@@ -52,15 +52,15 @@ const nextConfig = {
 
     webpack: (config, { dev, isServer }) => {
         // Only obfuscate client-side production builds
-        if (!dev && !isServer) {
-            config.plugins.push(
-                new WebpackObfuscator({
-                    rotateStringArray: true,
-                    stringArray: true,
-                    stringArrayThreshold: 0.75
-                }, [])
-            );
-        }
+        // if (!dev && !isServer) {
+        //     config.plugins.push(
+        //         new WebpackObfuscator({
+        //             rotateStringArray: true,
+        //             stringArray: true,
+        //             stringArrayThreshold: 0.75
+        //         }, [])
+        //     );
+        // }
 
         // Fix isomorphic-dompurify ENOENT error in Next.js 15
         if (isServer) {

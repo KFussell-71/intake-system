@@ -2,7 +2,7 @@
 -- Inspired by UrbanMIS but adapted for Supabase/Postgres
 
 -- 1. Conversations
-CREATE TABLE conversations (
+CREATE TABLE IF NOT EXISTS conversations (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   last_message_at TIMESTAMPTZ DEFAULT NOW(),
@@ -10,7 +10,7 @@ CREATE TABLE conversations (
 );
 
 -- 2. Participants (Many-to-Many)
-CREATE TABLE conversation_participants (
+CREATE TABLE IF NOT EXISTS conversation_participants (
   conversation_id UUID REFERENCES conversations(id) ON DELETE CASCADE,
   user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
   joined_at TIMESTAMPTZ DEFAULT NOW(),
@@ -18,7 +18,7 @@ CREATE TABLE conversation_participants (
 );
 
 -- 3. Messages
-CREATE TABLE messages (
+CREATE TABLE IF NOT EXISTS messages (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   conversation_id UUID REFERENCES conversations(id) ON DELETE CASCADE,
   sender_id UUID REFERENCES profiles(id),
@@ -27,7 +27,7 @@ CREATE TABLE messages (
 );
 
 -- 4. Read Status
-CREATE TABLE message_read_status (
+CREATE TABLE IF NOT EXISTS message_read_status (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   message_id UUID REFERENCES messages(id) ON DELETE CASCADE,
   user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
@@ -36,9 +36,9 @@ CREATE TABLE message_read_status (
 );
 
 -- Indexes
-CREATE INDEX idx_messages_conversation ON messages(conversation_id);
-CREATE INDEX idx_participants_user ON conversation_participants(user_id);
-CREATE INDEX idx_read_status_message ON message_read_status(message_id);
+CREATE INDEX IF NOT EXISTS idx_messages_conversation ON messages(conversation_id);
+CREATE INDEX IF NOT EXISTS idx_participants_user ON conversation_participants(user_id);
+CREATE INDEX IF NOT EXISTS idx_read_status_message ON message_read_status(message_id);
 
 -- RLS Policies
 ALTER TABLE conversations ENABLE ROW LEVEL SECURITY;
@@ -48,6 +48,7 @@ ALTER TABLE message_read_status ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Chat Access
 -- Users can see conversations they are part of
+DROP POLICY IF EXISTS "Users can view their conversations" ON conversations;
 CREATE POLICY "Users can view their conversations" ON conversations
   FOR SELECT TO authenticated
   USING (EXISTS (
@@ -57,6 +58,7 @@ CREATE POLICY "Users can view their conversations" ON conversations
   ));
 
 -- Policy: Participants
+DROP POLICY IF EXISTS "Users can view participants of their chats" ON conversation_participants;
 CREATE POLICY "Users can view participants of their chats" ON conversation_participants
   FOR SELECT TO authenticated
   USING (
@@ -69,6 +71,7 @@ CREATE POLICY "Users can view participants of their chats" ON conversation_parti
   );
 
 -- Policy: Messages
+DROP POLICY IF EXISTS "Users can view messages in their chats" ON messages;
 CREATE POLICY "Users can view messages in their chats" ON messages
   FOR SELECT TO authenticated
   USING (EXISTS (
@@ -77,6 +80,7 @@ CREATE POLICY "Users can view messages in their chats" ON messages
     AND cp.user_id = auth.uid()
   ));
 
+DROP POLICY IF EXISTS "Users can send messages to their chats" ON messages;
 CREATE POLICY "Users can send messages to their chats" ON messages
   FOR INSERT TO authenticated
   WITH CHECK (EXISTS (
@@ -86,6 +90,7 @@ CREATE POLICY "Users can send messages to their chats" ON messages
   ));
 
 -- Policy: Read Status
+DROP POLICY IF EXISTS "Users can see read status in their chats" ON message_read_status;
 CREATE POLICY "Users can see read status in their chats" ON message_read_status
   FOR SELECT TO authenticated
   USING (EXISTS (
@@ -95,6 +100,7 @@ CREATE POLICY "Users can see read status in their chats" ON message_read_status
     AND cp.user_id = auth.uid()
   ));
 
+DROP POLICY IF EXISTS "Users can mark messages as read" ON message_read_status;
 CREATE POLICY "Users can mark messages as read" ON message_read_status
   FOR INSERT TO authenticated
   WITH CHECK (auth.uid() = user_id);
@@ -110,6 +116,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trigger_update_chat_timestamp ON messages;
 CREATE TRIGGER trigger_update_chat_timestamp
 AFTER INSERT ON messages
 FOR EACH ROW

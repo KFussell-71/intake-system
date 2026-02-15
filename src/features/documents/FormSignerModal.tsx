@@ -66,8 +66,8 @@ export function FormSignerModal({ clientId, isOpen, onClose, onSuccess }: FormSi
                                 key={form.id}
                                 onClick={() => setSelectedForm(form.id)}
                                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${selectedForm === form.id
-                                        ? 'bg-blue-600 text-white shadow-sm'
-                                        : 'bg-white text-slate-600 hover:bg-slate-100'
+                                    ? 'bg-blue-600 text-white shadow-sm'
+                                    : 'bg-white text-slate-600 hover:bg-slate-100'
                                     }`}
                             >
                                 {form.label}
@@ -89,10 +89,9 @@ export function FormSignerModal({ clientId, isOpen, onClose, onSuccess }: FormSi
                         </div>
                     </div>
 
-                    {/* Signature Input */}
                     <div className="border-t pt-4 space-y-4">
                         <div className="font-semibold text-sm text-slate-700">Draw Authorization Signature (Trackpad/Mouse)</div>
-                        <SignaturePad onSignatureChange={setSignatureData} />
+                        <SignaturePad onSignatureChange={(sig: string | null) => setSignatureData(sig || '')} />
                     </div>
 
                     {/* Actions */}
