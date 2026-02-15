@@ -4,6 +4,7 @@ import { clientRepository } from "@/repositories/ClientRepository";
 import { revalidatePath } from "next/cache";
 
 import { CaseNoteType } from "@/features/cases/types";
+import { aiService } from "@/lib/ai/UnifiedAIService";
 
 export async function saveCaseNoteAction(prevState: any, formData: FormData) {
     const clientId = formData.get('client_id') as string;
@@ -24,27 +25,46 @@ export async function saveCaseNoteAction(prevState: any, formData: FormData) {
 
 
 
-    // --- AI Simulation Logic (MVP) ---
+    // --- AI Integration (Real Intelligence) ---
     let sentimentLabel: 'positive' | 'neutral' | 'negative' = 'neutral';
     let sentimentScore = 0.0;
-    const barriers: string[] = [];
-    const lowerContent = content.toLowerCase();
+    let barriers: string[] = [];
 
-    // Sentiment Heuristic
-    if (lowerContent.match(/crisis|risk|danger|suicid|threat|fail|evict|homeless|arrest|hospital/)) {
-        sentimentLabel = 'negative';
-        sentimentScore = -0.8;
-    } else if (lowerContent.match(/success|great|good|improve|stable|hired|graduated|safe/)) {
-        sentimentLabel = 'positive';
-        sentimentScore = 0.8;
+    // Only analyze if there is substantial content to avoid analyzing "test" or "foo"
+    if (content.length > 10) {
+        try {
+            const prompt = `
+            Analyze the following social work case note.
+            Return ONLY a valid JSON object. Do not include markdown code blocks.
+            JSON Format:
+            {
+              "sentiment": "positive" | "neutral" | "negative",
+              "sentiment_score": number (-1.0 to 1.0),
+              "barriers": ["Housing", "Employment", "Transportation", "Health", "Childcare", "Legal", "Financial", "Other"] (Select all that apply)
+            }
+            
+            Case Note Content:
+            "${content}"
+            `;
+
+            const aiResponse = await aiService.ask({
+                prompt: prompt,
+                temperature: 0.1 // Strict JSON
+            });
+
+            // Attempt to clean JSON if it comes wrapped in markdown
+            const cleanJson = aiResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+            const analysis = JSON.parse(cleanJson);
+
+            sentimentLabel = analysis.sentiment || 'neutral';
+            sentimentScore = analysis.sentiment_score || 0.0;
+            barriers = Array.isArray(analysis.barriers) ? analysis.barriers : [];
+
+        } catch (aiError) {
+            console.error('[CaseNoteAction] AI Analysis Failed:', aiError);
+            // Fallback to neutral/empty on failure, don't block the save
+        }
     }
-
-    // Barrier Detection Heuristic
-    if (lowerContent.match(/homeless|eviction|rent|housing|shelter/)) barriers.push('Housing');
-    if (lowerContent.match(/job|work|employ|fired|interview|resume/)) barriers.push('Employment');
-    if (lowerContent.match(/transport|bus|car|ride/)) barriers.push('Transportation');
-    if (lowerContent.match(/health|sick|doctor|medication|hospital/)) barriers.push('Health');
-    if (lowerContent.match(/childcare|kids|school/)) barriers.push('Childcare');
 
     try {
         await clientRepository.createCaseNote({

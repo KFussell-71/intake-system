@@ -9,11 +9,29 @@ export class UnifiedAIService {
 
     constructor() {
         // SME: Strategy Pattern for AI Providers with Fallback
+        // PRIMARY: Ollama (Local Privacy-First)
+        // FALLBACK: Gemini (Cloud High-Performance)
 
-        // FORCE MOCK FOR DEMO/LOW-RESOURCE
-        console.log('[UnifiedAIService] Forcing MockAIProvider for resource optimization.');
-        this.primaryProvider = new MockAIProvider();
-        this.fallbackProvider = null;
+        const ollamaBaseUrl = process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
+        const ollamaModel = process.env.OLLAMA_MODEL || 'llama3'; // Default to a standard model
+        const googleApiKey = process.env.GOOGLE_API_KEY;
+
+        // Initialize Primary (Ollama)
+        this.primaryProvider = new LocalAIProvider(ollamaBaseUrl, ollamaModel);
+
+        // Initialize Fallback (Gemini)
+        if (googleApiKey) {
+            this.fallbackProvider = new GeminiProvider(googleApiKey);
+        } else {
+            console.warn('[UnifiedAIService] GOOGLE_API_KEY not set. Gemini fallback disabled.');
+            // If no fallback key, we could potentially use Mock as a last resort or just leave it null.
+            // For now, let's keep it null implementation-wise to error out if Ollama fails, 
+            // OR use Mock if we want to guarantee *some* response.
+            // Let's use MockAIProvider as a "Safety Net" for dev environments without Keys.
+            if (process.env.NODE_ENV === 'development') {
+                this.fallbackProvider = new MockAIProvider();
+            }
+        }
     }
     async ask(req: AIRequest): Promise<string> {
         const start = Date.now();
