@@ -19,6 +19,8 @@ interface MockState {
     clients: any[];
     cases: any[];
     case_notes: any[];
+    placements: any[];
+    retention_checks: any[];
 }
 
 
@@ -129,6 +131,28 @@ const SEED_CASES = [
     }
 ];
 
+const SEED_PLACEMENTS = [
+    {
+        id: 'p1', client_id: 'mock-client-id', employer_name: 'City General Hospital',
+        job_title: 'Patient Transporter', start_date: '2025-11-15', hourly_wage: 18.50, hours_per_week: 40
+    },
+    {
+        id: 'p2', client_id: 'c2', employer_name: 'Quick Mart',
+        job_title: 'Cashier', start_date: '2025-10-01', hourly_wage: 15.00, hours_per_week: 30
+    },
+    {
+        id: 'p3', client_id: 'c3', employer_name: 'Tech Support Inc',
+        job_title: 'Help Desk L1', start_date: '2026-01-10', hourly_wage: 22.00, hours_per_week: 40
+    }
+];
+
+const SEED_RETENTION_CHECKS = [
+    { id: 'r1', placement_id: 'p1', check_type: '30_day', status: 'employed', checked_at: '2025-12-15' },
+    { id: 'r2', placement_id: 'p1', check_type: '60_day', status: 'employed', checked_at: '2026-01-15' },
+    { id: 'r3', placement_id: 'p2', check_type: '30_day', status: 'employed', checked_at: '2025-11-01' },
+    { id: 'r4', placement_id: 'p2', check_type: '60_day', status: 'unemployed', checked_at: '2025-12-01' }
+];
+
 // --- Mock Data Manager ---
 class MockDataManager {
     private state: MockState;
@@ -172,7 +196,9 @@ class MockDataManager {
             consent_documents: [],
             consent_signatures: [],
             cases: [...SEED_CASES],
-            case_notes: []
+            case_notes: [],
+            placements: [...SEED_PLACEMENTS],
+            retention_checks: [...SEED_RETENTION_CHECKS]
         };
     }
 
@@ -196,7 +222,9 @@ class MockDataManager {
             consent_signatures: [],
             clients: [],
             cases: [],
-            case_notes: []
+            case_notes: [],
+            placements: [],
+            retention_checks: []
         };
     }
 
@@ -222,6 +250,8 @@ class MockDataManager {
         if (table === 'consent_signatures') return this.state.consent_signatures || [];
         if (table === 'cases') return this.state.cases || [];
         if (table === 'case_notes') return this.state.case_notes || [];
+        if (table === 'placements') return this.state.placements || [];
+        if (table === 'retention_checks') return this.state.retention_checks || [];
         return [];
     }
 
@@ -344,6 +374,33 @@ export const createMockSupabase = () => {
                 };
             }
 
+            if (fn === 'get_outcome_metrics') {
+                const placements = mockManager.getTable('placements');
+                const totalChecks = mockManager.getTable('retention_checks');
+
+                const avgWage = placements.reduce((acc, p) => acc + p.hourly_wage, 0) / (placements.length || 1);
+
+                const retentionRate = (day: string) => {
+                    const checks = totalChecks.filter(c => c.check_type === day);
+                    const employed = checks.filter(c => c.status === 'employed').length;
+                    return checks.length ? (employed / checks.length) * 100 : 0;
+                };
+
+                return {
+                    data: {
+                        total_placements: placements.length,
+                        avg_wage: parseFloat(avgWage.toFixed(2)),
+                        retention_rates: {
+                            day_30: retentionRate('30_day'),
+                            day_60: retentionRate('60_day'),
+                            day_90: retentionRate('90_day')
+                        },
+                        wage_growth: 6.50 // Mock growth
+                    },
+                    error: null
+                };
+            }
+
             return { data: [], error: null };
 
         },
@@ -394,6 +451,12 @@ export const createMockSupabase = () => {
                 },
                 insert: (data: any) => {
                     console.log(`[MOCK] Inserting into ${table}`, data);
+
+                    // Simulate Audit Trigger
+                    if (['placements', 'retention_checks'].includes(table)) {
+                        console.log(`[MOCK AUDIT] Trigger fired: log_entity_change on ${table} for new record`);
+                    }
+
                     const newData = { ...data, id: data.id || `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` };
                     const tableData = mockManager.getTable(table);
                     if (tableData) tableData.push(newData);
