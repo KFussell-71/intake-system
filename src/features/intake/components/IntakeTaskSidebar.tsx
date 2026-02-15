@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { CheckCircle2, Circle, Clock, AlertCircle, Plus } from 'lucide-react';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/browser';
+const supabase = createClient();
 import { IntakeTask, updateTaskStatusAction, createTaskAction } from '@/app/actions/taskActions';
 import { Button } from '@/components/ui/button';
 import { ElegantInput } from '@/components/ui/ElegantInput';

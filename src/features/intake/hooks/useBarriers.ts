@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/browser';
+const supabase = createClient();
 import { addIntakeBarrierAction, removeIntakeBarrierAction, updateIntakeSection } from '@/app/actions/modernizedIntakeActions';
 
 export interface Barrier {

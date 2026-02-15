@@ -7,7 +7,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/browser';
+const supabase = createClient();
 import { Notification } from '@/lib/notifications/notificationService';
 import { toast } from 'sonner'; // Assuming you're using sonner for toasts
 

@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/browser';
+const supabase = createClient();
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { IntakeReportEditor } from './IntakeReportEditor';
 import { DocumentList } from '@/components/documents/DocumentList';

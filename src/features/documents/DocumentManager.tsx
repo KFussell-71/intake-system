@@ -5,7 +5,7 @@ import { Upload, Loader2, AlertCircle, PenTool } from 'lucide-react';
 import { DocumentList } from './DocumentList';
 import { DocumentService } from '@/services/DocumentService';
 import { ActionButton } from '@/components/ui/ActionButton';
-import { createClient } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/browser';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { SignaturePad } from '@/components/ui/SignaturePad';
 

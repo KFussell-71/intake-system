@@ -1,4 +1,5 @@
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/browser';
+const supabase = createClient();
 
 export interface GlobalSearchResult {
     type: 'client' | 'document';

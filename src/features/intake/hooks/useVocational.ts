@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/browser';
+const supabase = createClient();
 import { saveEmploymentAction } from '@/app/actions/employmentActions';
 import { VocationalData } from '@/features/intake/intakeTypes';
 

@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/browser';
 import type { SupabaseClient, PostgrestError } from '@supabase/supabase-js';
 
 /**
@@ -12,7 +12,7 @@ export abstract class BaseRepository {
      * Access to the Supabase client
      */
     protected get db(): SupabaseClient {
-        return supabase;
+        return createClient();
     }
 
     /**

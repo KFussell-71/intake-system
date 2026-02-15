@@ -1,7 +1,8 @@
 import { clientRepository, ClientRepository } from '../repositories/ClientRepository';
 import { intakeRepository, IntakeRepository, IntakeAssessment, SupervisionNote } from '../repositories/IntakeRepository';
 import type { IntakeFormData } from '@/features/intake/intakeTypes';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/browser';
+const supabase = createClient();
 import { saveSyncTask } from '@/lib/offline/db';
 import { IntakeWorkflowService } from '@/domain/services/IntakeWorkflowService';
 import { IntakeEntity, ClientAggregate } from '@/domain/entities/ClientAggregate';

@@ -4,7 +4,8 @@
  * Handles creation and management of user notifications
  */
 
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/browser';
+const supabase = createClient();
 
 export interface Notification {
     id: string;

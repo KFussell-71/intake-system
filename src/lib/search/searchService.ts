@@ -4,7 +4,8 @@
  * Provides full-text search across clients, reports, and documents
  */
 
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/browser';
+const supabase = createClient();
 
 export interface SearchResult {
     type: 'client' | 'report' | 'document';

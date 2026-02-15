@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/browser';
 import { documentRepository } from '@/repositories/DocumentRepository';
 import { v4 as uuidv4 } from 'uuid';
 

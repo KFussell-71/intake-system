@@ -1,3 +1,4 @@
+
 import { SupabaseClient } from '@supabase/supabase-js';
 
 // --- Data Types ---
@@ -374,35 +375,22 @@ export const createMockSupabase = () => {
                 };
             }
 
-            if (fn === 'get_outcome_metrics') {
-                const placements = mockManager.getTable('placements');
-                const totalChecks = mockManager.getTable('retention_checks');
-
-                const avgWage = placements.reduce((acc, p) => acc + p.hourly_wage, 0) / (placements.length || 1);
-
-                const retentionRate = (day: string) => {
-                    const checks = totalChecks.filter(c => c.check_type === day);
-                    const employed = checks.filter(c => c.status === 'employed').length;
-                    return checks.length ? (employed / checks.length) * 100 : 0;
-                };
-
+            if (fn === 'get_weekly_agency_metrics') {
                 return {
                     data: {
-                        total_placements: placements.length,
-                        avg_wage: parseFloat(avgWage.toFixed(2)),
-                        retention_rates: {
-                            day_30: retentionRate('30_day'),
-                            day_60: retentionRate('60_day'),
-                            day_90: retentionRate('90_day')
-                        },
-                        wage_growth: 6.50 // Mock growth
+                        total_active_cases: 45,
+                        new_intakes: 12,
+                        placements_count: 8,
+                        avg_wage: 18.50,
+                        retention_rate_30: 0.92,
+                        high_risk_count: 3,
+                        compliance_score: 95
                     },
                     error: null
                 };
             }
 
-            return { data: [], error: null };
-
+            return { data: null, error: null };
         },
         from: (table: string) => {
             const queryBuilder: any = {
@@ -414,13 +402,15 @@ export const createMockSupabase = () => {
                 },
                 gt: () => queryBuilder,
                 gte: () => queryBuilder,
-                lt: () => queryBuilder,
                 lte: () => queryBuilder,
+                lt: () => queryBuilder,
                 neq: () => queryBuilder,
-                not: () => queryBuilder,
+                is: () => queryBuilder,
+                in: () => queryBuilder,
+                contains: () => queryBuilder,
                 order: () => queryBuilder,
-                range: () => queryBuilder,
                 limit: () => queryBuilder,
+                range: () => queryBuilder,
                 single: async () => {
                     let data = mockManager.getTable(table);
                     if (queryBuilder._filters) {
@@ -439,88 +429,44 @@ export const createMockSupabase = () => {
                     }
                     return { data: data.length > 0 ? data[0] : null, error: null };
                 },
-                then: async (resolve: Function) => {
-                    let data = mockManager.getTable(table);
-                    if (queryBuilder._filters) {
-                        for (const filter of queryBuilder._filters) {
-                            data = data.filter(item => item[filter.column] === filter.value);
-                        }
-                    }
-                    const count = data.length;
-                    resolve({ data, error: null, count });
-                },
-                insert: (data: any) => {
+                insert: async (data: any) => {
                     console.log(`[MOCK] Inserting into ${table}`, data);
-
-                    // Simulate Audit Trigger
+                    const tableData = mockManager.getTable(table);
+                    // Simulate Audit
                     if (['placements', 'retention_checks'].includes(table)) {
-                        console.log(`[MOCK AUDIT] Trigger fired: log_entity_change on ${table} for new record`);
+                        console.log(`[MOCK AUDIT] Trigger fired on ${table}`);
                     }
-
-                    const newData = { ...data, id: data.id || `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` };
-                    const tableData = mockManager.getTable(table);
+                    const newData = { ...data, id: data.id || `mock-${Date.now()}` };
                     if (tableData) tableData.push(newData);
-                    return {
-                        ...queryBuilder,
-                        select: () => ({
-                            ...queryBuilder,
-                            single: async () => ({ data: newData, error: null }),
-                            then: async (resolve: Function) => resolve({ data: [newData], error: null })
-                        }),
-                        then: async (resolve: Function) => resolve({ data: null, error: null })
-                    };
+                    return { data: newData, error: null };
                 },
-                upsert: (data: any, options?: { onConflict?: string }) => {
-                    console.log(`[MOCK] Upserting into ${table}`, data, options);
-                    const tableData = mockManager.getTable(table);
-                    if (tableData) {
-                        const conflictKey = options?.onConflict || 'id';
-                        const existingIndex = tableData.findIndex(item => item[conflictKey] === data[conflictKey]);
-                        if (existingIndex >= 0) {
-                            tableData[existingIndex] = { ...tableData[existingIndex], ...data };
-                        } else {
-                            tableData.push({ ...data, id: data.id || `mock-${Date.now()}` });
-                        }
-                    }
-                    return {
-                        ...queryBuilder,
-                        select: () => ({
-                            ...queryBuilder,
-                            single: async () => ({ data: { ...data, id: data.id || `mock-${Date.now()}` }, error: null }),
-                            then: async (resolve: Function) => resolve({ data: [{ ...data, id: data.id || `mock-${Date.now()}` }], error: null })
-                        }),
-                        then: async (resolve: Function) => resolve({ data: null, error: null })
-                    };
-                },
-                update: (data: any) => {
+                update: async (data: any) => {
                     console.log(`[MOCK] Updating ${table}`, data);
-                    const tableData = mockManager.getTable(table);
-                    if (tableData && data.id) {
-                        const idx = tableData.findIndex(item => item.id === data.id);
-                        if (idx >= 0) tableData[idx] = { ...tableData[idx], ...data };
-                    }
-                    return {
-                        ...queryBuilder,
-                        eq: (col: string, val: any) => {
-                            if (col === 'id' && tableData) {
-                                const idx = tableData.findIndex(item => item.id === val);
-                                if (idx >= 0) tableData[idx] = { ...tableData[idx], ...data };
-                            }
-                            return queryBuilder;
-                        },
-                        select: () => ({
-                            ...queryBuilder,
-                            single: async () => ({ data, error: null }),
-                            then: async (resolve: Function) => resolve({ data: [data], error: null })
-                        }),
-                        then: async (resolve: Function) => resolve({ data: null, error: null })
-                    };
+                    return { data: null, error: null };
                 },
                 delete: async () => {
                     console.log(`[MOCK] Deleting from ${table}`);
                     return { data: null, error: null };
+                },
+                upsert: async (data: any) => {
+                    console.log(`[MOCK] Upserting into ${table}`, data);
+                    const tableData = mockManager.getTable(table);
+                    if (tableData) tableData.push(data);
+                    return { data, error: null };
                 }
             };
+
+            // Allow await on the builder itself (simulating thenable)
+            (queryBuilder as any).then = async (resolve: any, reject: any) => {
+                let data = mockManager.getTable(table);
+                if (queryBuilder._filters) {
+                    for (const filter of queryBuilder._filters) {
+                        data = data.filter(item => item[filter.column] === filter.value);
+                    }
+                }
+                resolve({ data, error: null, count: data.length });
+            };
+
             return queryBuilder;
         },
         storage: {
@@ -531,17 +477,15 @@ export const createMockSupabase = () => {
         },
         channel: (name: string) => ({
             on: () => ({
-                subscribe: () => ({
-                    unsubscribe: () => console.log(`[MOCK] Unsubscribed from ${name}`)
-                })
+                subscribe: () => { }
             }),
             subscribe: async (callback: any) => {
-                console.log(`[MOCK] Subscribed to ${name}`);
                 if (callback) callback('SUBSCRIBED');
                 return { error: null };
             },
-            unsubscribe: () => console.log(`[MOCK] Unsubscribed from ${name}`)
-        } as any),
+            unsubscribe: () => { },
+            send: async () => ({ error: null })
+        }),
         removeChannel: async () => ({ error: null })
     } as unknown as SupabaseClient;
 };

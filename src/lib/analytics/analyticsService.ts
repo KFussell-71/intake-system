@@ -4,7 +4,8 @@
  * Provides metrics and analytics for supervisors, staff, and clients
  */
 
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/browser';
+const supabase = createClient();
 
 export interface SupervisorMetrics {
     totalReviewed: number;

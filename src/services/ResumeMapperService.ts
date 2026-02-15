@@ -1,4 +1,5 @@
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/browser';
+const supabase = createClient();
 
 /**
  * JSON Resume Schema (https://jsonresume.org/schema/)

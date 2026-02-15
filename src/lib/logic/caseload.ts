@@ -1,4 +1,5 @@
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/browser';
+const supabase = createClient();
 
 interface StaffMember {
     id: string;

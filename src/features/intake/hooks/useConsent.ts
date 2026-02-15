@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/browser';
+const supabase = createClient();
 import { createConsentDocumentAction, signConsentAction, updateIntakeSection } from '@/app/actions/modernizedIntakeActions';
 
 export interface ConsentDocument {

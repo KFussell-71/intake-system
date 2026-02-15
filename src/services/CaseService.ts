@@ -1,4 +1,5 @@
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/browser';
+const supabase = createClient();
 import { Case, CaseStatus, CaseStage } from '@/types/case';
 import { caseloadBalancer } from '@/lib/logic/caseload';
 

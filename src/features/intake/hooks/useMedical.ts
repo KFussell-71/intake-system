@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/browser';
+const supabase = createClient();
 import { saveMedicalAction } from '@/app/actions/medicalActions';
 import { MedicalData } from '@/features/intake/intakeTypes';
 

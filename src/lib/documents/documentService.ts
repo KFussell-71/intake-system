@@ -4,7 +4,8 @@
  * Handles document upload, versioning, and management using Supabase Storage
  */
 
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/browser';
+const supabase = createClient();
 
 export interface DocumentBasic {
     id: string;

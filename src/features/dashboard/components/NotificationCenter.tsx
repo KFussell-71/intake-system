@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/browser';
+const supabase = createClient();
 import { Bell, Check, Clock, FileText, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 

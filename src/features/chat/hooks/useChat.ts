@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { supabase } from '@/lib/supabase/client'; // Assuming client-side instance
+import { createClient } from '@/lib/supabase/browser';
+const supabase = createClient(); // Assuming client-side instance
 import { Message, markAsRead } from '@/app/actions/chatActions';
 import { RealtimeChannel } from '@supabase/supabase-js';
 

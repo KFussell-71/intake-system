@@ -1,6 +1,7 @@
 
 import { useEffect, useState, useMemo } from 'react';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/browser';
+const supabase = createClient();
 import { IntakeRule, applyRules } from '@/lib/rules/ruleEngine';
 import { IntakeFormData } from '@/features/intake/intakeTypes';
 

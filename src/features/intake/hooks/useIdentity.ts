@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/browser';
+const supabase = createClient();
 import { saveIdentityAction } from '@/app/actions/identityActions';
 import { IdentityData } from '@/features/intake/intakeTypes';
 

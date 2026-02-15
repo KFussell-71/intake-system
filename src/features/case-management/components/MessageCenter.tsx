@@ -9,7 +9,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Check, CheckCheck, Send, Wand2, Mail, MessageSquare, Lock } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/browser';
+const supabase = createClient();
 
 interface Props {
     caseId: string;

@@ -4,7 +4,8 @@ import React from 'react';
 import { Card, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Trash2, Database, AlertCircle } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/browser';
+const supabase = createClient();
 import { useRouter } from 'next/navigation';
 
 export function DemoControls() {

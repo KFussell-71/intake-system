@@ -1,11 +1,12 @@
 'use server';
 
 import { supabaseAdmin } from '@/lib/supabase-admin';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/server';
 import { Profile } from '@/types';
 import { revalidatePath } from 'next/cache';
 
 export async function inviteTeamMember(data: { email: string; fullName: string; role: Profile['role'] }) {
+    const supabase = await createClient();
     try {
         // 1. Verify caller is a Supervisor or Admin
         const { data: { user } } = await supabase.auth.getUser();
@@ -66,6 +67,7 @@ export async function inviteTeamMember(data: { email: string; fullName: string; 
 }
 
 export async function updateTeamMemberRole(userId: string, newRole: Profile['role']) {
+    const supabase = await createClient();
     try {
         // 1. Verify caller
         const { data: { user } } = await supabase.auth.getUser();
@@ -102,6 +104,7 @@ export async function updateTeamMemberRole(userId: string, newRole: Profile['rol
 }
 
 export async function getTeamMembers() {
+    const supabase = await createClient();
     // RLS Policy "Supervisors can view all profiles" should allow this via standard client
     const { data, error } = await supabase
         .from('profiles')

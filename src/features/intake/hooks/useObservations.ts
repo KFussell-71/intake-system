@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/browser';
+const supabase = createClient();
 import { addObservationAction, removeObservationAction } from '@/app/actions/observationActions';
 import { updateIntakeSection } from '@/app/actions/modernizedIntakeActions';
 
