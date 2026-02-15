@@ -2,8 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { uploadPortalDocument } from '@/app/actions/portal/uploadPortalDocument';
-import { getPortalClientData } from '@/app/actions/portal/getPortalClientData';
+import { uploadPortalDocument } from '@/actions/portal/uploadPortalDocument';
+import { getPortalClientData } from '@/actions/portal/getPortalClientData';
 import { DocumentRequestCard } from '@/features/portal/components/DocumentRequestCard';
 
 /**

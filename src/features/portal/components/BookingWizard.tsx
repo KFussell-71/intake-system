@@ -7,7 +7,7 @@ import { Loader2, Video, MapPin, Calendar as CalendarIcon, Clock } from 'lucide-
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { getAvailableSlots, bookClientAppointment } from '@/app/actions/portal/bookingActions';
+import { getAvailableSlots, bookClientAppointment } from '@/actions/portal/bookingActions';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 
@@ -31,7 +31,7 @@ export function BookingWizard({ clientId }: { clientId: string }) {
     async function fetchSlots() {
         if (!date) return;
         setLoadingSlots(true);
-        const res = await getAvailableSlots(format(date, 'yyyy-MM-dd'));
+        const res = await getAvailableSlots(format(date, 'yyyy-MM-dd'), clientId);
         if (res.success && res.data) {
             setSlots(res.data);
             if (res.staffId) setStaffId(res.staffId);

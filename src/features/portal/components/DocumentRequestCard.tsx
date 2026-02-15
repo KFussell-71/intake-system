@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { Upload, CheckCircle, AlertCircle, FileText } from 'lucide-react';
-import { uploadPortalDocument } from '@/app/actions/portal/uploadPortalDocument';
+import { uploadPortalDocument } from '@/actions/portal/uploadPortalDocument';
 
 interface Props {
     request: {

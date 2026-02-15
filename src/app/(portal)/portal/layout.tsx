@@ -2,6 +2,7 @@ import { Metadata, Viewport } from 'next';
 import Link from 'next/link';
 import '@/app/globals.css';
 import { NotificationProvider } from '@/features/portal/context/NotificationProvider';
+import { PortalMobileNav } from '@/features/portal/components/PortalMobileNav';
 
 export const metadata: Metadata = {
     title: 'Client Portal | DOR Employment Services',
@@ -51,14 +52,22 @@ export default function PortalLayout({ children }: PortalLayoutProps) {
                                 Documents
                             </Link>
                             <Link
-                                href="/portal/status"
+                                href="/portal/messages"
                                 className="text-sm text-slate-300 hover:text-white transition-colors"
                             >
-                                Status
+                                Messages
+                            </Link>
+                            <Link
+                                href="/portal/book"
+                                className="text-sm text-slate-300 hover:text-white transition-colors"
+                            >
+                                Book Appointment
                             </Link>
                         </nav>
                     </div>
                 </header>
+
+                <PortalMobileNav />
 
                 {/* Main Content */}
                 <main className="max-w-5xl mx-auto px-4 py-8">

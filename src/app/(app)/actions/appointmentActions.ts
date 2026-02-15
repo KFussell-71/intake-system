@@ -43,8 +43,53 @@ export async function createAppointment(prevState: any, formData: FormData) {
     // Determine Staff ID:
     // 1. If passed explicitly (e.g. from Portal Wizard), use it.
     // 2. Else if user is staff, use their ID.
-    // 3. Fallback: Lookup assigned staff for client (omitted for brevity, assuming form passes it or user is staff).
-    const staffId = (formData.get('staff_id') as string) || user.id;
+    const formStaffId = formData.get('staff_id') as string;
+    let staffId = formStaffId;
+
+    if (!staffId) {
+        // Only default to user.id if they are NOT a client
+        // We can check profile role or assumes clients must pass staff_id
+        const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+        if (profile && ['case_manager', 'supervisor', 'admin'].includes(profile.role)) {
+            staffId = user.id;
+        } else {
+            return { success: false, message: 'Staff ID is required for booking.' };
+        }
+    }
+
+    // Overlap Check (Zero Footgun)
+    const { data: conflicts } = await supabase
+        .from('appointments')
+        .select('id')
+        .eq('staff_id', staffId)
+        .lt('time', endDateTime.toTimeString().slice(0, 5)) // appointments starting before this one ends
+        .gt('time', startDateTime.toTimeString().slice(0, 5)) // appointments ending after this one starts... wait, time column is text?
+        .eq('date', rawDate);
+
+    // The above query is tricky because 'time' is text "HH:MM". 
+    // And logic needs to check interval overlap: (StartA < EndB) and (EndA > StartB).
+    // Using Time strings for comparison is risky if they cross midnight (unlikely for appts) but works for ISO "HH:MM:SS".
+    // Better: Retrieve all appts for the day and check in code, or use a sophisticated SQL query if possible.
+    // Given the current schema likely stores date and time separately:
+    // Let's do a quick fetch of that day's appointments for that staff.
+
+    const { data: dayAppts } = await supabase
+        .from('appointments')
+        .select('time, duration_minutes')
+        .eq('staff_id', staffId)
+        .eq('date', rawDate);
+
+    const hasOverlap = (dayAppts || []).some(appt => {
+        const apptStart = new Date(`${rawDate}T${appt.time}`);
+        const apptEnd = new Date(apptStart.getTime() + (appt.duration_minutes || 60) * 60000);
+
+        // Check overlap
+        return startDateTime < apptEnd && endDateTime > apptStart;
+    });
+
+    if (hasOverlap) {
+        return { success: false, message: 'This slot is no longer available.' };
+    }
 
     const payload = {
         client_id: formData.get('client_id'),
