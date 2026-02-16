@@ -45,6 +45,14 @@ CREATE TABLE IF NOT EXISTS barriers (
   active BOOLEAN DEFAULT true
 );
 
+-- Ensure column exists if table was created by a previous migration without it
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'barriers' AND column_name = 'category') THEN
+        ALTER TABLE barriers ADD COLUMN category TEXT DEFAULT 'general';
+    END IF;
+END $$;
+
 -- Many-to-Many link for Intake Barriers
 CREATE TABLE IF NOT EXISTS intake_barriers (
   intake_id UUID REFERENCES intakes(id) ON DELETE CASCADE,

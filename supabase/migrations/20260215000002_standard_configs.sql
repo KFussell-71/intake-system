@@ -4,12 +4,25 @@
 -- 1. Create required_documents reference table
 CREATE TABLE IF NOT EXISTS required_documents (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  document_name TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL,
   is_mandatory BOOLEAN DEFAULT true,
-  category TEXT CHECK (category IN ('intake', 'compliance', 'employment', 'medical', 'other')),
+  category TEXT,
+  stage TEXT,
   description TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(name, stage)
 );
+
+-- Ensure columns exist if table was created differently
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'required_documents' AND column_name = 'category') THEN
+        ALTER TABLE required_documents ADD COLUMN category TEXT;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'required_documents' AND column_name = 'stage') THEN
+        ALTER TABLE required_documents ADD COLUMN stage TEXT;
+    END IF;
+END $$;
 
 -- Enable RLS
 ALTER TABLE required_documents ENABLE ROW LEVEL SECURITY;
@@ -21,15 +34,15 @@ CREATE POLICY "Admins can manage required_documents" ON required_documents FOR A
 );
 
 -- Seed Standard Documents
-INSERT INTO required_documents (document_name, is_mandatory, category, description) VALUES
-('Referral Form', true, 'intake', 'Initial referral from DOR or partner agency'),
-('Intake Assessment', true, 'intake', 'Completed intake interview form'),
-('Consent to Release Information', true, 'compliance', 'Signed consent for data sharing'),
-('Rights and Responsibilities', true, 'compliance', 'Signed acknowledgement of client rights'),
-('Individual Service Plan (ISP)', true, 'employment', 'The roadmap for employment services'),
-('Medical Clearance', false, 'medical', 'Clearance for physical labor if applicable'),
-('Resume', false, 'employment', 'Client resume (draft or final)')
-ON CONFLICT (document_name) DO NOTHING;
+INSERT INTO required_documents (name, is_mandatory, category, stage, description) VALUES
+('Referral Form', true, 'intake', 'intake', 'Initial referral from DOR or partner agency'),
+('Intake Assessment', true, 'intake', 'assessment', 'Completed intake interview form'),
+('Consent to Release Information', true, 'compliance', 'intake', 'Signed consent for data sharing'),
+('Rights and Responsibilities', true, 'compliance', 'intake', 'Signed acknowledgement of client rights'),
+('Individual Service Plan (ISP)', true, 'employment', 'planning', 'The roadmap for employment services'),
+('Medical Clearance', false, 'medical', 'service_delivery', 'Clearance for physical labor if applicable'),
+('Resume', false, 'employment', 'service_delivery', 'Client resume (draft or final)')
+ON CONFLICT (name, stage) DO NOTHING;
 
 
 -- 2. Create agency_settings table (Singleton pattern)

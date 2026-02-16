@@ -13,16 +13,16 @@ DROP POLICY IF EXISTS "Staff can insert clients" ON clients;
 -- (Assuming 'assigned_to' exists, otherwise default to created_by)
 
 -- Check columns first (in practice we would view schema, but assuming standard audit fields)
--- If assigned_to doesn't exist, we fall back to user_id (owner)
+-- If assigned_to doesn't exist, we fall back to created_by (owner)
 
 CREATE POLICY "Staff can update own clients"
 ON clients FOR UPDATE
 TO authenticated
 USING (
     -- Allow if owner
-    auth.current_user_id() = user_id
+    public.current_user_id() = created_by
     -- OR if explicitly assigned (future proofing)
-    -- OR auth.current_user_id() = assigned_to 
+    -- OR public.current_user_id() = assigned_to 
 );
 
 -- 3. Document the Contract

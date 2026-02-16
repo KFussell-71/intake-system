@@ -2,7 +2,6 @@
 -- Description: Hardens RPCs against IDOR and enforces strict Telemetry RLS.
 
 -- 1. Harden telemetry_logs RLS
--- Enforce that users can only insert logs where created_by matches their ID.
 DROP POLICY IF EXISTS "Staff can insert telemetry" ON telemetry_logs;
 CREATE POLICY "Staff can insert telemetry" ON telemetry_logs
     FOR INSERT WITH CHECK (
@@ -14,46 +13,50 @@ CREATE POLICY "Staff can insert telemetry" ON telemetry_logs
         )
     );
 
--- 2. Harden save_intake_progress_atomic
--- Adds owner check to ensure a user cannot modify someone else's intake via IDOR.
+-- 2. save_intake_progress_atomic (sealed)
+-- Note: Redundant if 20260207 is already hardened, but kept for remediation track consistency.
 CREATE OR REPLACE FUNCTION save_intake_progress_atomic(
   p_intake_id uuid,
   p_data jsonb,
-  p_summary text,
-  p_user_id uuid
+  p_summary text
 )
 RETURNS jsonb
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 DECLARE
-  new_version_id uuid;
+  v_user_id uuid := auth.uid();
   v_owner_id uuid;
+  new_version_id uuid;
 BEGIN
-  -- Security: Check ownership
-  SELECT created_by INTO v_owner_id FROM intakes WHERE id = p_intake_id;
-  
-  IF v_owner_id IS DISTINCT FROM p_user_id THEN
-    -- Allow admins/supervisors to bypass? For now, stay strict to owner unless explicitly requested.
-    -- Check if caller is admin/supervisor if we want to allow clinical review edits.
-    IF NOT EXISTS (SELECT 1 FROM profiles WHERE id = p_user_id AND role IN ('admin', 'supervisor')) THEN
-        RAISE EXCEPTION 'Unauthorized: You do not own this intake record.';
-    END IF;
+  IF v_user_id IS NULL THEN
+    RAISE EXCEPTION 'Authentication required';
   END IF;
 
-  -- 1. Update main intake record
-  UPDATE intakes
-  SET 
-    data = p_data,
-    updated_at = NOW(),
-    updated_by = p_user_id
-  WHERE id = p_intake_id;
+  -- lock the intake row first
+  SELECT prepared_by INTO v_owner_id FROM intakes WHERE id = p_intake_id FOR UPDATE;
 
-  IF NOT FOUND THEN
+  IF v_owner_id IS NULL THEN
     RAISE EXCEPTION 'Intake record % not found', p_intake_id;
   END IF;
 
-  -- 2. Insert version snapshot
+  -- Permission: Owner or Admin/Supervisor
+  IF v_owner_id <> v_user_id AND NOT EXISTS (
+      SELECT 1 FROM profiles
+      WHERE id = v_user_id
+      AND role IN ('admin','supervisor')
+  ) THEN
+    RAISE EXCEPTION 'Unauthorized';
+  END IF;
+
+  UPDATE intakes
+  SET
+    data = COALESCE(p_data, data),
+    updated_at = NOW(),
+    updated_by = v_user_id
+  WHERE id = p_intake_id;
+
   INSERT INTO intake_versions (
     intake_id,
     data,
@@ -62,9 +65,9 @@ BEGIN
   )
   VALUES (
     p_intake_id,
-    p_data,
+    COALESCE(p_data, '{}'::jsonb),
     p_summary,
-    p_user_id
+    v_user_id
   )
   RETURNING id INTO new_version_id;
 
@@ -73,149 +76,150 @@ BEGIN
     'intake_id', p_intake_id,
     'version_id', new_version_id
   );
-EXCEPTION WHEN OTHERS THEN
-  RETURN jsonb_build_object('success', false, 'error', SQLERRM);
 END;
 $$;
 
--- 3. Harden upsert_intake_assessment_atomic
--- Adds check that the intake being assessed exists and the user is authorized.
+-- 3. upsert_intake_assessment_atomic (sealed)
 CREATE OR REPLACE FUNCTION upsert_intake_assessment_atomic(
   p_intake_id uuid,
-  p_assessment_data jsonb,
-  p_user_id uuid
+  p_assessment_data jsonb
 )
 RETURNS jsonb
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 DECLARE
-  v_existing_id uuid;
-  v_is_locked boolean;
+  v_user_id uuid := auth.uid();
+  v_owner_id uuid;
   v_result_id uuid;
-  v_intake_owner_id uuid;
 BEGIN
-  -- Security: Check intake ownership/assignment
-  SELECT created_by INTO v_intake_owner_id FROM intakes WHERE id = p_intake_id;
-  
-  IF v_intake_owner_id IS NULL THEN
-    RAISE EXCEPTION 'Intake record % not found', p_intake_id;
+  IF v_user_id IS NULL THEN
+    RAISE EXCEPTION 'Authentication required';
   END IF;
 
-  -- Check for existing record
-  SELECT id, is_locked INTO v_existing_id, v_is_locked
-  FROM intake_assessments
-  WHERE intake_id = p_intake_id;
+  -- verify intake & lock
+  SELECT prepared_by INTO v_owner_id FROM intakes WHERE id = p_intake_id FOR UPDATE;
 
-  -- Security check: prevent modification of locked assessments
-  IF v_existing_id IS NOT NULL AND v_is_locked = true THEN
-    RAISE EXCEPTION 'Assessment is locked and cannot be modified';
+  IF v_owner_id IS NULL THEN
+    RAISE EXCEPTION 'Intake % not found', p_intake_id;
   END IF;
 
-  IF v_existing_id IS NOT NULL THEN
-    -- Update
-    UPDATE intake_assessments
-    SET 
-      verified_barriers = (p_assessment_data->>'verified_barriers')::text[],
-      clinical_narrative = p_assessment_data->>'clinical_narrative',
-      recommended_priority_level = (p_assessment_data->>'recommended_priority_level')::int,
-      eligibility_status = p_assessment_data->>'eligibility_status',
-      eligibility_rationale = p_assessment_data->>'eligibility_rationale',
-      verification_evidence = (p_assessment_data->>'verification_evidence')::jsonb,
-      ai_discrepancy_notes = p_assessment_data->>'ai_discrepancy_notes',
-      ai_risk_score = (p_assessment_data->>'ai_risk_score')::numeric,
-      updated_at = NOW()
-    WHERE id = v_existing_id
-    RETURNING id INTO v_result_id;
-  ELSE
-    -- Insert
-    INSERT INTO intake_assessments (
-      intake_id,
-      counselor_id,
-      verified_barriers,
-      clinical_narrative,
-      recommended_priority_level,
-      eligibility_status,
-      eligibility_rationale,
-      verification_evidence,
-      ai_discrepancy_notes,
-      ai_risk_score
-    )
-    VALUES (
-      p_intake_id,
-      p_user_id,
-      (p_assessment_data->>'verified_barriers')::text[],
-      p_assessment_data->>'clinical_narrative',
-      (p_assessment_data->>'recommended_priority_level')::int,
-      p_assessment_data->>'eligibility_status',
-      p_assessment_data->>'eligibility_rationale',
-      (p_assessment_data->>'verification_evidence')::jsonb,
-      p_assessment_data->>'ai_discrepancy_notes',
-      (p_assessment_data->>'ai_risk_score')::numeric
-    )
-    RETURNING id INTO v_result_id;
+  IF v_owner_id <> v_user_id AND NOT EXISTS (
+      SELECT 1 FROM profiles
+      WHERE id = v_user_id
+      AND role IN ('admin','supervisor')
+  ) THEN
+    RAISE EXCEPTION 'Unauthorized';
   END IF;
 
-  RETURN jsonb_build_object(
-    'success', true,
-    'id', v_result_id
-  );
-EXCEPTION WHEN OTHERS THEN
-  RETURN jsonb_build_object('success', false, 'error', SQLERRM);
+  INSERT INTO intake_assessments (
+    intake_id,
+    counselor_id,
+    verified_barriers,
+    clinical_narrative,
+    recommended_priority_level,
+    eligibility_status,
+    eligibility_rationale,
+    verification_evidence,
+    ai_discrepancy_notes,
+    ai_risk_score,
+    updated_at
+  )
+  VALUES (
+    p_intake_id,
+    v_user_id,
+    COALESCE(
+      ARRAY(SELECT jsonb_array_elements_text(p_assessment_data->'verified_barriers')),
+      ARRAY[]::text[]
+    ),
+    p_assessment_data->>'clinical_narrative',
+    NULLIF(p_assessment_data->>'recommended_priority_level','')::int,
+    p_assessment_data->>'eligibility_status',
+    p_assessment_data->>'eligibility_rationale',
+    COALESCE(p_assessment_data->'verification_evidence','{}'::jsonb),
+    p_assessment_data->>'ai_discrepancy_notes',
+    NULLIF(p_assessment_data->>'ai_risk_score','')::numeric,
+    NOW()
+  )
+  ON CONFLICT (intake_id)
+  DO UPDATE SET
+    verified_barriers = EXCLUDED.verified_barriers,
+    clinical_narrative = EXCLUDED.clinical_narrative,
+    recommended_priority_level = EXCLUDED.recommended_priority_level,
+    eligibility_status = EXCLUDED.eligibility_status,
+    eligibility_rationale = EXCLUDED.eligibility_rationale,
+    verification_evidence = EXCLUDED.verification_evidence,
+    ai_discrepancy_notes = EXCLUDED.ai_discrepancy_notes,
+    ai_risk_score = EXCLUDED.ai_risk_score,
+    updated_at = NOW()
+  WHERE intake_assessments.is_locked = false
+  RETURNING id INTO v_result_id;
+
+  IF v_result_id IS NULL THEN
+    RAISE EXCEPTION 'Assessment is locked';
+  END IF;
+
+  RETURN jsonb_build_object('success', true, 'id', v_result_id);
 END;
 $$;
 
--- 4. Harden save_intake_draft
--- Ensures users can only update drafts they created or create new drafts as themselves.
+-- 4. save_intake_draft (sealed)
 CREATE OR REPLACE FUNCTION save_intake_draft(
   p_intake_id uuid,
-  p_intake_data jsonb,
-  p_user_id uuid
+  p_intake_data jsonb
 )
 RETURNS jsonb
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 DECLARE
-  v_result_id uuid;
+  v_user_id uuid := auth.uid();
   v_owner_id uuid;
+  v_result_id uuid;
 BEGIN
+  IF v_user_id IS NULL THEN
+    RAISE EXCEPTION 'Authentication required';
+  END IF;
+
   IF p_intake_id IS NOT NULL THEN
-    -- Security check on ownership
-    SELECT created_by INTO v_owner_id FROM intakes WHERE id = p_intake_id;
-    IF v_owner_id IS DISTINCT FROM p_user_id THEN
-        RAISE EXCEPTION 'Unauthorized: You do not own this intake draft.';
+    SELECT prepared_by INTO v_owner_id FROM intakes WHERE id = p_intake_id FOR UPDATE;
+
+    IF v_owner_id IS NULL THEN
+      RAISE EXCEPTION 'Draft not found';
+    END IF;
+
+    IF v_owner_id <> v_user_id THEN
+      RAISE EXCEPTION 'Unauthorized';
     END IF;
 
     UPDATE intakes
-    SET 
-      data = p_intake_data,
+    SET
+      data = COALESCE(p_intake_data, '{}'::jsonb),
       status = 'draft',
       updated_at = NOW(),
-      updated_by = p_user_id
+      updated_by = v_user_id
     WHERE id = p_intake_id
     RETURNING id INTO v_result_id;
   ELSE
     INSERT INTO intakes (
       data,
       status,
-      created_by,
-      updated_by
+      prepared_by,
+      updated_by,
+      updated_at
     )
     VALUES (
-      p_intake_data,
+      COALESCE(p_intake_data, '{}'::jsonb),
       'draft',
-      p_user_id,
-      p_user_id
+      v_user_id,
+      v_user_id,
+      NOW()
     )
     RETURNING id INTO v_result_id;
   END IF;
 
-  RETURN jsonb_build_object(
-    'success', true,
-    'intake_id', v_result_id
-  );
-EXCEPTION WHEN OTHERS THEN
-  RETURN jsonb_build_object('success', false, 'error', SQLERRM);
+  RETURN jsonb_build_object('success', true, 'intake_id', v_result_id);
 END;
 $$;

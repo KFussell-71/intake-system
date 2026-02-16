@@ -12,10 +12,10 @@ DROP POLICY IF EXISTS "Staff can update own intakes" ON intakes; -- Sanity check
 CREATE POLICY "Staff can update own intakes"
 ON intakes FOR UPDATE
 TO authenticated
-USING (auth.current_user_id() = user_id);
+USING (public.current_user_id() = prepared_by);
 
 -- 3. Audit Comment (Compliance)
 COMMENT ON POLICY "Staff can update own intakes" ON intakes IS 
-'CONTRACT: Strict Update access. Only the creator (user_id) can modify an intake. Prevents lateral movement.';
+'CONTRACT: Strict Update access. Only the creator (prepared_by) can modify an intake. Prevents lateral movement.';
 
 COMMIT;

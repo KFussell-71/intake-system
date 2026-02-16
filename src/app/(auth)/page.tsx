@@ -20,7 +20,7 @@ export default function Home() {
             </div>
 
             <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 1, scale: 1 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
                 className="text-center z-10 max-w-2xl px-4"

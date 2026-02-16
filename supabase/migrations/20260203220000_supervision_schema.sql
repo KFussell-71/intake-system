@@ -45,7 +45,7 @@ USING (
     EXISTS (
         SELECT 1 FROM intakes 
         WHERE intakes.id = intake_supervision_notes.intake_id
-        AND intakes.user_id = auth.uid()
+        AND intakes.prepared_by = auth.uid()
     )
     OR
     EXISTS (

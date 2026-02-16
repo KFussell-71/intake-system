@@ -1,6 +1,6 @@
 -- Refactor RLS Policies & Add Contracts
 -- Created: 2026-02-03
--- Purpose: Standardize RLS using auth.current_user_id() and document intent via comments
+-- Purpose: Standardize RLS using public.current_user_id() and document intent via comments
 
 -- CLIENTS TABLE
 DROP POLICY IF EXISTS "Staff can view all clients" ON clients;
@@ -40,9 +40,9 @@ DROP POLICY IF EXISTS "Staff can insert intakes" ON intakes;
 CREATE POLICY "Staff can insert intakes"
 ON intakes FOR INSERT
 TO authenticated
-WITH CHECK (auth.current_user_id() = user_id);
+WITH CHECK (public.current_user_id() = prepared_by);
 COMMENT ON POLICY "Staff can insert intakes" ON intakes IS 
-'CONTRACT: Staff can only create intakes attributed to themselves (user_id matches auth).';
+'CONTRACT: Staff can only create intakes attributed to themselves (prepared_by matches auth).';
 
 DROP POLICY IF EXISTS "Staff can update own intakes" ON intakes;
 CREATE POLICY "Staff can update intakes"
@@ -68,7 +68,7 @@ DROP POLICY IF EXISTS "Staff can upload documents" ON documents;
 CREATE POLICY "Staff can upload documents"
 ON documents FOR INSERT
 TO authenticated
-WITH CHECK (auth.current_user_id() = uploaded_by);
+WITH CHECK (public.current_user_id() = uploaded_by);
 COMMENT ON POLICY "Staff can upload documents" ON documents IS 
 'CONTRACT: Uploads must be attributed to the authenticated user.';
 
