@@ -10,6 +10,9 @@ jobs:
   backup:
     name: Backup Database
     runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
     steps:
       - uses: actions/checkout@v4
       
@@ -25,9 +28,6 @@ jobs:
         run: |
           echo "Database backup would run here"
           echo "This would export critical tables to JSON/SQL"
-        env:
-          SUPABASE_URL: "${{ secrets.SUPABASE_URL }}"
-          SUPABASE_SERVICE_ROLE_KEY: "${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}"
       
       - name: Upload backup artifacts
         uses: actions/upload-artifact@v4

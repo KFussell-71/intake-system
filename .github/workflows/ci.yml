@@ -70,9 +70,9 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          NEXT_PUBLIC_SUPABASE_URL: "${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: "${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
-          NEXT_PUBLIC_SENTRY_DSN: "${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}"
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
       
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -124,8 +124,6 @@ jobs:
     if: github.ref == 'refs/heads/main'
     environment:
       name: production
-    env:
-      SENTRY_AUTH_TOKEN: "${{ secrets.SENTRY_AUTH_TOKEN }}"
     steps:
       - uses: actions/checkout@v4
       
@@ -133,6 +131,8 @@ jobs:
         run: |
           echo "Production deployment would happen here"
           echo "Deployment to Vercel/your hosting provider"
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       
       - name: Create Sentry Release
         if: env.SENTRY_AUTH_TOKEN != ''
