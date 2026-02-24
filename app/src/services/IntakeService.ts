@@ -104,6 +104,11 @@ export class IntakeService {
                     primaryDiagnosisCode: data.primaryDiagnosisCode,
                     mobilityStatus: data.mobilityStatus
                 },
+                statements: {
+                    presentingIssue: data.presentingIssueDescription,
+                    reportedBarriers: data.barriers || [],
+                    goals: data.presentingIssueGoals
+                },
                 assessment: {
                     clinicalNarrative: data.clinicalNarrative,
                     eligibilityStatus: data.eligibilityStatus
@@ -214,6 +219,29 @@ export class IntakeService {
             console.error('[IntakeService] promoteNarrativeToBarrier failed:', error);
             throw error;
         }
+    }
+
+    async prepareExportBundle(intakeId: string) {
+        const intake = await this.intakeRepo.getIntakeById(intakeId);
+        const assessment = await this.intakeRepo.getAssessment(intakeId);
+        const history = await this.intakeRepo.getSupervisionHistory(intakeId);
+
+        const bundle = {
+            vanguard_tier: "v4.0",
+            export_timestamp: new Date().toISOString(),
+            case_id: intakeId,
+            base_version: intake?.version || 1,
+            data: {
+                intake: intake?.data || {},
+                assessment: assessment || {},
+                supervision: history || []
+            },
+            manifest: {
+                integrity_hash: await this.caseService.calculateFileHash(new File([JSON.stringify(intake?.data || {})], "intake.json"))
+            }
+        };
+
+        return bundle;
     }
 
     /**

@@ -21,6 +21,7 @@ export interface ActivityFeedItem {
     description: string;
     created_at: string;
     client_name: string;
+    intake_id?: string;
 }
 
 export interface DashboardStats {

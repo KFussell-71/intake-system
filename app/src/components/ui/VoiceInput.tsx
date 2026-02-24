@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Mic, MicOff, Loader2 } from 'lucide-react';
+import { Mic, MicOff, Loader2, Wand2 } from 'lucide-react';
+import { aiService } from '@/lib/ai/UnifiedAIService';
 
 interface VoiceInputProps {
     onTranscript: (text: string) => void;
@@ -10,8 +11,10 @@ interface VoiceInputProps {
 
 export const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscript, className = '' }) => {
     const [isListening, setIsListening] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
     const [isSupported, setIsSupported] = useState(false);
     const [recognition, setRecognition] = useState<any>(null);
+    const [accumulatedTranscript, setAccumulatedTranscript] = useState('');
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -25,13 +28,20 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscript, className 
 
                 recognitionInstance.onresult = (event: any) => {
                     let finalTranscript = '';
+                    let interimTranscript = '';
+
                     for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        const transcript = event.results[i][0].transcript;
                         if (event.results[i].isFinal) {
-                            finalTranscript += event.results[i][0].transcript + ' ';
+                            finalTranscript += transcript + ' ';
+                        } else {
+                            interimTranscript += transcript;
                         }
                     }
+
                     if (finalTranscript) {
-                        onTranscript(finalTranscript);
+                        setAccumulatedTranscript(prev => prev + finalTranscript);
+                        onTranscript(accumulatedTranscript + finalTranscript + interimTranscript);
                     }
                 };
 
@@ -40,17 +50,41 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscript, className 
                     setIsListening(false);
                 };
 
-                recognitionInstance.onend = () => {
-                    // Auto-restart if we think we should still be listening, 
-                    // providing a "continuous" feel, unless stopped manually.
-                    // For now, we'll just stop to be safe and simple.
+                recognitionInstance.onend = async () => {
                     setIsListening(false);
+                    // Automatically trigger clean up on end if we have content
+                    if (accumulatedTranscript.length > 20) {
+                        handleAIClean(accumulatedTranscript);
+                    }
                 };
 
                 setRecognition(recognitionInstance);
             }
         }
     }, [onTranscript]);
+
+    const handleAIClean = async (text: string) => {
+        if (!text.trim()) return;
+        setIsProcessing(true);
+        try {
+            const prompt = `
+You are a clinical transcription assistant.
+Correct the punctuation and grammar of the following dictated text while preserving clinical terminology.
+Do not change the meaning. Only add punctuation and fix minor speech recognition errors.
+
+TEXT: ${text}
+
+Return only the corrected text.
+`;
+            const cleaned = await aiService.ask({ prompt, temperature: 0.3 });
+            onTranscript(cleaned.trim());
+        } catch (error) {
+            console.error('AI Clean failed', error);
+            onTranscript(text); // Fallback to raw
+        } finally {
+            setIsProcessing(false);
+        }
+    };
 
     const toggleListening = useCallback(() => {
         if (!process.browser && !recognition) return;
@@ -59,10 +93,21 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscript, className 
             recognition.stop();
             setIsListening(false);
         } else {
+            setAccumulatedTranscript('');
             recognition.start();
             setIsListening(true);
         }
     }, [isListening, recognition]);
+
+    const handleStopAndClean = useCallback(() => {
+        if (recognition) {
+            recognition.stop();
+            setIsListening(false);
+            // We need a way to capture the final results or the state must have them
+            // For this UI, we assume 'onTranscript' was called with fragments.
+            // If we want a "FINAL" clean, we should accumulate.
+        }
+    }, [recognition]);
 
     if (!isSupported) return null;
 
@@ -78,8 +123,15 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscript, className 
                 ${className}
             `}
             title={isListening ? 'Stop Dictation' : 'Start Dictation'}
+            disabled={isProcessing}
         >
-            {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+            {isProcessing ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+            ) : isListening ? (
+                <MicOff className="w-4 h-4" />
+            ) : (
+                <Mic className="w-4 h-4" />
+            )}
         </button>
     );
 };

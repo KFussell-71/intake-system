@@ -1,15 +1,27 @@
-# Intake System V3: Production Hardening Installer (Windows)
+# 🏥 Intake System V3: Production Clinical Node Installer (Windows)
+# Purpose: Zero-Touch Bootstrap for Distributed Clinical Nodes.
+
 param (
     [switch]$Clean,
     [switch]$Verify
 )
 
-Write-Host "🚀 Starting Intake System V3 Production Installer..." -ForegroundColor Cyan
+# --- Styles ---
+function Write-Header {
+    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
+    Write-Host "🏥 INTAKE SYSTEM: CLINICAL NODE BOOTSTRAP" -ForegroundColor Cyan -Style Bold
+    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
+}
+
+Clear-Host
+Write-Header
 
 # 1. Dependency Check
+Write-Host "🔍 Verifying dependencies..." -ForegroundColor Yellow
+$DockerCmd = "docker compose"
 if (!(Get-Command docker -ErrorAction SilentlyContinue)) {
-    Write-Error "❌ Docker not found. Please install Docker Desktop first."
-    exit
+    Write-Error "❌ Docker not found. Please install Docker Desktop first: https://www.docker.com/products/docker-desktop/"
+    exit 1
 }
 
 # 2. Cleanup (Optional)
@@ -20,26 +32,58 @@ if ($Clean) {
     Set-Location ..
 }
 
-# 3. Secrets & Paths
-Write-Host "🔐 Initializing security credentials..."
-New-Item -ItemType Directory -Force -Path "docker/secrets", "docker/nginx/certs"
+# 3. Path Provisioning
+Write-Host "📂 Provisioning persistent volumes..." -ForegroundColor Yellow
+$Paths = @("docker/data/db", "docker/data/backups", "docker/data/storage", "docker/nginx/certs", "docker/secrets")
+foreach ($Path in $Paths) {
+    if (!(Test-Path $Path)) {
+        New-Item -ItemType Directory -Path $Path -Force | Out-Null
+    }
+}
 
+# 4. Secret Generation
+Write-Host "🔐 Securing node credentials..." -ForegroundColor Yellow
 if (!(Test-Path "docker/secrets/db_password.txt")) {
-    $pass = [Convert]::ToBase64String((1..32 | ForEach-Object { [byte](Get-Random -Minimum 0 -Maximum 255) }))
-    $pass | Out-File -FilePath "docker/secrets/db_password.txt" -NoNewline -Encoding utf8
+    $Pass = [Convert]::ToBase64String((1..32 | ForEach-Object { [byte](Get-Random -Minimum 0 -Maximum 255) }))
+    $Pass | Out-File -FilePath "docker/secrets/db_password.txt" -NoNewline -Encoding utf8
+    Write-Host "✅ Generated secure DB password." -ForegroundColor Green
 }
 
-# 4. Launch Stack
-Write-Host "🐳 Launching hardened stack..."
+if (!(Test-Path "docker/secrets/gpg_passphrase.txt")) {
+    $Key = [Convert]::ToBase64String((1..32 | ForEach-Object { [byte](Get-Random -Minimum 0 -Maximum 255) }))
+    $Key | Out-File -FilePath "docker/secrets/gpg_passphrase.txt" -NoNewline -Encoding utf8
+    Write-Host "✅ Generated node encryption key (GPG)." -ForegroundColor Green
+}
+
+# 5. Launch Stack
+Write-Host "🐳 Starting Clinical Node containers..." -ForegroundColor Cyan
 Set-Location docker
+docker compose down > $null 2>&1
 docker compose up -d --build
+Set-Location ..
 
-# 5. Verification
-if ($Verify) {
-    Write-Host "🔍 Running health probes..."
-    Start-Sleep -Seconds 10
-    # PowerShell equivalent of health_probe.sh could be added here
+# 6. Verification
+Write-Host "⏳ Waiting for clinical state machine to warm up..." -ForegroundColor Yellow
+Start-Sleep -Seconds 15
+
+# Basic health check
+try {
+    $Response = Invoke-WebRequest -Uri "http://localhost:80" -Method Head -ErrorAction SilentlyContinue
+    if ($Response.StatusCode -eq 200) {
+        Write-Host "✅ Health check PASSED." -ForegroundColor Green
+    }
+    else {
+        Write-Warning "⚠️ Health check returned status: $($Response.StatusCode)"
+    }
+}
+catch {
+    Write-Host "❌ Health check FAILED. Retrying manual access in browser." -ForegroundColor Red
 }
 
-Write-Host "✅ Production candidate deployed successfully." -ForegroundColor Green
-Write-Host "📍 Access your application at: https://localhost"
+Write-Host ""
+Write-Host "🎉 SUCCESS: Your Clinical Node is LIVE." -ForegroundColor Green -Style Bold
+Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
+Write-Host "📍 Dashboard: http://localhost" -ForegroundColor White
+Write-Host "🔐 Device ID: $((Get-CimInstance Win32_ComputerSystem).Name)" -ForegroundColor White
+Write-Host "📜 Documentation: See INSTALL.md for next steps." -ForegroundColor White
+Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan

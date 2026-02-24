@@ -18,6 +18,16 @@ export interface IntakeAssessment {
     updated_at?: string;
 }
 
+export interface ClientStatement {
+    id?: string;
+    intake_id: string;
+    client_id?: string;
+    presenting_issue: string;
+    reported_barriers: string[];
+    goals_and_objectives: string;
+    updated_at?: string;
+}
+
 export interface SupervisionNote {
     id: string;
     intake_id: string;
@@ -59,6 +69,77 @@ export class IntakeRepository extends BaseRepository {
             .single();
 
         if (error) this.handleError(error, 'getIntakeById');
+        return data;
+    }
+
+    async getLatestUserDraft(userId: string) {
+        const { data, error } = await this.db
+            .from('intakes')
+            .select('*')
+            .eq('status', 'draft')
+            .order('updated_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+        if (error) this.handleError(error, 'getLatestUserDraft');
+        return data;
+    }
+
+    async upsertAssessmentAtomic(intakeId: string, assessment: Partial<IntakeAssessment>, userId: string) {
+        const { data, error } = await this.db
+            .from('intake_assessments')
+            .upsert({
+                ...assessment,
+                intake_id: intakeId,
+                counselor_id: userId,
+                updated_at: new Date().toISOString()
+            })
+            .select()
+            .single();
+
+        if (error) this.handleError(error, 'upsertAssessmentAtomic');
+        return data;
+    }
+
+    async addSupervisionNote(note: Omit<SupervisionNote, 'id' | 'created_at'>) {
+        const { data, error } = await this.db
+            .from('intake_supervision_notes')
+            .insert({
+                ...note,
+                created_at: new Date().toISOString()
+            })
+            .select()
+            .single();
+
+        if (error) this.handleError(error, 'addSupervisionNote');
+        return data;
+    }
+
+    async getClientStatement(intakeId: string): Promise<ClientStatement | null> {
+        const { data, error } = await this.db
+            .from('client_statements')
+            .select('*')
+            .eq('intake_id', intakeId)
+            .maybeSingle();
+
+        if (error) this.handleError(error, 'getClientStatement');
+        return data;
+    }
+
+    async upsertClientStatementAtomic(intakeId: string, statement: Partial<ClientStatement>, userId: string) {
+        const { data: profile } = await this.db.from('profiles').select('id').eq('id', userId).single();
+
+        const { data, error } = await this.db
+            .from('client_statements')
+            .upsert({
+                ...statement,
+                intake_id: intakeId,
+                updated_at: new Date().toISOString()
+            })
+            .select()
+            .single();
+
+        if (error) this.handleError(error, 'upsertClientStatementAtomic');
         return data;
     }
 

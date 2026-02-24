@@ -5,6 +5,7 @@ import { FileText, Loader2, Download, CheckCircle, ExternalLink } from 'lucide-r
 import { resumeMapperService } from '@/services/ResumeMapperService';
 import { resumeRepository } from '@/repositories/ResumeRepository';
 import { reactiveResumeService } from '@/services/ReactiveResumeService';
+import { resumeIntelligenceService } from '@/services/ResumeIntelligenceService';
 import { toast } from 'sonner';
 
 interface Props {
@@ -23,11 +24,15 @@ export function GenerateResumeButton({ intakeId, clientId, clientName, onResumeG
         setSuccess(false);
 
         try {
-            // 1. Generate JSON Resume from intake data
-            console.log('[GenerateResume] Generating resume for intake:', intakeId);
-            const jsonResume = await resumeMapperService.generateResumeFromIntake(intakeId);
+            // 1. Generate core JSON Resume from intake data
+            console.log('[GenerateResume] Generating base resume for intake:', intakeId);
+            const baseResume = await resumeMapperService.generateResumeFromIntake(intakeId);
 
-            // 2. Validate the resume
+            // 2. Enhance with Resume Intelligence (The "Better Way")
+            console.log('[GenerateResume] Applying Intelligence Layer');
+            const jsonResume = await resumeIntelligenceService.enhanceResumeWithIntelligence(intakeId, baseResume);
+
+            // 3. Validate the resume
             const validation = resumeMapperService.validateResume(jsonResume);
             if (!validation.valid) {
                 console.error('[GenerateResume] Validation errors:', validation.errors);

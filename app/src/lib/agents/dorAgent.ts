@@ -61,6 +61,16 @@ export interface IntakeBundle {
         description: string;
         status: string;
     }[];
+    statements?: {
+        presenting_issue: string;
+        reported_barriers: string[];
+        goals_and_objectives: string;
+    };
+    assessment_record?: {
+        clinical_narrative: string;
+        eligibility_status: string;
+        eligibility_rationale: string;
+    };
     follow_up: {
         next_meeting_date?: string;
         notes?: string;
@@ -222,6 +232,10 @@ Master Application
     - Mobility Status: ${data.intake.mobility_status || 'Independent'}
     - Eligibility: ${data.intake.eligibility_status || 'Pending'}
     - Priority: ${data.intake.priority_level || '3'}
+    - Client's Voice (Self-Report): ${data.statements?.presenting_issue || data.intake.details?.presentingIssueDescription || 'None reported'}
+    - Reported Barriers: ${(data.statements?.reported_barriers || data.intake.details?.barriers || []).join(', ')}
+    - Counselor's Professional Assessment: ${data.assessment_record?.clinical_narrative || data.intake.details?.clinicalNarrative || 'No assessment summary provided'}
+    - Eligibility Rationale: ${data.assessment_record?.eligibility_rationale || data.intake.details?.eligibilityRationale || 'Pending review'}
     - Medical History: ${data.medical?.medical_condition_description || 'None reported'}
     - Employment Summary: ${data.employment?.work_experience_summary || 'No summary provided'}
     - Transferable Skills: ${(data.employment?.transferable_skills || []).join(', ')}

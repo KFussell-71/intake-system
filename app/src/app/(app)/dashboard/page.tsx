@@ -50,6 +50,15 @@ const PolicySimulator = dynamic(() => import('@/features/simulation/components/P
 const ComparabilityWidget = dynamic(() => import('@/features/comparability/components/ComparabilityWidget').then(mod => mod.ComparabilityWidget), {
     loading: () => <div className="h-32 animate-pulse bg-slate-100 dark:bg-white/5 rounded-xl" />
 });
+const ClinicalFleetVisualizer = dynamic(() => import('@/components/dashboard/ClinicalFleetVisualizer').then(mod => mod.ClinicalFleetVisualizer), {
+    loading: () => <div className="h-64 animate-pulse bg-slate-100 dark:bg-white/5 rounded-xl" />
+});
+const VanguardAnalytics = dynamic(() => import('@/components/dashboard/VanguardAnalytics').then(mod => mod.VanguardAnalytics), {
+    loading: () => <div className="h-48 animate-pulse bg-slate-100 dark:bg-white/5 rounded-xl" />
+});
+const ManualSyncExport = dynamic(() => import('@/components/dashboard/ManualSyncExport').then(mod => mod.ManualSyncExport), {
+    loading: () => <div className="h-24 animate-pulse bg-slate-100 dark:bg-white/5 rounded-xl" />
+});
 
 export default function DashboardPage() {
     const router = useRouter();
@@ -250,32 +259,49 @@ export default function DashboardPage() {
                         </GlassCard>
                     </motion.div>
 
+                    {/* Vanguard Analytics (Ultimate Tier) */}
+                    {isSupervisor && (
+                        <motion.div variants={itemVariants} className="md:col-span-4 lg:col-span-12 mb-6">
+                            <VanguardAnalytics />
+                        </motion.div>
+                    )}
+
                     {/* Quick Stats - Dynamic */}
-                    <motion.div variants={itemVariants} className="md:col-span-4 lg:col-span-4 grid grid-cols-2 gap-4">
-                        <GlassCard className="flex flex-col justify-center items-center text-center">
-                            <div className="p-3 bg-blue-500/10 rounded-2xl mb-3">
-                                <Users className="w-6 h-6 text-blue-500" />
-                            </div>
-                            <p className="text-2xl font-bold">{totalClients}</p>
-                            <p className="text-[10px] uppercase font-bold text-slate-400">Total Clients</p>
-                        </GlassCard>
-                        <GlassCard className="flex flex-col justify-center items-center text-center">
-                            <div className="p-3 bg-amber-500/10 rounded-2xl mb-3">
-                                <Clock className="w-6 h-6 text-amber-500" />
-                            </div>
-                            <p className="text-2xl font-bold">{activeCases}</p>
-                            <p className="text-[10px] uppercase font-bold text-slate-400">In Progress</p>
-                        </GlassCard>
-                        <GlassCard className="col-span-2 flex flex-col justify-center items-center text-center">
-                            <div className="p-3 bg-purple-500/10 rounded-2xl mb-3">
-                                <Activity className="w-6 h-6 text-purple-500" />
-                            </div>
-                            <p className="text-sm font-medium text-slate-500 mb-1">Latest Activity</p>
-                            <p className="text-xs text-slate-400 max-w-[200px] truncate">
-                                {stats?.recentActivity?.[0]?.description || 'No recent activity'}
-                            </p>
-                        </GlassCard>
-                    </motion.div>
+                    <div className="md:col-span-4 lg:col-span-4 flex flex-col gap-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <GlassCard className="flex flex-col justify-center items-center text-center">
+                                <div className="p-3 bg-blue-500/10 rounded-2xl mb-3">
+                                    <Users className="w-6 h-6 text-blue-500" />
+                                </div>
+                                <p className="text-2xl font-bold">{totalClients}</p>
+                                <p className="text-[10px] uppercase font-bold text-slate-400">Total Clients</p>
+                            </GlassCard>
+                            <GlassCard className="flex flex-col justify-center items-center text-center">
+                                <div className="p-3 bg-amber-500/10 rounded-2xl mb-3">
+                                    <Clock className="w-6 h-6 text-amber-500" />
+                                </div>
+                                <p className="text-2xl font-bold">{activeCases}</p>
+                                <p className="text-[10px] uppercase font-bold text-slate-400">In Progress</p>
+                            </GlassCard>
+                        </div>
+
+                        {/* Clinical Resilience: USB Fallback (SME Refinement) */}
+                        {isSupervisor && (
+                            <motion.div variants={itemVariants}>
+                                <ManualSyncExport
+                                    intakeId={stats?.recentActivity?.[0]?.intake_id || ''}
+                                    clientName={stats?.recentActivity?.[0]?.client_name || 'Latest_Case'}
+                                />
+                            </motion.div>
+                        )}
+                    </div>
+
+                    {/* Field Operations - Clinical Fleet Visualizer (Enterprise v3.3) */}
+                    {isSupervisor && (
+                        <motion.div variants={itemVariants} className="md:col-span-4 lg:col-span-12">
+                            <ClinicalFleetVisualizer />
+                        </motion.div>
+                    )}
 
                     {/* Analytics Section - Supervisor Only */}
                     {isSupervisor && stats && (
