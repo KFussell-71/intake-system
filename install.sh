@@ -6,14 +6,34 @@ set -e
 
 echo "🚀 Initializing Clinical Node Deployment..."
 
-# 1. Preflight Diagnostics
+# 1. Forensic Safeguards
+if [ "$EUID" -eq 0 ]; then
+    echo "❌ Error: DO NOT run this script as root. Use a dedicated service user."
+    exit 1
+fi
+
+# 2. Preflight Diagnostics
 if [ -f "./scripts/preflight.sh" ]; then
     bash ./scripts/preflight.sh
 else
     echo "⚠️  Warning: preflight.sh not found. Skipping hardware audit."
 fi
 
-# 2. Directory Provisioning (NAS Bind Mounts)
+# 3. NAS Mount Warning (Forensic Protection)
+echo "🔍 Checking NAS mount integrity..."
+mount_opts=$(mount | grep "on / " | head -n 1) # Checking root as fallback if data dir not yet mapped
+if echo "$mount_opts" | grep -q "data=writeback"; then
+    echo "⚠️  WARNING: NAS filesystem uses 'data=writeback'. Postgres durability is AT RISK."
+    echo "   Recommended: data=ordered or ZFS."
+fi
+
+# 4. Entropy Validation (For key generation)
+avail_entropy=$(cat /proc/sys/kernel/random/entropy_avail 2>/dev/null || echo "1000")
+if [ "$avail_entropy" -lt 200 ]; then
+    echo "⚠️  Warning: Low system entropy ($avail_entropy). Key generation may be weak."
+fi
+
+# 5. Directory Provisioning (NAS Bind Mounts)
 echo "📂 Provisioning persistent volumes..."
 mkdir -p docker/data/db
 mkdir -p docker/data/backups

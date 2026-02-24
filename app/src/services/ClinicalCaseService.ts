@@ -25,30 +25,34 @@ export class ClinicalCaseService {
         caseId: string,
         baseVersion: number,
         payload: any,
-        eventMetadata: { type: string; actorId: string }
+        metadata: { type: string; actorId?: string }
     ): Promise<T> {
+        const userId = metadata.actorId || 'SYSTEM';
         const deviceId = this.getDeviceId();
+        const clientTimestamp = new Date().toISOString(); // Authoritative timestamp generated at source
 
         console.log(`[ClinicalCaseService] Executing Master Sync: Case ${caseId}, V${baseVersion}`);
 
-        const { data, error } = await this.supabase.rpc('master_clinical_sync', {
+        const { data, error } = await this.supabase.rpc('master_clinical_sync_v2', {
             p_case_id: caseId,
             p_base_version: baseVersion,
             p_device_id: deviceId,
-            p_user_id: eventMetadata.actorId,
+            p_user_id: userId,
+            p_timestamp: clientTimestamp,
             p_payload: payload
         });
 
         if (error) {
-            console.error('[ClinicalCaseService] RPC Error:', error);
-            throw error;
+            console.error(`[ClinicalCaseService] Mutation Failed:`, error);
+            throw new Error(`Mutation failed: ${error.message}`);
         }
 
         if (data.status === 'error') {
-            if (data.message?.includes('Version conflict')) {
-                throw new ConflictError(data.current_version || -1, data.message);
+            console.error(`[ClinicalCaseService] Business Logic Error:`, data.message);
+            if (data.message === 'Version conflict') {
+                throw new Error(`version mismatch: expected ${baseVersion}, got ${data.current_version}`);
             }
-            throw new Error(data.message || 'Master sync failed');
+            throw new Error(data.message);
         }
 
         return data as T;
