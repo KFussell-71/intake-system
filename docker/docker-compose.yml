@@ -30,7 +30,7 @@ services:
     image: pgvector/pgvector:pg15
     container_name: intake-db
     restart: always
-    command: [ "postgres", "-c", "max_connections=50", "-c", "shared_buffers=256MB" ]
+    command: [ "postgres", "-c", "max_connections=50", "-c", "shared_buffers=256MB", "-c", "fsync=on", "-c", "full_page_writes=on" ]
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres

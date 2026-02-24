@@ -175,6 +175,25 @@ export class IntakeRepository extends BaseRepository {
 
         if (error) this.handleError(error, `updateDomainFields:${table}`);
     }
+
+    async syncClinicalCase(params: {
+        caseId: string;
+        clientId: string;
+        localVersion: number;
+        data: any;
+        events: any[];
+    }) {
+        const { data, error } = await this.db.rpc('sync_clinical_case', {
+            p_case_id: params.caseId,
+            p_client_id: params.clientId,
+            p_local_version: params.localVersion,
+            p_data: params.data,
+            p_events: params.events
+        });
+
+        if (error) this.handleError(error, 'syncClinicalCase');
+        return data;
+    }
 }
 
 export const intakeRepository = new IntakeRepository();
