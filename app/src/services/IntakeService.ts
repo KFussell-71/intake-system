@@ -6,6 +6,7 @@ import { saveSyncTask } from '@/lib/offline/db';
 import { IntakeWorkflowService } from '@/domain/services/IntakeWorkflowService';
 import { IntakeEntity, ClientAggregate } from '@/domain/entities/ClientAggregate';
 import { DomainPersistenceManager } from '@/domain/services/DomainPersistenceManager';
+import { clinicalCaseService, ClinicalCaseService } from './ClinicalCaseService';
 
 export { type IntakeAssessment, type SupervisionNote };
 
@@ -15,7 +16,8 @@ export class IntakeService {
     }
     constructor(
         private readonly repo: ClientRepository = clientRepository,
-        private readonly intakeRepo: IntakeRepository = intakeRepository
+        private readonly intakeRepo: IntakeRepository = intakeRepository,
+        private readonly caseService: ClinicalCaseService = clinicalCaseService
     ) { }
 
     private isOffline() {
@@ -88,27 +90,33 @@ export class IntakeService {
 
             const entity = new IntakeEntity(intakeId, raw.data || {}, raw.status, [], raw.version);
 
-            // 1. SME: State Transition & Domain Events (Diffing happens here)
-            await IntakeWorkflowService.saveProgress(entity, data, editComment || "Progressive Save", user.id);
-
-            // 2. ARCHITECTURE: Incremental Domain Hydration (V3 Parallelized)
-            const updatesByTable = DomainPersistenceManager.getUpdatesByTable(data);
-
-            const updatePromises = Object.entries(updatesByTable).map(async ([table, fields]) => {
-                let targetId = table === 'clients' ? raw.client_id : intakeId;
-                return this.intakeRepo.updateDomainFields(table, targetId, fields);
-            });
-
-            // Run updates in parallel to reduce latency from O(N) to O(1) round-trips
-            await Promise.all(updatePromises);
-
-            // 3. Finalize versioning and JSONB sync (Backward Compatibility)
-            const result = await this.intakeRepo.saveIntakeProgressAtomic(
+            // NEW: Orchestrate through ClinicalCaseService for Distributed Sync integrity
+            const result = await this.caseService.executeMutation(
                 intakeId,
-                data,
-                editComment || "Progressive Save",
-                user.id,
-                expectedVersion
+                expectedVersion ?? raw.version ?? 1,
+                async () => {
+                    // 1. SME: State Transition & Domain Events (Diffing happens here)
+                    await IntakeWorkflowService.saveProgress(entity, data, editComment || "Progressive Save", user.id);
+
+                    // 2. ARCHITECTURE: Incremental Domain Hydration (V3 Parallelized)
+                    const updatesByTable = DomainPersistenceManager.getUpdatesByTable(data);
+                    const updatePromises = Object.entries(updatesByTable).map(async ([table, fields]) => {
+                        let targetId = table === 'clients' ? raw.client_id : intakeId;
+                        return this.intakeRepo.updateDomainFields(table, targetId, fields);
+                    });
+
+                    await Promise.all(updatePromises);
+
+                    // 3. Finalize versioning and JSONB sync (Backward Compatibility)
+                    return await this.intakeRepo.saveIntakeProgressAtomic(
+                        intakeId,
+                        data,
+                        editComment || "Progressive Save",
+                        user.id,
+                        expectedVersion
+                    );
+                },
+                { type: 'INTAKE_PROGRESS_SAVE', actorId: user.id }
             );
 
             if (result && !result.success && result.error === 'CONFLICT') {
