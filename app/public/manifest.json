@@ -1,0 +1,46 @@
+{
+    "name": "New Beginning Client Portal",
+    "short_name": "NewBeginning",
+    "description": "Enterprise clinical intake and career tracking platform.",
+    "start_url": "/?source=pwa",
+    "display": "standalone",
+    "background_color": "#0f172a",
+    "theme_color": "#4f46e5",
+    "orientation": "any",
+    "icons": [
+        {
+            "src": "/icons/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/icons/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "New Intake",
+            "url": "/intake/new",
+            "icons": [
+                {
+                    "src": "/icons/shortcut-new.png",
+                    "sizes": "192x192"
+                }
+            ]
+        },
+        {
+            "name": "Client Directory",
+            "url": "/directory",
+            "icons": [
+                {
+                    "src": "/icons/shortcut-dir.png",
+                    "sizes": "192x192"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,93 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ../app
+      dockerfile: Dockerfile
+    container_name: intake-system
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2GB
+    environment:
+      - NEXT_PUBLIC_OLLAMA_MODEL=gemma2:2b
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
+      - NEXT_PUBLIC_SUPABASE_URL=http://kong:8000
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${ANON_KEY}
+    env_file:
+      - ../app/.env.local
+    depends_on:
+      db:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+
+  db:
+    image: pgvector/pgvector:pg15
+    container_name: intake-db
+    restart: always
+    command: [ "postgres", "-c", "max_connections=50", "-c", "shared_buffers=256MB" ]
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+      - POSTGRES_INITDB_ARGS="--data-checksums"
+    secrets:
+      - db_password
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1GB
+    volumes:
+      - ./supabase/migrations:/docker-entrypoint-initdb.d
+      - db_data:/var/lib/postgresql/data
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: intake-ollama
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "ollama list || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 4GB
+    volumes:
+      - ollama_data:/root/.ollama
+
+  proxy:
+    image: nginx:alpine
+    container_name: intake-proxy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - app
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+  gpg_passphrase:
+    file: ./secrets/gpg_passphrase.txt
+
+volumes:
+  db_data:
+  ollama_data:

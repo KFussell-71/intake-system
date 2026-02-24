@@ -1,0 +1,8 @@
+Intake System V3.2 (Enterprise)
+-------------------------------
+Nginx: stable-alpine
+PostgreSQL: 15-alpine
+Ollama: latest
+Node.js: 20
+GPG: Enabled
+CircuitBreaker: Enabled

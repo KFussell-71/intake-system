@@ -1,0 +1,39 @@
+🔄 Finalizing Supabase Database Restoration...
+🧨 Resetting database
+open supabase/.temp/profile: no such file or directory
+Supabase CLI 2.76.7
+Using profile: supabase (supabase.co)
+Resetting local database...
+Recreating database...
+2026/02/16 12:12:28 PG Send: {"Type":"StartupMessage","ProtocolVersion":196608,"Parameters":{"database":"postgres","user":"postgres"}}
+2026/02/16 12:12:28 PG Recv: {"Type":"AuthenticationSASL","AuthMechanisms":["SCRAM-SHA-256"]}
+2026/02/16 12:12:28 PG Send: {"Type":"SASLInitialResponse","AuthMechanism":"SCRAM-SHA-256","Data":"n,,n=,r=NN5kf524VT544RrFk4pSyQT9"}
+2026/02/16 12:12:28 PG Recv: {"Type":"AuthenticationSASLContinue","Data":"r=NN5kf524VT544RrFk4pSyQT9IkeyiNXx/bv7iJ7zKeWq8B1K,s=xdDsMlaI3k8YyQxXMAx3SA==,i=4096"}
+2026/02/16 12:12:28 PG Send: {"Type":"SASLResponse","Data":"c=biws,r=NN5kf524VT544RrFk4pSyQT9IkeyiNXx/bv7iJ7zKeWq8B1K,p=3B+zBPfZjWIXumg5FP0xwF/0ud0OdLGhy/NWm0SYNu0="}
+2026/02/16 12:12:28 PG Recv: {"Type":"AuthenticationSASLFinal","Data":"v=hgKU3aCKV2YnCn9D52SKyFFhTVvNzF/8hf2Mp6NDrCQ="}
+2026/02/16 12:12:28 PG Recv: {"Type":"AuthenticationOK"}
+2026/02/16 12:12:28 PG Recv: {"Type":"ParameterStatus","Name":"in_hot_standby","Value":"off"}
+2026/02/16 12:12:28 PG Recv: {"Type":"ParameterStatus","Name":"integer_datetimes","Value":"on"}
+2026/02/16 12:12:28 PG Recv: {"Type":"ParameterStatus","Name":"TimeZone","Value":"UTC"}
+2026/02/16 12:12:28 PG Recv: {"Type":"ParameterStatus","Name":"IntervalStyle","Value":"postgres"}
+2026/02/16 12:12:28 PG Recv: {"Type":"ParameterStatus","Name":"is_superuser","Value":"off"}
+2026/02/16 12:12:28 PG Recv: {"Type":"ParameterStatus","Name":"application_name","Value":""}
+2026/02/16 12:12:28 PG Recv: {"Type":"ParameterStatus","Name":"default_transaction_read_only","Value":"off"}
+2026/02/16 12:12:28 PG Recv: {"Type":"ParameterStatus","Name":"scram_iterations","Value":"4096"}
+2026/02/16 12:12:28 PG Recv: {"Type":"ParameterStatus","Name":"DateStyle","Value":"ISO, MDY"}
+2026/02/16 12:12:28 PG Recv: {"Type":"ParameterStatus","Name":"standard_conforming_strings","Value":"on"}
+2026/02/16 12:12:28 PG Recv: {"Type":"ParameterStatus","Name":"session_authorization","Value":"postgres"}
+2026/02/16 12:12:28 PG Recv: {"Type":"ParameterStatus","Name":"client_encoding","Value":"UTF8"}
+2026/02/16 12:12:28 PG Recv: {"Type":"ParameterStatus","Name":"server_version","Value":"17.6"}
+2026/02/16 12:12:28 PG Recv: {"Type":"ParameterStatus","Name":"server_encoding","Value":"UTF8"}
+2026/02/16 12:12:28 PG Recv: {"Type":"BackendKeyData","ProcessID":256,"SecretKey":1325827916}
+2026/02/16 12:12:28 PG Recv: {"Type":"ReadyForQuery","TxStatus":"I"}
+Initialising schema...
++ ulimit -n
++ '[' '!' -z '' ']'
++ export ERL_CRASH_DUMP=/tmp/erl_crash.dump
++ ERL_CRASH_DUMP=/tmp/erl_crash.dump
++ '[' false = true ']'
++ [[ -n '' ]]
++ echo 'Running migrations'
++ sudo -E -u nobody /app/bin/migrate

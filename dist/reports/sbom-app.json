@@ -1,0 +1,560 @@
+{
+  "version": "1.0.0",
+  "name": "intake",
+  "problems": [
+    "missing: @google/generative-ai@^0.24.1, required by intake@1.0.0",
+    "missing: @radix-ui/react-avatar@^1.1.11, required by intake@1.0.0",
+    "missing: @radix-ui/react-checkbox@^1.3.3, required by intake@1.0.0",
+    "missing: @radix-ui/react-dialog@^1.1.15, required by intake@1.0.0",
+    "missing: @radix-ui/react-dropdown-menu@^2.1.16, required by intake@1.0.0",
+    "missing: @radix-ui/react-label@^2.1.8, required by intake@1.0.0",
+    "missing: @radix-ui/react-radio-group@^1.3.8, required by intake@1.0.0",
+    "missing: @radix-ui/react-select@^2.2.6, required by intake@1.0.0",
+    "missing: @radix-ui/react-slot@^1.2.4, required by intake@1.0.0",
+    "missing: @radix-ui/react-switch@^1.2.6, required by intake@1.0.0",
+    "missing: @sentry/nextjs@^10.38.0, required by intake@1.0.0",
+    "missing: @sparticuz/chromium@^143.0.4, required by intake@1.0.0",
+    "missing: @supabase/auth-helpers-nextjs@^0.15.0, required by intake@1.0.0",
+    "missing: @supabase/ssr@^0.8.0, required by intake@1.0.0",
+    "missing: @supabase/supabase-js@^2.93.1, required by intake@1.0.0",
+    "missing: @tailwindcss/postcss@^4.1.18, required by intake@1.0.0",
+    "missing: @tailwindcss/typography@^0.5.19, required by intake@1.0.0",
+    "missing: @testing-library/jest-dom@^6.9.1, required by intake@1.0.0",
+    "missing: @testing-library/react@^16.3.2, required by intake@1.0.0",
+    "missing: @types/canvas-confetti@^1.9.0, required by intake@1.0.0",
+    "missing: @types/json-stringify-safe@^5.0.3, required by intake@1.0.0",
+    "missing: @types/marked@^5.0.2, required by intake@1.0.0",
+    "missing: @types/node@^25.0.10, required by intake@1.0.0",
+    "missing: @types/react-dom@^19.2.3, required by intake@1.0.0",
+    "missing: @types/react-signature-canvas@^1.0.7, required by intake@1.0.0",
+    "missing: @types/react@^19.2.10, required by intake@1.0.0",
+    "missing: @types/uuid@^10.0.0, required by intake@1.0.0",
+    "missing: @vitejs/plugin-react@^5.1.2, required by intake@1.0.0",
+    "missing: autoprefixer@^10.4.23, required by intake@1.0.0",
+    "missing: canvas-confetti@^1.9.4, required by intake@1.0.0",
+    "missing: class-variance-authority@^0.7.1, required by intake@1.0.0",
+    "missing: clsx@^2.1.1, required by intake@1.0.0",
+    "missing: date-fns@^4.1.0, required by intake@1.0.0",
+    "missing: diff@^8.0.3, required by intake@1.0.0",
+    "missing: dotenv@^17.3.1, required by intake@1.0.0",
+    "missing: eslint-config-next@^15.1.0, required by intake@1.0.0",
+    "missing: eslint@^9.39.2, required by intake@1.0.0",
+    "missing: fast-glob@^3.3.3, required by intake@1.0.0",
+    "missing: framer-motion@^12.29.2, required by intake@1.0.0",
+    "missing: glob@^13.0.3, required by intake@1.0.0",
+    "missing: html2canvas@^1.4.1, required by intake@1.0.0",
+    "missing: idb@^8.0.3, required by intake@1.0.0",
+    "missing: isomorphic-dompurify@^2.35.0, required by intake@1.0.0",
+    "missing: javascript-obfuscator@^5.3.0, required by intake@1.0.0",
+    "missing: jsdom@^27.4.0, required by intake@1.0.0",
+    "missing: json-stringify-safe@^5.0.1, required by intake@1.0.0",
+    "missing: jspdf-autotable@^5.0.7, required by intake@1.0.0",
+    "missing: jspdf@^4.0.0, required by intake@1.0.0",
+    "missing: lucide-react@^0.563.0, required by intake@1.0.0",
+    "missing: marked@^17.0.1, required by intake@1.0.0",
+    "missing: next-pwa@^5.6.0, required by intake@1.0.0",
+    "missing: next-themes@^0.4.6, required by intake@1.0.0",
+    "missing: next@^15.1.0, required by intake@1.0.0",
+    "missing: pdf-lib@^1.17.1, required by intake@1.0.0",
+    "missing: pg@^8.18.0, required by intake@1.0.0",
+    "missing: postcss@^8.5.6, required by intake@1.0.0",
+    "missing: puppeteer-core@^24.36.1, required by intake@1.0.0",
+    "missing: radix-ui@^1.4.3, required by intake@1.0.0",
+    "missing: react-day-picker@^9.13.0, required by intake@1.0.0",
+    "missing: react-dom@^19.2.4, required by intake@1.0.0",
+    "missing: react-hook-form@^7.71.1, required by intake@1.0.0",
+    "missing: react-icons@^5.5.0, required by intake@1.0.0",
+    "missing: react-markdown@^10.1.0, required by intake@1.0.0",
+    "missing: react-signature-canvas@^1.1.0-alpha.2, required by intake@1.0.0",
+    "missing: react@^19.2.4, required by intake@1.0.0",
+    "missing: recharts@^3.7.0, required by intake@1.0.0",
+    "missing: resend@^6.9.1, required by intake@1.0.0",
+    "missing: shadcn@^3.8.4, required by intake@1.0.0",
+    "missing: sonner@^2.0.7, required by intake@1.0.0",
+    "missing: supabase@^2.74.5, required by intake@1.0.0",
+    "missing: tailwind-merge@^3.4.0, required by intake@1.0.0",
+    "missing: tailwindcss@^4.1.18, required by intake@1.0.0",
+    "missing: tw-animate-css@^1.4.0, required by intake@1.0.0",
+    "missing: typescript@^5.9.3, required by intake@1.0.0",
+    "missing: uuid@^13.0.0, required by intake@1.0.0",
+    "missing: vitest@^4.0.18, required by intake@1.0.0",
+    "missing: webpack-obfuscator@^3.6.0, required by intake@1.0.0",
+    "missing: zod@^4.3.6, required by intake@1.0.0"
+  ],
+  "dependencies": {
+    "@google/generative-ai": {
+      "required": "^0.24.1",
+      "missing": true,
+      "problems": [
+        "missing: @google/generative-ai@^0.24.1, required by intake@1.0.0"
+      ]
+    },
+    "@radix-ui/react-avatar": {
+      "missing": true,
+      "problems": [
+        "missing: @radix-ui/react-avatar@^1.1.11, required by intake@1.0.0"
+      ]
+    },
+    "@radix-ui/react-checkbox": {
+      "missing": true,
+      "problems": [
+        "missing: @radix-ui/react-checkbox@^1.3.3, required by intake@1.0.0"
+      ]
+    },
+    "@radix-ui/react-dialog": {
+      "missing": true,
+      "problems": [
+        "missing: @radix-ui/react-dialog@^1.1.15, required by intake@1.0.0"
+      ]
+    },
+    "@radix-ui/react-dropdown-menu": {
+      "missing": true,
+      "problems": [
+        "missing: @radix-ui/react-dropdown-menu@^2.1.16, required by intake@1.0.0"
+      ]
+    },
+    "@radix-ui/react-label": {
+      "missing": true,
+      "problems": [
+        "missing: @radix-ui/react-label@^2.1.8, required by intake@1.0.0"
+      ]
+    },
+    "@radix-ui/react-radio-group": {
+      "missing": true,
+      "problems": [
+        "missing: @radix-ui/react-radio-group@^1.3.8, required by intake@1.0.0"
+      ]
+    },
+    "@radix-ui/react-select": {
+      "missing": true,
+      "problems": [
+        "missing: @radix-ui/react-select@^2.2.6, required by intake@1.0.0"
+      ]
+    },
+    "@radix-ui/react-slot": {
+      "missing": true,
+      "problems": [
+        "missing: @radix-ui/react-slot@^1.2.4, required by intake@1.0.0"
+      ]
+    },
+    "@radix-ui/react-switch": {
+      "missing": true,
+      "problems": [
+        "missing: @radix-ui/react-switch@^1.2.6, required by intake@1.0.0"
+      ]
+    },
+    "@sentry/nextjs": {
+      "missing": true,
+      "problems": [
+        "missing: @sentry/nextjs@^10.38.0, required by intake@1.0.0"
+      ]
+    },
+    "@sparticuz/chromium": {
+      "missing": true,
+      "problems": [
+        "missing: @sparticuz/chromium@^143.0.4, required by intake@1.0.0"
+      ]
+    },
+    "@supabase/auth-helpers-nextjs": {
+      "missing": true,
+      "problems": [
+        "missing: @supabase/auth-helpers-nextjs@^0.15.0, required by intake@1.0.0"
+      ]
+    },
+    "@supabase/ssr": {
+      "missing": true,
+      "problems": [
+        "missing: @supabase/ssr@^0.8.0, required by intake@1.0.0"
+      ]
+    },
+    "@supabase/supabase-js": {
+      "missing": true,
+      "problems": [
+        "missing: @supabase/supabase-js@^2.93.1, required by intake@1.0.0"
+      ]
+    },
+    "@tailwindcss/postcss": {
+      "missing": true,
+      "problems": [
+        "missing: @tailwindcss/postcss@^4.1.18, required by intake@1.0.0"
+      ]
+    },
+    "@tailwindcss/typography": {
+      "missing": true,
+      "problems": [
+        "missing: @tailwindcss/typography@^0.5.19, required by intake@1.0.0"
+      ]
+    },
+    "@testing-library/jest-dom": {
+      "missing": true,
+      "problems": [
+        "missing: @testing-library/jest-dom@^6.9.1, required by intake@1.0.0"
+      ]
+    },
+    "@testing-library/react": {
+      "missing": true,
+      "problems": [
+        "missing: @testing-library/react@^16.3.2, required by intake@1.0.0"
+      ]
+    },
+    "@types/canvas-confetti": {
+      "missing": true,
+      "problems": [
+        "missing: @types/canvas-confetti@^1.9.0, required by intake@1.0.0"
+      ]
+    },
+    "@types/json-stringify-safe": {
+      "missing": true,
+      "problems": [
+        "missing: @types/json-stringify-safe@^5.0.3, required by intake@1.0.0"
+      ]
+    },
+    "@types/marked": {
+      "missing": true,
+      "problems": [
+        "missing: @types/marked@^5.0.2, required by intake@1.0.0"
+      ]
+    },
+    "@types/node": {
+      "missing": true,
+      "problems": [
+        "missing: @types/node@^25.0.10, required by intake@1.0.0"
+      ]
+    },
+    "@types/react-dom": {
+      "missing": true,
+      "problems": [
+        "missing: @types/react-dom@^19.2.3, required by intake@1.0.0"
+      ]
+    },
+    "@types/react-signature-canvas": {
+      "missing": true,
+      "problems": [
+        "missing: @types/react-signature-canvas@^1.0.7, required by intake@1.0.0"
+      ]
+    },
+    "@types/react": {
+      "missing": true,
+      "problems": [
+        "missing: @types/react@^19.2.10, required by intake@1.0.0"
+      ]
+    },
+    "@types/uuid": {
+      "missing": true,
+      "problems": [
+        "missing: @types/uuid@^10.0.0, required by intake@1.0.0"
+      ]
+    },
+    "@vitejs/plugin-react": {
+      "missing": true,
+      "problems": [
+        "missing: @vitejs/plugin-react@^5.1.2, required by intake@1.0.0"
+      ]
+    },
+    "autoprefixer": {
+      "missing": true,
+      "problems": [
+        "missing: autoprefixer@^10.4.23, required by intake@1.0.0"
+      ]
+    },
+    "canvas-confetti": {
+      "missing": true,
+      "problems": [
+        "missing: canvas-confetti@^1.9.4, required by intake@1.0.0"
+      ]
+    },
+    "class-variance-authority": {
+      "missing": true,
+      "problems": [
+        "missing: class-variance-authority@^0.7.1, required by intake@1.0.0"
+      ]
+    },
+    "clsx": {
+      "missing": true,
+      "problems": [
+        "missing: clsx@^2.1.1, required by intake@1.0.0"
+      ]
+    },
+    "date-fns": {
+      "missing": true,
+      "problems": [
+        "missing: date-fns@^4.1.0, required by intake@1.0.0"
+      ]
+    },
+    "diff": {
+      "missing": true,
+      "problems": [
+        "missing: diff@^8.0.3, required by intake@1.0.0"
+      ]
+    },
+    "dotenv": {
+      "missing": true,
+      "problems": [
+        "missing: dotenv@^17.3.1, required by intake@1.0.0"
+      ]
+    },
+    "eslint-config-next": {
+      "missing": true,
+      "problems": [
+        "missing: eslint-config-next@^15.1.0, required by intake@1.0.0"
+      ]
+    },
+    "eslint": {
+      "missing": true,
+      "problems": [
+        "missing: eslint@^9.39.2, required by intake@1.0.0"
+      ]
+    },
+    "fast-glob": {
+      "missing": true,
+      "problems": [
+        "missing: fast-glob@^3.3.3, required by intake@1.0.0"
+      ]
+    },
+    "framer-motion": {
+      "missing": true,
+      "problems": [
+        "missing: framer-motion@^12.29.2, required by intake@1.0.0"
+      ]
+    },
+    "glob": {
+      "missing": true,
+      "problems": [
+        "missing: glob@^13.0.3, required by intake@1.0.0"
+      ]
+    },
+    "html2canvas": {
+      "missing": true,
+      "problems": [
+        "missing: html2canvas@^1.4.1, required by intake@1.0.0"
+      ]
+    },
+    "idb": {
+      "missing": true,
+      "problems": [
+        "missing: idb@^8.0.3, required by intake@1.0.0"
+      ]
+    },
+    "isomorphic-dompurify": {
+      "missing": true,
+      "problems": [
+        "missing: isomorphic-dompurify@^2.35.0, required by intake@1.0.0"
+      ]
+    },
+    "javascript-obfuscator": {
+      "missing": true,
+      "problems": [
+        "missing: javascript-obfuscator@^5.3.0, required by intake@1.0.0"
+      ]
+    },
+    "jsdom": {
+      "missing": true,
+      "problems": [
+        "missing: jsdom@^27.4.0, required by intake@1.0.0"
+      ]
+    },
+    "json-stringify-safe": {
+      "missing": true,
+      "problems": [
+        "missing: json-stringify-safe@^5.0.1, required by intake@1.0.0"
+      ]
+    },
+    "jspdf-autotable": {
+      "missing": true,
+      "problems": [
+        "missing: jspdf-autotable@^5.0.7, required by intake@1.0.0"
+      ]
+    },
+    "jspdf": {
+      "missing": true,
+      "problems": [
+        "missing: jspdf@^4.0.0, required by intake@1.0.0"
+      ]
+    },
+    "lucide-react": {
+      "missing": true,
+      "problems": [
+        "missing: lucide-react@^0.563.0, required by intake@1.0.0"
+      ]
+    },
+    "marked": {
+      "missing": true,
+      "problems": [
+        "missing: marked@^17.0.1, required by intake@1.0.0"
+      ]
+    },
+    "next-pwa": {
+      "missing": true,
+      "problems": [
+        "missing: next-pwa@^5.6.0, required by intake@1.0.0"
+      ]
+    },
+    "next-themes": {
+      "missing": true,
+      "problems": [
+        "missing: next-themes@^0.4.6, required by intake@1.0.0"
+      ]
+    },
+    "next": {
+      "missing": true,
+      "problems": [
+        "missing: next@^15.1.0, required by intake@1.0.0"
+      ]
+    },
+    "pdf-lib": {
+      "missing": true,
+      "problems": [
+        "missing: pdf-lib@^1.17.1, required by intake@1.0.0"
+      ]
+    },
+    "pg": {
+      "missing": true,
+      "problems": [
+        "missing: pg@^8.18.0, required by intake@1.0.0"
+      ]
+    },
+    "postcss": {
+      "missing": true,
+      "problems": [
+        "missing: postcss@^8.5.6, required by intake@1.0.0"
+      ]
+    },
+    "puppeteer-core": {
+      "missing": true,
+      "problems": [
+        "missing: puppeteer-core@^24.36.1, required by intake@1.0.0"
+      ]
+    },
+    "radix-ui": {
+      "missing": true,
+      "problems": [
+        "missing: radix-ui@^1.4.3, required by intake@1.0.0"
+      ]
+    },
+    "react-day-picker": {
+      "missing": true,
+      "problems": [
+        "missing: react-day-picker@^9.13.0, required by intake@1.0.0"
+      ]
+    },
+    "react-dom": {
+      "missing": true,
+      "problems": [
+        "missing: react-dom@^19.2.4, required by intake@1.0.0"
+      ]
+    },
+    "react-hook-form": {
+      "missing": true,
+      "problems": [
+        "missing: react-hook-form@^7.71.1, required by intake@1.0.0"
+      ]
+    },
+    "react-icons": {
+      "missing": true,
+      "problems": [
+        "missing: react-icons@^5.5.0, required by intake@1.0.0"
+      ]
+    },
+    "react-markdown": {
+      "missing": true,
+      "problems": [
+        "missing: react-markdown@^10.1.0, required by intake@1.0.0"
+      ]
+    },
+    "react-signature-canvas": {
+      "missing": true,
+      "problems": [
+        "missing: react-signature-canvas@^1.1.0-alpha.2, required by intake@1.0.0"
+      ]
+    },
+    "react": {
+      "missing": true,
+      "problems": [
+        "missing: react@^19.2.4, required by intake@1.0.0"
+      ]
+    },
+    "recharts": {
+      "missing": true,
+      "problems": [
+        "missing: recharts@^3.7.0, required by intake@1.0.0"
+      ]
+    },
+    "resend": {
+      "missing": true,
+      "problems": [
+        "missing: resend@^6.9.1, required by intake@1.0.0"
+      ]
+    },
+    "shadcn": {
+      "missing": true,
+      "problems": [
+        "missing: shadcn@^3.8.4, required by intake@1.0.0"
+      ]
+    },
+    "sonner": {
+      "missing": true,
+      "problems": [
+        "missing: sonner@^2.0.7, required by intake@1.0.0"
+      ]
+    },
+    "supabase": {
+      "missing": true,
+      "problems": [
+        "missing: supabase@^2.74.5, required by intake@1.0.0"
+      ]
+    },
+    "tailwind-merge": {
+      "missing": true,
+      "problems": [
+        "missing: tailwind-merge@^3.4.0, required by intake@1.0.0"
+      ]
+    },
+    "tailwindcss": {
+      "missing": true,
+      "problems": [
+        "missing: tailwindcss@^4.1.18, required by intake@1.0.0"
+      ]
+    },
+    "tw-animate-css": {
+      "missing": true,
+      "problems": [
+        "missing: tw-animate-css@^1.4.0, required by intake@1.0.0"
+      ]
+    },
+    "typescript": {
+      "missing": true,
+      "problems": [
+        "missing: typescript@^5.9.3, required by intake@1.0.0"
+      ]
+    },
+    "uuid": {
+      "missing": true,
+      "problems": [
+        "missing: uuid@^13.0.0, required by intake@1.0.0"
+      ]
+    },
+    "vitest": {
+      "missing": true,
+      "problems": [
+        "missing: vitest@^4.0.18, required by intake@1.0.0"
+      ]
+    },
+    "webpack-obfuscator": {
+      "missing": true,
+      "problems": [
+        "missing: webpack-obfuscator@^3.6.0, required by intake@1.0.0"
+      ]
+    },
+    "zod": {
+      "missing": true,
+      "problems": [
+        "missing: zod@^4.3.6, required by intake@1.0.0"
+      ]
+    }
+  },
+  "error": {
+    "code": "ELSPROBLEMS",
+    "summary": "missing: @google/generative-ai@^0.24.1, required by intake@1.0.0\nmissing: @radix-ui/react-avatar@^1.1.11, required by intake@1.0.0\nmissing: @radix-ui/react-checkbox@^1.3.3, required by intake@1.0.0\nmissing: @radix-ui/react-dialog@^1.1.15, required by intake@1.0.0\nmissing: @radix-ui/react-dropdown-menu@^2.1.16, required by intake@1.0.0\nmissing: @radix-ui/react-label@^2.1.8, required by intake@1.0.0\nmissing: @radix-ui/react-radio-group@^1.3.8, required by intake@1.0.0\nmissing: @radix-ui/react-select@^2.2.6, required by intake@1.0.0\nmissing: @radix-ui/react-slot@^1.2.4, required by intake@1.0.0\nmissing: @radix-ui/react-switch@^1.2.6, required by intake@1.0.0\nmissing: @sentry/nextjs@^10.38.0, required by intake@1.0.0\nmissing: @sparticuz/chromium@^143.0.4, required by intake@1.0.0\nmissing: @supabase/auth-helpers-nextjs@^0.15.0, required by intake@1.0.0\nmissing: @supabase/ssr@^0.8.0, required by intake@1.0.0\nmissing: @supabase/supabase-js@^2.93.1, required by intake@1.0.0\nmissing: @tailwindcss/postcss@^4.1.18, required by intake@1.0.0\nmissing: @tailwindcss/typography@^0.5.19, required by intake@1.0.0\nmissing: @testing-library/jest-dom@^6.9.1, required by intake@1.0.0\nmissing: @testing-library/react@^16.3.2, required by intake@1.0.0\nmissing: @types/canvas-confetti@^1.9.0, required by intake@1.0.0\nmissing: @types/json-stringify-safe@^5.0.3, required by intake@1.0.0\nmissing: @types/marked@^5.0.2, required by intake@1.0.0\nmissing: @types/node@^25.0.10, required by intake@1.0.0\nmissing: @types/react-dom@^19.2.3, required by intake@1.0.0\nmissing: @types/react-signature-canvas@^1.0.7, required by intake@1.0.0\nmissing: @types/react@^19.2.10, required by intake@1.0.0\nmissing: @types/uuid@^10.0.0, required by intake@1.0.0\nmissing: @vitejs/plugin-react@^5.1.2, required by intake@1.0.0\nmissing: autoprefixer@^10.4.23, required by intake@1.0.0\nmissing: canvas-confetti@^1.9.4, required by intake@1.0.0\nmissing: class-variance-authority@^0.7.1, required by intake@1.0.0\nmissing: clsx@^2.1.1, required by intake@1.0.0\nmissing: date-fns@^4.1.0, required by intake@1.0.0\nmissing: diff@^8.0.3, required by intake@1.0.0\nmissing: dotenv@^17.3.1, required by intake@1.0.0\nmissing: eslint-config-next@^15.1.0, required by intake@1.0.0\nmissing: eslint@^9.39.2, required by intake@1.0.0\nmissing: fast-glob@^3.3.3, required by intake@1.0.0\nmissing: framer-motion@^12.29.2, required by intake@1.0.0\nmissing: glob@^13.0.3, required by intake@1.0.0\nmissing: html2canvas@^1.4.1, required by intake@1.0.0\nmissing: idb@^8.0.3, required by intake@1.0.0\nmissing: isomorphic-dompurify@^2.35.0, required by intake@1.0.0\nmissing: javascript-obfuscator@^5.3.0, required by intake@1.0.0\nmissing: jsdom@^27.4.0, required by intake@1.0.0\nmissing: json-stringify-safe@^5.0.1, required by intake@1.0.0\nmissing: jspdf-autotable@^5.0.7, required by intake@1.0.0\nmissing: jspdf@^4.0.0, required by intake@1.0.0\nmissing: lucide-react@^0.563.0, required by intake@1.0.0\nmissing: marked@^17.0.1, required by intake@1.0.0\nmissing: next-pwa@^5.6.0, required by intake@1.0.0\nmissing: next-themes@^0.4.6, required by intake@1.0.0\nmissing: next@^15.1.0, required by intake@1.0.0\nmissing: pdf-lib@^1.17.1, required by intake@1.0.0\nmissing: pg@^8.18.0, required by intake@1.0.0\nmissing: postcss@^8.5.6, required by intake@1.0.0\nmissing: puppeteer-core@^24.36.1, required by intake@1.0.0\nmissing: radix-ui@^1.4.3, required by intake@1.0.0\nmissing: react-day-picker@^9.13.0, required by intake@1.0.0\nmissing: react-dom@^19.2.4, required by intake@1.0.0\nmissing: react-hook-form@^7.71.1, required by intake@1.0.0\nmissing: react-icons@^5.5.0, required by intake@1.0.0\nmissing: react-markdown@^10.1.0, required by intake@1.0.0\nmissing: react-signature-canvas@^1.1.0-alpha.2, required by intake@1.0.0\nmissing: react@^19.2.4, required by intake@1.0.0\nmissing: recharts@^3.7.0, required by intake@1.0.0\nmissing: resend@^6.9.1, required by intake@1.0.0\nmissing: shadcn@^3.8.4, required by intake@1.0.0\nmissing: sonner@^2.0.7, required by intake@1.0.0\nmissing: supabase@^2.74.5, required by intake@1.0.0\nmissing: tailwind-merge@^3.4.0, required by intake@1.0.0\nmissing: tailwindcss@^4.1.18, required by intake@1.0.0\nmissing: tw-animate-css@^1.4.0, required by intake@1.0.0\nmissing: typescript@^5.9.3, required by intake@1.0.0\nmissing: uuid@^13.0.0, required by intake@1.0.0\nmissing: vitest@^4.0.18, required by intake@1.0.0\nmissing: webpack-obfuscator@^3.6.0, required by intake@1.0.0\nmissing: zod@^4.3.6, required by intake@1.0.0",
+    "detail": ""
+  }
+}

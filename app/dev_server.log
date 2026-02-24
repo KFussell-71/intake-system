@@ -1,0 +1,464 @@
+
+> intake@1.0.0 dev
+> NODE_OPTIONS='--max-old-space-size=4096' next dev
+
+   ▲ Next.js 15.5.12
+   - Local:        http://localhost:3000
+   - Network:      http://172.31.99.100:3000
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     ✓ webpackBuildWorker
+     · optimizePackageImports
+
+ ✓ Starting...
+> [PWA] PWA support is disabled
+> [PWA] PWA support is disabled
+ ✓ Ready in 3.3s
+ ✓ Compiled /middleware in 422ms (160 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 3.4s (1271 modules)
+ HEAD / 200 in 3866ms
+ GET / 200 in 112ms
+ ⚠ Cross origin request detected from 0.0.0.0 to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ GET / 200 in 49ms
+ ○ Compiling /login ...
+ ✓ Compiled /login in 1342ms (1441 modules)
+ GET /login 200 in 1507ms
+ GET /login 200 in 32ms
+ GET /login 200 in 326ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 7s (2936 modules)
+ GET /dashboard 200 in 7282ms
+ GET /dashboard 200 in 731ms
+ ○ Compiling /cases ...
+ ✓ Compiled /cases in 1162ms (3002 modules)
+ GET /cases 200 in 1541ms
+ ○ Compiling /intake/new ...
+ ✓ Compiled /intake/new in 5.3s (4251 modules)
+ GET /intake/new 200 in 5607ms
+ ✓ Compiled in 771ms (1875 modules)
+ GET /intake/new 200 in 362ms
+ ✓ Compiled in 561ms (1875 modules)
+ GET /intake/new 200 in 52ms
+ GET /intake/new 200 in 1562ms
+ GET /cases 200 in 101ms
+ ○ Compiling /directory ...
+ ✓ Compiled /directory in 2s (3746 modules)
+ GET /directory 200 in 2406ms
+ GET /intake/new 200 in 273ms
+ GET /directory 200 in 89ms
+ ○ Compiling / ...
+ ✓ Compiled / in 732ms (1838 modules)
+ GET / 200 in 1011ms
+ ○ Compiling /login ...
+ ✓ Compiled /login in 1066ms (1895 modules)
+ GET /login 200 in 1960ms
+ ✓ Compiled in 973ms (1886 modules)
+ GET /login 200 in 337ms
+ ✓ Compiled in 522ms (1886 modules)
+ GET /login 200 in 57ms
+ ○ Compiling /cases ...
+ ✓ Compiled /cases in 1267ms (1139 modules)
+ GET /cases 200 in 1828ms
+ ✓ Compiled /intake/new in 380ms (1918 modules)
+ GET /intake/new 200 in 646ms
+ ✓ Compiled / in 345ms (1926 modules)
+ GET / 200 in 690ms
+ GET /cases 200 in 244ms
+ GET /intake/new 200 in 50ms
+ ○ Compiling /directory ...
+ ✓ Compiled /directory in 2.1s (3760 modules)
+ GET /directory 200 in 1857ms
+ ○ Compiling / ...
+ ✓ Compiled / in 692ms (1838 modules)
+ GET / 200 in 1108ms
+ ○ Compiling /cases/[id] ...
+ ✓ Compiled /cases/[id] in 4s (3855 modules)
+ GET /cases/new 200 in 5306ms
+ GET /directory 200 in 125ms
+ ✓ Compiled /login in 386ms (1969 modules)
+ GET /login 200 in 783ms
+ ✓ Compiled /cases in 375ms (1263 modules)
+ GET /cases 200 in 716ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 1080ms (3206 modules)
+ GET /cases/1/clinical 404 in 1319ms
+ ✓ Compiled in 535ms (1954 modules)
+ ✓ Compiled in 1255ms (3068 modules)
+ GET /cases/1/clinical 404 in 1348ms
+ GET /cases/1/clinical 404 in 16ms
+ GET /cases/1/clinical 404 in 92ms
+ ○ Compiling /intake/new ...
+ ✓ Compiled /intake/new in 529ms (1921 modules)
+ GET /intake/new 200 in 862ms
+ ○ Compiling /follow-ups ...
+ ✓ Compiled /follow-ups in 2.1s (3811 modules)
+ GET /follow-ups 200 in 2706ms
+ GET /cases 200 in 76ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 627ms (3256 modules)
+ GET /intake/mock-intake-id-for-demo 404 in 832ms
+ ✓ Compiled /intake/new in 369ms (1873 modules)
+ GET /intake/new 200 in 1357ms
+ ✓ Compiled in 627ms (1955 modules)
+ GET /intake/new 200 in 308ms
+ ✓ Compiled in 505ms (1955 modules)
+ GET /intake/new 200 in 33ms
+ GET /cases 200 in 104ms
+ ○ Compiling /reports ...
+ ✓ Compiled /reports in 2.6s (4325 modules)
+The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+ GET /reports 200 in 3071ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 1137ms (4284 modules)
+ GET /intake/list 404 in 1416ms
+ ✓ Compiled in 399ms (1976 modules)
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 1359ms (4284 modules)
+ GET /intake/list 404 in 1352ms
+ GET /intake/list 404 in 16ms
+ GET /intake/list 404 in 54ms
+ ✓ Compiled in 442ms (1976 modules)
+ ✓ Compiled /_not-found in 620ms (4284 modules)
+ GET /intake/list 404 in 672ms
+ GET /intake/list 404 in 24ms
+ GET /intake/list 404 in 86ms
+ ✓ Compiled in 346ms (1980 modules)
+ GET /intake/list 404 in 25ms
+ GET /intake/list 404 in 38ms
+ ○ Compiling / ...
+ ✓ Compiled / in 695ms (2331 modules)
+ GET / 200 in 953ms
+ ○ Compiling /login ...
+ ✓ Compiled /login in 1217ms (2385 modules)
+ GET /login 200 in 1416ms
+ ✓ Compiled in 702ms (1976 modules)
+ GET /login 200 in 470ms
+ ✓ Compiled in 754ms (1976 modules)
+ GET /login 200 in 58ms
+ GET /login 200 in 210ms
+ ○ Compiling /signup ...
+ ✓ Compiled /signup in 737ms (2779 modules)
+ GET /signup 200 in 1584ms
+ GET /login 200 in 81ms
+ GET /signup 200 in 27ms
+ ✓ Compiled in 1542ms (1979 modules)
+ GET /signup 200 in 342ms
+ ✓ Compiled in 566ms (1979 modules)
+ GET /signup 200 in 36ms
+ GET /login 200 in 29ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 3.3s (1631 modules)
+ GET /dashboard 200 in 3683ms
+ GET /dashboard 200 in 463ms
+ ○ Compiling /cases ...
+ ✓ Compiled /cases in 1352ms (1673 modules)
+ GET /cases 200 in 1735ms
+ ✓ Compiled /intake/new in 357ms (2390 modules)
+ GET /intake/new 200 in 568ms
+ GET /cases 200 in 291ms
+ GET /intake/new 200 in 33ms
+ ✓ Compiled in 1417ms (1979 modules)
+ GET /intake/new 200 in 362ms
+ ✓ Compiled in 595ms (1979 modules)
+ GET /intake/new 200 in 43ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 4.6s (3828 modules)
+ GET /clients 404 in 4911ms
+ ○ Compiling /directory ...
+ ✓ Compiled /directory in 1149ms (1877 modules)
+ GET /directory 200 in 1693ms
+ GET /intake 404 in 34ms
+ GET /intake 404 in 40ms
+ GET /cases 200 in 130ms
+ GET /intake/new 200 in 156ms
+ ○ Compiling / ...
+ ✓ Compiled / in 1169ms (1887 modules)
+ GET / 200 in 1462ms
+ ○ Compiling /login ...
+ ✓ Compiled /login in 1227ms (1926 modules)
+ GET /login 200 in 1850ms
+ ✓ Compiled in 1429ms (1979 modules)
+ GET /login 200 in 328ms
+ ✓ Compiled in 561ms (1979 modules)
+ GET /login 200 in 43ms
+ ✓ Compiled in 512ms (1979 modules)
+ GET /login 200 in 266ms
+ ✓ Compiled in 448ms (1979 modules)
+ GET /login 200 in 32ms
+ ✓ Compiled in 476ms (1979 modules)
+ GET /login 200 in 28ms
+ ○ Compiling /signup ...
+ ✓ Compiled /signup in 3s (814 modules)
+ GET /signup 200 in 3564ms
+ ✓ Compiled in 1576ms (1979 modules)
+ GET /signup 200 in 120ms
+ ✓ Compiled in 758ms (1979 modules)
+ GET /signup 200 in 61ms
+ GET /login 200 in 85ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 5.1s (1631 modules)
+ GET /dashboard 200 in 5438ms
+ GET /dashboard 200 in 390ms
+ ○ Compiling /cases ...
+ ✓ Compiled /cases in 516ms (1680 modules)
+ GET /cases 200 in 1114ms
+ ✓ Compiled /intake/new in 442ms (2390 modules)
+ GET /intake/new 200 in 750ms
+ ✓ Compiled in 1383ms (1979 modules)
+ GET /intake/new 200 in 150ms
+ ✓ Compiled in 790ms (1979 modules)
+ GET /intake/new 200 in 54ms
+ ⨯ Error: Attempted to call createClient() from the server but createClient is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.
+    at eval (src/services/IntakeService.ts:5:30)
+    at Module.49759 (.next/server/app/(app)/intake/new/page.js:1164:1)
+    at eval (webpack-internal:///30882:9:81)
+    at Module.30882 (.next/server/app/(app)/intake/new/page.js:758:1)
+    at eval (webpack-internal:///72863:30:132)
+    at Module.72863 (.next/server/app/(app)/intake/new/page.js:1558:1)
+    at doRender (webpack-internal:/20701:396:1)
+    at handleResponse (webpack-internal:/20701:548:1)
+    at handler (webpack-internal:/20701:933:1)
+  3 | import type { IntakeFormData } from '@/features/intake/intakeTypes';
+  4 | import { createClient } from '@/lib/supabase/browser';
+> 5 | const supabase = createClient();
+    |                              ^
+  6 | import { saveSyncTask } from '@/lib/offline/db';
+  7 | import { IntakeWorkflowService } from '@/domain/services/IntakeWorkflowService';
+  8 | import { IntakeEntity, ClientAggregate } from '@/domain/entities/ClientAggregate'; {
+  digest: '1678719763'
+}
+ POST /intake/new 500 in 148ms
+ GET /cases 200 in 381ms
+ ✓ Compiled in 1284ms (1979 modules)
+ GET /cases 200 in 308ms
+ ✓ Compiled in 503ms (1979 modules)
+ GET /cases 200 in 35ms
+ GET /intake/new 200 in 36ms
+ ✓ Compiled in 1417ms (1979 modules)
+ GET /intake/new 200 in 329ms
+ ✓ Compiled in 549ms (1979 modules)
+ GET /intake/new 200 in 36ms
+ GET /dashboard 200 in 69ms
+ ○ Compiling /modernized-intake/new ...
+ ✓ Compiled /modernized-intake/new in 4.4s (4379 modules)
+ GET /modernized-intake/new 200 in 5146ms
+ ○ Compiling /modernized-intake/[id] ...
+ ✓ Compiled /modernized-intake/[id] in 8.5s (4677 modules)
+ GET /modernized-intake/59c0a9a4-0850-48db-84bd-29e66b4f2ddf 200 in 12261ms
+ ○ Compiling /cases ...
+ ✓ Compiled /cases in 1226ms (2593 modules)
+ GET /modernized-intake/59c0a9a4-0850-48db-84bd-29e66b4f2ddf 200 in 2232ms
+ GET /cases 200 in 2264ms
+ ✓ Compiled in 1611ms (2107 modules)
+ GET /cases 200 in 386ms
+ ✓ Compiled in 711ms (2107 modules)
+ GET /cases 200 in 36ms
+ GET /dashboard 200 in 390ms
+ GET /intake/new 200 in 88ms
+ ✓ Compiled in 1675ms (2107 modules)
+ GET /intake/new 200 in 410ms
+ ✓ Compiled in 669ms (2107 modules)
+ GET /intake/new 200 in 36ms
+ ○ Compiling /api/generate-report ...
+ ✓ Compiled /api/generate-report in 3.7s (2569 modules)
+[LocalAIProvider] Generation failed: Error: Ollama API error: Internal Server Error
+    at LocalAIProvider.generate (src/lib/ai/providers/LocalAIProvider.ts:32:23)
+    at async UnifiedAIService.executeRequest (src/lib/ai/UnifiedAIService.ts:62:26)
+    at async UnifiedAIService.ask (src/lib/ai/UnifiedAIService.ts:41:20)
+    at async runDorAgent (src/lib/agents/dorAgent.ts:223:22)
+    at async POST (src/app/(app)/api/generate-report/route.ts:237:26)
+    at async AppRouteRouteModule.do (../../../../src/server/route-modules/app-route/module.ts:586:15)
+    at async AppRouteRouteModule.handle (../../../../src/server/route-modules/app-route/module.ts:706:31)
+  30 |
+  31 |             if (!res.ok) {
+> 32 |                 throw new Error(`Ollama API error: ${res.statusText}`);
+     |                       ^
+  33 |             }
+  34 |
+  35 |             const data = await res.json(); {
+  
+}
+[UnifiedAIService] Primary provider (ollama) failed. Switching to fallback (gemini). Error: Ollama API error: Internal Server Error
+    at LocalAIProvider.generate (src/lib/ai/providers/LocalAIProvider.ts:32:23)
+    at async UnifiedAIService.executeRequest (src/lib/ai/UnifiedAIService.ts:62:26)
+    at async UnifiedAIService.ask (src/lib/ai/UnifiedAIService.ts:41:20)
+    at async runDorAgent (src/lib/agents/dorAgent.ts:223:22)
+    at async POST (src/app/(app)/api/generate-report/route.ts:237:26)
+    at async AppRouteRouteModule.do (../../../../src/server/route-modules/app-route/module.ts:586:15)
+    at async AppRouteRouteModule.handle (../../../../src/server/route-modules/app-route/module.ts:706:31)
+  30 |
+  31 |             if (!res.ok) {
+> 32 |                 throw new Error(`Ollama API error: ${res.statusText}`);
+     |                       ^
+  33 |             }
+  34 |
+  35 |             const data = await res.json(); {
+  
+}
+[UnifiedAIService] Fallback provider (gemini) also failed. Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent: [404 Not Found] models/gemini-1.5-pro is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+    at async GeminiProvider.generate (src/lib/ai/providers/GeminiProvider.ts:22:24)
+    at async UnifiedAIService.executeRequest (src/lib/ai/UnifiedAIService.ts:62:26)
+    at async UnifiedAIService.ask (src/lib/ai/UnifiedAIService.ts:48:28)
+    at async runDorAgent (src/lib/agents/dorAgent.ts:223:22)
+    at async POST (src/app/(app)/api/generate-report/route.ts:237:26)
+    at async AppRouteRouteModule.do (../../../../src/server/route-modules/app-route/module.ts:586:15)
+  20 |         });
+  21 |
+> 22 |         const result = await model.generateContent(req.prompt);
+     |                        ^
+  23 |         const response = await result.response;
+  24 |         return response.text();
+  25 |     } {
+  status: 404,
+  statusText: 'Not Found',
+  errorDetails: undefined
+}
+DOR Agent execution failed: { status: 404, statusText: 'Not Found', errorDetails: undefined }
+ POST /api/generate-report 200 in 5257ms
+ GET /dashboard 200 in 109ms
+ ✓ Compiled in 671ms (2107 modules)
+ GET /dashboard 200 in 368ms
+ ✓ Compiled in 711ms (2107 modules)
+ GET /dashboard 200 in 62ms
+ ✓ Compiled in 5.7s (4449 modules)
+ GET /dashboard 200 in 193ms
+ ✓ Compiled in 1515ms (4449 modules)
+ GET /dashboard 200 in 104ms
+ ✓ Compiled in 3.1s (4449 modules)
+ GET /dashboard 200 in 83ms
+ ✓ Compiled in 660ms (2107 modules)
+ GET /dashboard 200 in 368ms
+ ✓ Compiled in 651ms (2107 modules)
+ GET /dashboard 200 in 57ms
+ ✓ Compiled /cases in 475ms (2390 modules)
+ GET /cases 200 in 1055ms
+ GET /intake/new 200 in 66ms
+ ⨯ Error: Attempted to call createClient() from the server but createClient is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.
+    at eval (src/services/IntakeService.ts:5:30)
+    at Module.49759 (.next/server/app/(app)/intake/new/page.js:1164:1)
+    at eval (webpack-internal:///30882:9:81)
+    at Module.30882 (.next/server/app/(app)/intake/new/page.js:758:1)
+    at eval (webpack-internal:///72863:30:132)
+    at Module.72863 (.next/server/app/(app)/intake/new/page.js:1558:1)
+    at doRender (webpack-internal:/20701:396:1)
+    at handleResponse (webpack-internal:/20701:548:1)
+    at handler (webpack-internal:/20701:933:1)
+  3 | import type { IntakeFormData } from '@/features/intake/intakeTypes';
+  4 | import { createClient } from '@/lib/supabase/browser';
+> 5 | const supabase = createClient();
+    |                              ^
+  6 | import { saveSyncTask } from '@/lib/offline/db';
+  7 | import { IntakeWorkflowService } from '@/domain/services/IntakeWorkflowService';
+  8 | import { IntakeEntity, ClientAggregate } from '@/domain/entities/ClientAggregate'; {
+  digest: '1678719763'
+}
+ POST /intake/new 500 in 219ms
+ GET /dashboard 200 in 103ms
+ GET /cases 200 in 166ms
+ GET /dashboard 200 in 343ms
+ GET /intake/new 200 in 72ms
+ ✓ Compiled in 1958ms (2107 modules)
+ GET /intake/new 200 in 328ms
+ ✓ Compiled in 673ms (2107 modules)
+ GET /intake/new 200 in 37ms
+ GET /intake/new 200 in 367ms
+ GET /dashboard 200 in 63ms
+ GET /cases 200 in 150ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 4.8s (3956 modules)
+ GET /intake/hub 404 in 5047ms
+ ○ Compiling /directory ...
+ ✓ Compiled /directory in 1221ms (1877 modules)
+ GET /directory 200 in 1654ms
+ GET /auditor 404 in 92ms
+ ✓ Compiled in 689ms (2111 modules)
+ ✓ Compiled in 928ms (3293 modules)
+ GET /auditor 404 in 993ms
+ GET /auditor 404 in 19ms
+ GET /auditor 404 in 74ms
+ ○ Compiling / ...
+ ✓ Compiled / in 2.3s (1216 modules)
+ GET / 200 in 2588ms
+ ○ Compiling /login ...
+ ✓ Compiled /login in 2.8s (1226 modules)
+ GET /login 200 in 3072ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 3.2s (1633 modules)
+ GET /dashboard 200 in 3504ms
+ GET /dashboard 200 in 2643ms
+ GET /dashboard 200 in 121ms
+ ○ Compiling /cases ...
+ ✓ Compiled /cases in 1467ms (1674 modules)
+ GET /cases 200 in 1863ms
+ ○ Compiling /intake/new ...
+ ✓ Compiled /intake/new in 7.8s (2452 modules)
+ GET /intake/new 200 in 8260ms
+ GET /intake/new 200 in 1624ms
+ ✓ Compiled in 2.1s (2107 modules)
+ GET /intake/new 200 in 76ms
+ ✓ Compiled in 796ms (2107 modules)
+ GET /intake/new 200 in 44ms
+ GET /dashboard 200 in 99ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 3.4s (4442 modules)
+ GET /intake 404 in 3778ms
+ ○ Compiling /directory ...
+ ✓ Compiled /directory in 1374ms (2363 modules)
+ GET /directory 200 in 1784ms
+ GET /intake 404 in 288ms
+ GET /intake 404 in 58ms
+ ○ Compiling /cases/[id] ...
+ ✓ Compiled /cases/[id] in 2.6s (1986 modules)
+ GET /cases/new 200 in 3119ms
+ ✓ Compiled in 1749ms (2111 modules)
+ GET /cases/new 200 in 496ms
+ ✓ Compiled in 784ms (2111 modules)
+ GET /cases/new 200 in 57ms
+ ✓ Compiled in 634ms (2111 modules)
+ GET /cases/new 200 in 376ms
+ ✓ Compiled in 682ms (2111 modules)
+ GET /cases/new 200 in 50ms
+ ✓ Compiled in 655ms (2107 modules)
+ GET /cases/new 200 in 108ms
+ ✓ Compiled in 766ms (2107 modules)
+ GET /cases/new 200 in 2829ms
+ ✓ Compiled in 4.1s (2107 modules)
+ GET /cases/new 200 in 196ms
+ ✓ Compiled in 1839ms (2107 modules)
+ GET /cases/new 200 in 176ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 3.3s (4001 modules)
+ GET /auth/login 404 in 3531ms
+ ○ Compiling / ...
+ ✓ Compiled / in 4.4s (1922 modules)
+ GET / 200 in 4821ms
+ ○ Compiling /login ...
+ ✓ Compiled /login in 2.1s (1984 modules)
+ GET /login 200 in 2317ms
+ GET /login 200 in 581ms
+ ✓ Compiled in 1856ms (2107 modules)
+ GET /login 200 in 132ms
+ ✓ Compiled in 1175ms (2107 modules)
+ GET /login 200 in 84ms
+ ○ Compiling /signup ...
+ ✓ Compiled /signup in 1817ms (814 modules)
+ GET /signup 200 in 2627ms
+ GET /login 200 in 189ms
+ GET /signup 200 in 113ms
+ ✓ Compiled in 1737ms (2107 modules)
+ ✓ Compiled in 418ms (2107 modules)
+ ✓ Compiled in 1044ms (2107 modules)
+ ✓ Compiled in 387ms (2107 modules)
+ ✓ Compiled in 966ms (2107 modules)
+ ✓ Compiled in 304ms (2107 modules)
+ ✓ Compiled in 1047ms (2107 modules)
+ ✓ Compiled in 296ms (2107 modules)

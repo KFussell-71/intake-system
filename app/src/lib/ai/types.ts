@@ -1,0 +1,26 @@
+
+export interface AIRequest {
+    system?: string;
+    prompt: string;
+    temperature?: number;
+    // Keeping optional metadata for telemetry if needed, but strict to user core request
+    userId?: string;
+    format?: 'json' | 'text';
+    /** SME: PHI Guardrail. If true, NEVER fallback to Cloud (Gemini). Mandatory for HIPAA Compliance. */
+    isPHISensitive?: boolean;
+}
+
+
+export interface AIResponse {
+    text: string;
+    model: string;
+    usage?: {
+        promptTokens: number;
+        completionTokens: number;
+    };
+}
+
+export interface AIProvider {
+    name: string;
+    generate(req: AIRequest): Promise<string>;
+}
