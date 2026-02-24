@@ -18,61 +18,54 @@ export class ClinicalCaseService {
     ) { }
 
     /**
-     * Executes a version-aware mutation on a ClinicalCase aggregate.
-     * centralizes optimistic concurrency and event logging.
+     * Executes a version-aware mutation on a ClinicalCase aggregate via the master_clinical_sync RPC.
+     * This COLLAPSES all domain mutations into a single database transaction.
      */
     async executeMutation<T>(
         caseId: string,
         baseVersion: number,
-        mutationFn: () => Promise<T>,
+        payload: any,
         eventMetadata: { type: string; actorId: string }
     ): Promise<T> {
-        // 1. Fetch current state to verify version
-        const current = await this.intakeRepo.getIntakeById(caseId);
+        const deviceId = this.getDeviceId();
 
-        if (!current) {
-            throw new Error(`Clinical case ${caseId} not found.`);
-        }
+        console.log(`[ClinicalCaseService] Executing Master Sync: Case ${caseId}, V${baseVersion}`);
 
-        if (current.version !== baseVersion) {
-            console.error(`[ClinicalCaseService] Version mismatch. Client: ${baseVersion}, Server: ${current.version}`);
-            throw new ConflictError(current.version, 'Another provider has updated this record. Please refresh and try again.');
-        }
-
-        // 2. Execute the actual domain mutation
-        // Note: In a pure distributed system, this would ideally be wrapped in a single DB transaction.
-        // For the current Supabase architecture, we rely on the atomic nature of the final sync call.
-        const result = await mutationFn();
-
-        // 3. Record the transition in the Case Event Log
-        // This ensures every change is traceable for the Distributed Sync protocol.
-        await this.logSyncEvent(caseId, baseVersion + 1, eventMetadata.type, result, eventMetadata.actorId);
-
-        return result;
-    }
-
-    private async logSyncEvent(
-        caseId: string,
-        version: number,
-        type: string,
-        payload: any,
-        actorId: string
-    ) {
-        const { error } = await this.supabase
-            .from('clinical_case_events')
-            .insert({
-                case_id: caseId,
-                version: version,
-                event_type: type,
-                payload: payload,
-                actor_id: actorId
-            });
+        const { data, error } = await this.supabase.rpc('master_clinical_sync', {
+            p_case_id: caseId,
+            p_base_version: baseVersion,
+            p_device_id: deviceId,
+            p_user_id: eventMetadata.actorId,
+            p_payload: payload
+        });
 
         if (error) {
-            console.error('[ClinicalCaseService] Failed to log sync event:', error);
-            // We don't throw here to avoid failing the mutation, but in production, 
-            // this should be queued or retried.
+            console.error('[ClinicalCaseService] RPC Error:', error);
+            throw error;
         }
+
+        if (data.status === 'error') {
+            if (data.message?.includes('Version conflict')) {
+                throw new ConflictError(data.current_version || -1, data.message);
+            }
+            throw new Error(data.message || 'Master sync failed');
+        }
+
+        return data as T;
+    }
+
+    private getDeviceId(): string {
+        // In a real distributed app, this would be a persistent UUID stored in localStorage
+        // or a hardware ID. For now, we use a session-based or derived ID.
+        if (typeof window !== 'undefined') {
+            let id = localStorage.getItem('clinical_node_device_id');
+            if (!id) {
+                id = crypto.randomUUID();
+                localStorage.setItem('clinical_node_device_id', id);
+            }
+            return id;
+        }
+        return 'SERVER_NODE_ID';
     }
 }
 

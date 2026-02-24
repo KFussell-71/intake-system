@@ -2,11 +2,15 @@ import { supabase } from '@/lib/supabase';
 
 import { Case, CaseStatus, CaseStage } from '@/types/case';
 import { caseloadBalancer } from '@/lib/logic/caseload';
+import { clinicalCaseService, ClinicalCaseService } from './ClinicalCaseService';
 
 export class CaseService {
     private get db() {
         return supabase;
     }
+    constructor(
+        private readonly caseOrchestrator: ClinicalCaseService = clinicalCaseService
+    ) { }
     /**
      * Create a new case from an intake
      * Triggered when an intake is approved and converted to a case.
@@ -68,39 +72,33 @@ export class CaseService {
     }
 
     /**
-     * Update case stage
+     * Update case stage via the Deterministic Mutation Engine
      */
-    async updateCaseStage(caseId: string, stage: CaseStage): Promise<Case | null> {
-        const { data, error } = await this.db
-            .from('cases')
-            .update({ stage })
-            .eq('id', caseId)
-            .select()
-            .single();
-
-        if (error) throw error;
-        return data;
+    async updateCaseStage(caseId: string, stage: CaseStage, version: number): Promise<Case | null> {
+        return await this.caseOrchestrator.executeMutation(
+            caseId,
+            version,
+            { clinical: { stage } },
+            { type: 'CASE_STAGE_UPDATE', actorId: 'SYSTEM' } // Actor should be passed in production
+        );
     }
 
     /**
-     * Update case status (e.g., close case)
+     * Update case status via the Deterministic Mutation Engine
      */
-    async updateCaseStatus(caseId: string, status: CaseStatus, closureReason?: string): Promise<Case | null> {
-        const updateData: any = { status };
+    async updateCaseStatus(caseId: string, status: CaseStatus, version: number, closureReason?: string): Promise<Case | null> {
+        const payload: any = { status };
         if (status === 'closed') {
-            updateData.closed_date = new Date().toISOString();
-            if (closureReason) updateData.closure_reason = closureReason;
+            payload.closed_date = new Date().toISOString();
+            if (closureReason) payload.closure_reason = closureReason;
         }
 
-        const { data, error } = await this.db
-            .from('cases')
-            .update(updateData)
-            .eq('id', caseId)
-            .select()
-            .single();
-
-        if (error) throw error;
-        return data;
+        return await this.caseOrchestrator.executeMutation(
+            caseId,
+            version,
+            { clinical: payload },
+            { type: 'CASE_STATUS_UPDATE', actorId: 'SYSTEM' }
+        );
     }
 
     /**

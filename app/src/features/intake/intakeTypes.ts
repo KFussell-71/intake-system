@@ -260,6 +260,10 @@ export interface ClinicalAssessment {
     supportServicesOther: string;
     rsaServiceCategory?: string; // New RSA-911 Field
     assessmentSummary: string;
+
+    // NEW: Relational Clinical Fields (SME Remediation)
+    clinicalNarrative?: string;
+    eligibilityStatus?: 'pending' | 'eligible' | 'ineligible';
 }
 
 export interface ReviewDates {

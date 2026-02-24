@@ -90,40 +90,34 @@ export class IntakeService {
 
             const entity = new IntakeEntity(intakeId, raw.data || {}, raw.status, [], raw.version);
 
-            // NEW: Orchestrate through ClinicalCaseService for Distributed Sync integrity
-            const result = await this.caseService.executeMutation(
+            // NEW: Prepare the "Sync Package" for the master_clinical_sync RPC.
+            // This preserves deterministic order and atomicity across domain tables.
+            const syncPackage = {
+                identity: {
+                    clientName: data.clientName,
+                    clientPhone: data.phone,
+                    clientEmail: data.email,
+                    clientAddress: data.address
+                },
+                clinical: {
+                    ...data, // Main form payload for deep merge
+                    primaryDiagnosisCode: data.primaryDiagnosisCode,
+                    mobilityStatus: data.mobilityStatus
+                },
+                assessment: {
+                    clinicalNarrative: data.clinicalNarrative,
+                    eligibilityStatus: data.eligibilityStatus
+                }
+            };
+
+            const syncResult = await this.caseService.executeMutation(
                 intakeId,
                 expectedVersion ?? raw.version ?? 1,
-                async () => {
-                    // 1. SME: State Transition & Domain Events (Diffing happens here)
-                    await IntakeWorkflowService.saveProgress(entity, data, editComment || "Progressive Save", user.id);
-
-                    // 2. ARCHITECTURE: Incremental Domain Hydration (V3 Parallelized)
-                    const updatesByTable = DomainPersistenceManager.getUpdatesByTable(data);
-                    const updatePromises = Object.entries(updatesByTable).map(async ([table, fields]) => {
-                        let targetId = table === 'clients' ? raw.client_id : intakeId;
-                        return this.intakeRepo.updateDomainFields(table, targetId, fields);
-                    });
-
-                    await Promise.all(updatePromises);
-
-                    // 3. Finalize versioning and JSONB sync (Backward Compatibility)
-                    return await this.intakeRepo.saveIntakeProgressAtomic(
-                        intakeId,
-                        data,
-                        editComment || "Progressive Save",
-                        user.id,
-                        expectedVersion
-                    );
-                },
+                syncPackage,
                 { type: 'INTAKE_PROGRESS_SAVE', actorId: user.id }
             );
 
-            if (result && !result.success && result.error === 'CONFLICT') {
-                return { success: false, error: 'CONFLICT', message: result.message };
-            }
-
-            return { success: true, data: result };
+            return { success: true, data: syncResult };
         } catch (error: any) {
             if (error.message?.includes('version mismatch')) {
                 return { success: false, error: 'CONFLICT', message: error.message };
