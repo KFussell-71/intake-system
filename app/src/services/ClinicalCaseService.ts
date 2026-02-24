@@ -29,17 +29,22 @@ export class ClinicalCaseService {
     ): Promise<T> {
         const userId = metadata.actorId || 'SYSTEM';
         const deviceId = this.getDeviceId();
-        const clientTimestamp = new Date().toISOString(); // Authoritative timestamp generated at source
+        const clientTimestamp = new Date().toISOString();
+        const eventId = crypto.randomUUID(); // Origin-generated ID for event ledger
 
-        console.log(`[ClinicalCaseService] Executing Master Sync: Case ${caseId}, V${baseVersion}`);
+        // CONFORMS TO DETERMINISTIC REPLAY: Canonicalize payload
+        const canonicalPayload = this.canonicalize(payload);
 
-        const { data, error } = await this.supabase.rpc('master_clinical_sync_v2', {
+        console.log(`[ClinicalCaseService] Executing Forensic Master Sync: Case ${caseId}, Event ${eventId}, V${baseVersion}`);
+
+        const { data, error } = await this.supabase.rpc('master_clinical_sync_v3', {
             p_case_id: caseId,
+            p_event_id: eventId,
             p_base_version: baseVersion,
             p_device_id: deviceId,
             p_user_id: userId,
             p_timestamp: clientTimestamp,
-            p_payload: payload
+            p_payload: canonicalPayload
         });
 
         if (error) {
@@ -77,15 +82,37 @@ export class ClinicalCaseService {
     private getDeviceId(): string {
         // In a real distributed app, this would be a persistent UUID stored in localStorage
         // or a hardware ID. For now, we use a session-based or derived ID.
-        if (typeof window !== 'undefined') {
-            let id = localStorage.getItem('clinical_node_device_id');
-            if (!id) {
-                id = crypto.randomUUID();
-                localStorage.setItem('clinical_node_device_id', id);
+        let deviceId = typeof localStorage !== 'undefined' ? localStorage.getItem('clinical_node_device_id') : null;
+        if (!deviceId) {
+            deviceId = crypto.randomUUID();
+            if (typeof localStorage !== 'undefined') {
+                localStorage.setItem('clinical_node_device_id', deviceId);
             }
-            return id;
         }
-        return 'SERVER_NODE_ID';
+        return deviceId;
+    }
+
+    /**
+     * Ensures deterministic JSON serialization by recursively sorting object keys.
+     * Required for byte-level state equality across replicas.
+     */
+    private canonicalize(obj: any): any {
+        if (obj === null || typeof obj !== 'object') {
+            return obj;
+        }
+
+        if (Array.isArray(obj)) {
+            return obj.map(item => this.canonicalize(item));
+        }
+
+        const sortedKeys = Object.keys(obj).sort();
+        const result: Record<string, any> = {};
+        for (const key of sortedKeys) {
+            if (obj[key] !== undefined) {
+                result[key] = this.canonicalize(obj[key]);
+            }
+        }
+        return result;
     }
 }
 
