@@ -50,7 +50,8 @@ services:
           memory: 1GB
     volumes:
       - ./supabase/migrations:/docker-entrypoint-initdb.d
-      - db_data:/var/lib/postgresql/data
+      - ./data/db:/var/lib/postgresql/data
+      - ./data/backups:/var/lib/postgresql/backups
 
   ollama:
     image: ollama/ollama:latest
@@ -89,5 +90,4 @@ secrets:
     file: ./secrets/gpg_passphrase.txt
 
 volumes:
-  db_data:
   ollama_data:

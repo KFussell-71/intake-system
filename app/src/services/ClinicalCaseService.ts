@@ -54,6 +54,22 @@ export class ClinicalCaseService {
         return data as T;
     }
 
+    /**
+     * Calculates a SHA256 hash of a file for deterministic sync.
+     * This is the "Law" of binary reconciliation in the Clinical Node.
+     */
+    async calculateFileHash(file: File): Promise<string> {
+        if (typeof window === 'undefined') return 'SERVER_CALCULATION';
+
+        const arrayBuffer = await file.arrayBuffer();
+        const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+        console.log(`[ClinicalCaseService] Generated Hash for ${file.name}: ${hashHex}`);
+        return hashHex;
+    }
+
     private getDeviceId(): string {
         // In a real distributed app, this would be a persistent UUID stored in localStorage
         // or a hardware ID. For now, we use a session-based or derived ID.
