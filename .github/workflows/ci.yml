@@ -124,6 +124,8 @@ jobs:
     if: github.ref == 'refs/heads/main'
     environment:
       name: production
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       
@@ -131,8 +133,6 @@ jobs:
         run: |
           echo "Production deployment would happen here"
           echo "Deployment to Vercel/your hosting provider"
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       
       - name: Create Sentry Release
         if: env.SENTRY_AUTH_TOKEN != ''
