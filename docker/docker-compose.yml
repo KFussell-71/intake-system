@@ -100,6 +100,45 @@ services:
     volumes:
       - ollama_data:/root/.ollama
 
+  synapse:
+    image: docker.io/matrixdotorg/synapse:latest
+    container_name: intake-synapse
+    restart: always
+    environment:
+      - SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
+    volumes:
+      - ./synapse:/data
+    depends_on:
+      synapse-db:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 4GB
+          cpus: '2.0'
+
+  synapse-db:
+    image: docker.io/postgres:15-alpine
+    container_name: synapse-db
+    restart: always
+    environment:
+      - POSTGRES_USER=synapse_user
+      - POSTGRES_PASSWORD=vanguard_synapse_secure_pass
+      - POSTGRES_DB=synapse
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    volumes:
+      - ./data/synapse-db/schemas:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U synapse_user -d synapse" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 1GB
+          cpus: '1.0'
+
   proxy:
     image: nginx:alpine
     container_name: intake-proxy
