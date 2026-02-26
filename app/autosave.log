@@ -591,3 +591,13 @@
 [2026-02-17T23:48:23.455Z] Starting autosave cycle...
 [2026-02-26T20:41:18Z] Autosave daemon started. Interval: 120s
 [2026-02-26T20:41:18Z] Starting autosave cycle...
+[V3.2-Hardened-Final 9eda2aef0] CHORE: Automated progress checkpoint (Protocol Sync)
+ 2 files changed, 31 insertions(+)
+ create mode 100755 scripts/autosave.sh
+[2026-02-26T20:41:18Z] Git commit successful.
+🛡️ Starting Database Backup...
+⚠️  WARNING: BACKUP_PASSPHRASE not set. Storing unencrypted.
+✅ Backup completed: ./app/backups/intake_backup_20260226_204118.sql.gz
+🧹 Old backups pruned.
+[2026-02-26T20:41:18Z] Database backup cycle complete.
+[2026-02-26T20:43:18Z] Starting autosave cycle...
