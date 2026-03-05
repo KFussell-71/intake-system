@@ -2,11 +2,11 @@
 
 import React from 'react';
 import { HIPAAAuthorizationForm } from './forms/HIPAAAuthorizationForm';
-import { HIPAAAuthorizationData } from './types/hipaaRelease';
-import { GlassCard } from '@/components/ui/GlassCard';
-import { FileSignature } from 'lucide-react';
+import { saveHIPAAAuthorizationAction } from '@/app/(app)/actions/hipaaActions';
+import { toast } from 'sonner';
 
 interface Props {
+    intakeId: string; // Required for persistence
     clientData?: {
         firstName?: string;
         lastName?: string;
@@ -15,11 +15,23 @@ interface Props {
     };
 }
 
-export const HIPAAFormPage: React.FC<Props> = ({ clientData }) => {
-    const handleSubmit = (data: HIPAAAuthorizationData) => {
-        console.log('HIPAA Form Submitted:', data);
-        // TODO: Save to database / generate PDF
-        alert('Authorization form submitted successfully!');
+export const HIPAAFormPage: React.FC<Props> = ({ intakeId, clientData }) => {
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+    const handleSubmit = async (data: HIPAAAuthorizationData) => {
+        setIsSubmitting(true);
+        try {
+            const result = await saveHIPAAAuthorizationAction(intakeId, data);
+            if (result.success) {
+                toast.success('HIPAA Authorization submitted successfully!');
+            } else {
+                toast.error(`Error: ${result.error}`);
+            }
+        } catch (err: any) {
+            toast.error('Failed to submit form.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -27,6 +39,7 @@ export const HIPAAFormPage: React.FC<Props> = ({ clientData }) => {
             <HIPAAAuthorizationForm
                 clientData={clientData}
                 onSubmit={handleSubmit}
+                isSubmitting={isSubmitting}
             />
         </div>
     );

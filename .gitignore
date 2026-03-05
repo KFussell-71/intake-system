@@ -46,3 +46,9 @@ app/node_modules/
 app/.next/
 app/.next/standalone/node_modules/
 app/verification_results.txt
+
+# Large Artifacts & Logs
+*.tar.gz
+*.zip
+*.log
+robocopy_*.log

@@ -136,13 +136,9 @@ export async function createConsentDocumentAction(intakeId: string, scopeText: s
     if (!auth.authenticated || !auth.userId) throw new Error('Unauthorized');
 
     // Validation
-    // The provided validation block was for 'observations' and used incorrect parameters.
-    // Keeping the original repository call and adding a placeholder for correct validation.
-    // TODO: Implement specific validation for consent document creation using intakeId, scopeText, version.
-    // const validation = validateSection('consent', { intakeId, scopeText, version });
-    // if (!validation.success) {
-    //     return { success: false, error: validation.error };
-    // }
+    if (!intakeId || !scopeText || !version) {
+        return { success: false, error: 'Missing required fields for consent document' };
+    }
 
     const result = await modernizedIntakeRepository.createConsentDocument({
         intake_id: intakeId,

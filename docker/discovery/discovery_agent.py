@@ -23,9 +23,14 @@ class MeshHandler(http.server.SimpleHTTPRequestHandler):
             self.send_error(404)
 
 def start_mesh_api(port=8000):
-    with socketserver.TCPServer(("", port), MeshHandler) as httpd:
-        print(f"📡 Vanguard Mesh API active on port {port}")
-        httpd.serve_forever()
+    socketserver.TCPServer.allow_reuse_address = True
+    try:
+        with socketserver.TCPServer(("", port), MeshHandler) as httpd:
+            httpd.timeout = 5
+            print(f"📡 Vanguard Mesh API active on port {port}")
+            httpd.serve_forever()
+    except Exception as e:
+        print(f"❌ Mesh API Server Error: {e}")
 
 class FleetListener:
     def __init__(self):

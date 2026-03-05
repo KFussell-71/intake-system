@@ -83,8 +83,22 @@ export async function bookClientAppointment(formData: FormData) {
 
     if (result.success) {
         revalidatePath('/portal');
-        // TODO: In-app notification logic can be triggered here
-        // await createNotification({ userId: staffId, message: "New booking!" })
+
+        // Fetch staff info to notify
+        const staffId = formData.get('staff_id') as string;
+        const clientId = formData.get('client_id') as string;
+        const apptTitle = formData.get('title') as string;
+        const apptDate = formData.get('date') as string;
+
+        if (staffId && clientId) {
+            const { createNotification } = await import('@/app/(app)/actions/notificationActions');
+            await createNotification({
+                staff_id: staffId,
+                client_id: clientId,
+                type: 'booking',
+                message: `Portal Booking: ${apptTitle} requested for ${apptDate}`
+            });
+        }
     }
 
     return result;

@@ -1,0 +1,28 @@
+# 🏁 Project Vanguard: Handoff & Resumption Guide
+
+## 📦 What's in the Box?
+The `vanguard_export_[TIMESTAMP].tar.gz` archive contains:
+1. **Source Code**: The full `/home/kfussell/Documents/Intake` directory.
+2. **AI Brain Context**: The artifact directory `/home/kfussell/.gemini/antigravity/brain/6ab48bc9-8b50-407f-956d-b2bbe387e67f`.
+
+## 🛠️ How to Resume Work
+1. **Unpack**:
+   ```bash
+   tar -xzvf vanguard_export_[TIMESTAMP].tar.gz
+   ```
+2. **Initialize Env**:
+   - Re-run `npm install` in the `app` directory.
+   - Ensure the `.env.local` is correctly configured (carried over in the export).
+3. **Continue Deployment**:
+   - The NAS IP is `10.121.18.14`.
+   - Credentials: `Fussell` / `N1ghtrider`.
+   - Current Phase: **Phase 18 (Node Recovery)**.
+   - Next Step: **Atomic Config Upload (Step R4)**.
+
+## 💾 State Preservation
+- The `autosave.sh` daemon was active during export, ensuring `git` and `db` are synced.
+- Refer to `DEPLOYMENT_LOG.md` in the brain context for the exact hardware state of the QNAP.
+
+## 🚦 Verification
+- Run `npm run dev` to verify the local stack.
+- Check NAS File Station at `/Container/vanguard` for provisioned folders.

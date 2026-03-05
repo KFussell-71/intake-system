@@ -128,6 +128,32 @@ export async function returnForRevision(
             };
         }
 
+        // Notify Specialist
+        try {
+            // First fetch missing data (preparer and client name)
+            const { data: intakeWithClient } = await supabase
+                .from('intakes')
+                .select(`
+                    prepared_by,
+                    client_id,
+                    clients (name)
+                `)
+                .eq('id', intakeId)
+                .single();
+
+            if (intakeWithClient) {
+                const { createNotification } = await import('@/app/(app)/actions/notificationActions');
+                await createNotification({
+                    staff_id: intakeWithClient.prepared_by,
+                    type: 'alert',
+                    message: `${urgent ? 'URGENT: ' : ''}Report for ${(intakeWithClient.clients as any)?.name || 'one of your clients'} was returned for revision: ${reason}`,
+                    link: `/clients/${intakeWithClient.client_id}`
+                });
+            }
+        } catch (notifyError) {
+            console.error('Failed to notify specialist of revision:', notifyError);
+        }
+
         return { success: true };
     } catch (error) {
         console.error('Exception returning report:', error);
