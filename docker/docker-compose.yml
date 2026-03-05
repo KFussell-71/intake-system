@@ -287,7 +287,7 @@ services:
       - PGID=100
       - TZ=America/Los_Angeles
       - SUBDOMAINS=${DDNS_SUBDOMAINS:-blackdiamondsandpearls}
-      - TOKEN=${DDNS_TOKEN:-REPLACE_WITH_YOUR_DUCKDNS_TOKEN}
+      - TOKEN=${DDNS_TOKEN:-79b094c5-71eb-41ac-b6aa-2d4bf27c5901}
       - LOG_FILE=false # Set to true if diagnosing
 
 secrets:
