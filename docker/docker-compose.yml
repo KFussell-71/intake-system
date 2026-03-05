@@ -220,7 +220,7 @@ services:
     environment:
       # WG_HOST: Public IP/hostname peers use to reach this NAS.
       # Options: WAN IP, Tailscale IP (100.x.x.x), or a DDNS hostname.
-      - WG_HOST=${DDNS_DOMAIN:-REPLACE_WITH_YOUR_DUCKDNS_DOMAIN}.duckdns.org
+      - WG_HOST=${DDNS_DOMAIN:-blackdiamondsandpearls}.duckdns.org
       # Web UI password
       - PASSWORD=${WG_PASSWORD:-vanguard_wg_pass}
       - PORT=51821
@@ -271,6 +271,8 @@ services:
           git fetch origin V3.2-Hardened-Final && \
           git reset --hard origin/V3.2-Hardened-Final && \
           docker compose up -d --build app
+          echo "[$(date)] [Sync] Update check complete. Sleeping 15m..."
+          sleep 900
         done
 
   # ---------------------------------------------------------------------------
@@ -284,7 +286,7 @@ services:
       - PUID=1000
       - PGID=100
       - TZ=America/Los_Angeles
-      - SUBDOMAINS=${DDNS_SUBDOMAINS:-REPLACE_WITH_YOUR_DUCKDNS_SUBDOMAIN}
+      - SUBDOMAINS=${DDNS_SUBDOMAINS:-blackdiamondsandpearls}
       - TOKEN=${DDNS_TOKEN:-REPLACE_WITH_YOUR_DUCKDNS_TOKEN}
       - LOG_FILE=false # Set to true if diagnosing
 
