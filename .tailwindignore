@@ -1,0 +1,7 @@
+.agent
+*.docx
+*.pdf
+*.zip
+*.log
+node_modules
+.next

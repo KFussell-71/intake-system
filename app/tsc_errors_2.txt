@@ -1,0 +1,126 @@
+src/app/(app)/actions/appointmentActions.ts(141,21): error TS2353: Object literal may only specify known properties, and 'entityType' does not exist in type '(Without<AuditLogCreateInput, AuditLogUncheckedCreateInput> & AuditLogUncheckedCreateInput) | (Without<...> & AuditLogCreateInput)'.
+src/app/(app)/actions/appointmentActions.ts(190,21): error TS2353: Object literal may only specify known properties, and 'entityType' does not exist in type '(Without<AuditLogCreateInput, AuditLogUncheckedCreateInput> & AuditLogUncheckedCreateInput) | (Without<...> & AuditLogCreateInput)'.
+src/app/(app)/actions/caseDetailsActions.ts(32,31): error TS2353: Object literal may only specify known properties, and 'name' does not exist in type 'ProfileSelect<DefaultArgs>'.
+src/app/(app)/actions/caseDetailsActions.ts(48,40): error TS2339: Property 'clinicalNote' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/(app)/actions/caseDetailsActions.ts(57,38): error TS2339: Property 'outcomeRecord' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/(app)/actions/caseDetailsActions.ts(66,40): error TS2339: Property 'outcomeMeasure' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/(app)/actions/employmentActions.ts(177,13): error TS2322: Type 'string | number' is not assignable to type 'string'.
+  Type 'number' is not assignable to type 'string'.
+src/app/(app)/actions/getPortalActivityAction.ts(26,17): error TS2353: Object literal may only specify known properties, and 'client' does not exist in type 'PortalActivityInclude<DefaultArgs>'.
+src/app/(app)/actions/getPortalActivityAction.ts(42,36): error TS2551: Property 'client' does not exist on type '{ userId: string | null; id: string; createdAt: Date; clientId: string | null; action: string; metadata: JsonValue; ipAddress: string | null; userAgent: string | null; portalAccessId: string; }'. Did you mean 'clientId'?
+src/app/(app)/actions/identityActions.ts(108,20): error TS2339: Property 'intakeIdentity' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/(app)/actions/notificationActions.ts(20,17): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/app/(app)/actions/notificationActions.ts(41,22): error TS2353: Object literal may only specify known properties, and 'userId' does not exist in type 'NotificationWhereInput'.
+src/app/(app)/actions/notificationActions.ts(62,22): error TS2353: Object literal may only specify known properties, and 'userId' does not exist in type 'NotificationWhereInput'.
+src/app/(app)/actions/notificationActions.ts(93,17): error TS2353: Object literal may only specify known properties, and 'userId' does not exist in type 'NotificationWhereInput'.
+src/app/(app)/actions/resources/findResources.ts(29,57): error TS2339: Property 'length' does not exist on type '{ matches: CommunityResource[]; source: "local" | "web"; reasoning: string; }'.
+src/app/(app)/actions/uploadClientDocument.ts(69,23): error TS2353: Object literal may only specify known properties, and 'profiles' does not exist in type 'ClientWhereInput'.
+src/app/(app)/clients/[id]/page.tsx(32,21): error TS2353: Object literal may only specify known properties, and 'name' does not exist in type 'ProfileSelect<DefaultArgs>'.
+src/app/(app)/clients/[id]/page.tsx(50,21): error TS2353: Object literal may only specify known properties, and 'name' does not exist in type 'ProfileSelect<DefaultArgs>'.
+src/app/(app)/clients/[id]/page.tsx(65,20): error TS2339: Property 'intakes' does not exist on type '{ id: string; createdAt: Date; name: string; phone: string | null; email: string | null; address: string | null; ssnLastFour: string | null; status: string; createdById: string | null; assignedToId: string | null; }'.
+src/app/(portal)/portal/messages/page.tsx(13,31): error TS2339: Property 'user' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/app/(portal)/portal/messages/page.tsx(40,98): error TS2353: Object literal may only specify known properties, and 'name' does not exist in type 'ProfileSelect<DefaultArgs>'.
+src/app/(portal)/portal/messages/page.tsx(41,32): error TS2339: Property 'name' does not exist on type '{ role: Role; id: string; username: string; firstName: string | null; lastName: string | null; fullName: string | null; createdAt: Date; updatedAt: Date; }'.
+src/app/(portal)/portal/messages/page.tsx(41,59): error TS2339: Property 'name' does not exist on type '{ role: Role; id: string; username: string; firstName: string | null; lastName: string | null; fullName: string | null; createdAt: Date; updatedAt: Date; }'.
+src/app/(portal)/portal/page.tsx(160,41): error TS2322: Type '{ id: string; createdAt: Date; clientId: string; completionDate: Date | null; intakeId: string | null; description: string | null; stepOrder: number; milestoneName: string; }[]' is not assignable to type 'Milestone[]'.
+  Type '{ id: string; createdAt: Date; clientId: string; completionDate: Date | null; intakeId: string | null; description: string | null; stepOrder: number; milestoneName: string; }' is missing the following properties from type 'Milestone': milestone_name, step_order
+src/app/(portal)/portal/status/page.tsx(85,37): error TS2322: Type '{ id: string; createdAt: Date; clientId: string; completionDate: Date | null; intakeId: string | null; description: string | null; stepOrder: number; milestoneName: string; }[]' is not assignable to type 'Milestone[]'.
+  Type '{ id: string; createdAt: Date; clientId: string; completionDate: Date | null; intakeId: string | null; description: string | null; stepOrder: number; milestoneName: string; }' is missing the following properties from type 'Milestone': milestone_name, step_order
+src/domain/services/IntakeWorkflowService.ts(56,36): error TS2339: Property 'logClinicalEvent' does not exist on type 'IntakeRepository'.
+src/features/accreditation/components/AccreditationManager.tsx(96,102): error TS2551: Property 'generated_at' does not exist on type 'EvidencePacket'. Did you mean 'generatedAt'?
+src/features/case-management/components/CaseHeader.tsx(25,47): error TS2554: Expected 3 arguments, but got 2.
+src/features/chat/components/ChatWindow.tsx(65,25): error TS2345: Argument of type '(prev: Message[]) => ({ id: any; conversation_id: any; sender_id: any; content: any; created_at: any; } | undefined)[]' is not assignable to parameter of type 'SetStateAction<Message[]>'.
+  Type '(prev: Message[]) => ({ id: any; conversation_id: any; sender_id: any; content: any; created_at: any; } | undefined)[]' is not assignable to type '(prevState: Message[]) => Message[]'.
+    Type '({ id: any; conversation_id: any; sender_id: any; content: any; created_at: any; } | undefined)[]' is not assignable to type 'Message[]'.
+      Type '{ id: any; conversation_id: any; sender_id: any; content: any; created_at: any; } | undefined' is not assignable to type 'Message'.
+        Type 'undefined' is not assignable to type 'Message'.
+src/features/chat/components/ChatWindow.tsx(66,45): error TS18048: 'res.data' is possibly 'undefined'.
+src/features/chat/components/ConversationList.tsx(22,48): error TS2554: Expected 0 arguments, but got 1.
+src/features/chat/components/ConversationList.tsx(50,65): error TS2339: Property 'user_id' does not exist on type '{ id: string; username: string; }'.
+src/features/consent/components/ConsentModule.tsx(35,24): error TS2339: Property 'success' does not exist on type '{ id: string; clientId: string | null; ipAddress: string | null; intakeId: string; consentDocumentId: string; signerName: string; signerRole: string; signatureData: string | null; method: string | null; documentHash: string | null; signedAt: Date; }'.
+src/features/dashboard/components/NotificationCenter.tsx(18,102): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/features/intake/components/ConsentWorkflow.tsx(7,85): error TS2305: Module '"@/app/(app)/actions/consentActions"' has no exported member 'ConsentDocument'.
+src/features/intake/components/ConsentWorkflow.tsx(28,38): error TS2345: Argument of type '({ signatures: { id: string; clientId: string | null; ipAddress: string | null; intakeId: string; consentDocumentId: string; signerName: string; signerRole: string; signatureData: string | null; method: string | null; documentHash: string | null; signedAt: Date; }[]; } & { ...; })[] | undefined' is not assignable to parameter of type 'SetStateAction<ConsentDocument[]>'.
+  Type 'undefined' is not assignable to type 'SetStateAction<ConsentDocument[]>'.
+src/features/intake/components/ConsentWorkflow.tsx(124,65): error TS7006: Parameter 'sig' implicitly has an 'any' type.
+src/features/intake/hooks/useIntakeForm.ts(257,63): error TS2339: Property 'found' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; status: string; data: JsonValue; clientId: string; reportDate: Date; preparedById: string | null; completionDate: Date | null; submittedAt: Date | null; updatedById: string | null; }'.
+src/features/intake/hooks/useIntakeForm.ts(259,70): error TS2698: Spread types may only be created from object types.
+src/features/intake/hooks/useIntakeForm.ts(259,73): error TS18047: 'result.data' is possibly 'null'.
+src/features/intake/hooks/useIntakeForm.ts(260,44): error TS2339: Property 'intake_id' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; status: string; data: JsonValue; clientId: string; reportDate: Date; preparedById: string | null; completionDate: Date | null; submittedAt: Date | null; updatedById: string | null; }'.
+src/features/intake/hooks/useIntakeForm.ts(261,44): error TS2339: Property 'version' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; status: string; data: JsonValue; clientId: string; reportDate: Date; preparedById: string | null; completionDate: Date | null; submittedAt: Date | null; updatedById: string | null; }'.
+src/features/intake/hooks/useIntakeForm.ts(309,48): error TS2339: Property 'found' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; status: string; data: JsonValue; clientId: string; reportDate: Date; preparedById: string | null; completionDate: Date | null; submittedAt: Date | null; updatedById: string | null; }'.
+src/features/intake/hooks/useIntakeForm.ts(310,40): error TS2339: Property 'version' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; status: string; data: JsonValue; clientId: string; reportDate: Date; preparedById: string | null; completionDate: Date | null; submittedAt: Date | null; updatedById: string | null; }'.
+src/features/portal/context/NotificationProvider.tsx(50,37): error TS2345: Argument of type '(current: Notification[]) => ({ id: string; createdAt: Date; link: string | null; message: string; type: string; clientId: string; staffId: string | null; isRead: boolean; } | Notification)[]' is not assignable to parameter of type 'SetStateAction<Notification[]>'.
+  Type '(current: Notification[]) => ({ id: string; createdAt: Date; link: string | null; message: string; type: string; clientId: string; staffId: string | null; isRead: boolean; } | Notification)[]' is not assignable to type '(prevState: Notification[]) => Notification[]'.
+    Type '({ id: string; createdAt: Date; link: string | null; message: string; type: string; clientId: string; staffId: string | null; isRead: boolean; } | Notification)[]' is not assignable to type 'Notification[]'.
+      Type '{ id: string; createdAt: Date; link: string | null; message: string; type: string; clientId: string; staffId: string | null; isRead: boolean; } | Notification' is not assignable to type 'Notification'.
+        Property 'created_at' is missing in type '{ id: string; createdAt: Date; link: string | null; message: string; type: string; clientId: string; staffId: string | null; isRead: boolean; }' but required in type 'Notification'.
+src/features/portal/context/NotificationProvider.tsx(53,24): error TS2352: Conversion of type '{ id: string; createdAt: Date; link: string | null; message: string; type: string; clientId: string; staffId: string | null; isRead: boolean; }[]' to type 'Notification[]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Property 'created_at' is missing in type '{ id: string; createdAt: Date; link: string | null; message: string; type: string; clientId: string; staffId: string | null; isRead: boolean; }' but required in type 'Notification'.
+src/features/reporting/components/OutcomesDashboard.tsx(19,37): error TS2339: Property 'getRiskProfiling' does not exist on type 'DashboardRepository'.
+src/features/supervisor/components/InviteMemberDialog.tsx(34,17): error TS2322: Type '"admin" | "supervisor" | "specialist" | "intake_worker"' is not assignable to type 'Role'.
+  Type '"specialist"' is not assignable to type 'Role'.
+src/features/supervisor/components/PipelineVelocity.tsx(45,33): error TS2322: Type '(value: number | undefined) => [string, string]' is not assignable to type 'Formatter<ValueType, NameType> & ((value: ValueType, name: NameType, item: TooltipPayloadEntry, index: number, payload: TooltipPayload) => ReactNode | [...])'.
+  Type '(value: number | undefined) => [string, string]' is not assignable to type 'Formatter<ValueType, NameType>'.
+    Types of parameters 'value' and 'value' are incompatible.
+      Type 'ValueType | undefined' is not assignable to type 'number | undefined'.
+        Type 'string' is not assignable to type 'number'.
+src/features/supervisor/components/TeamManagementWidget.tsx(36,24): error TS2345: Argument of type '{ role: Role; id: string; username: string; firstName: string | null; lastName: string | null; fullName: string | null; createdAt: Date; updatedAt: Date; }[]' is not assignable to parameter of type 'SetStateAction<Profile[]>'.
+  Type '{ role: Role; id: string; username: string; firstName: string | null; lastName: string | null; fullName: string | null; createdAt: Date; updatedAt: Date; }[]' is not assignable to type 'Profile[]'.
+    Type '{ role: Role; id: string; username: string; firstName: string | null; lastName: string | null; fullName: string | null; createdAt: Date; updatedAt: Date; }' is not assignable to type 'Profile'.
+      Types of property 'role' are incompatible.
+        Type 'Role' is not assignable to type '"admin" | "supervisor" | "specialist" | "intake_worker"'.
+          Type '"staff"' is not assignable to type '"admin" | "supervisor" | "specialist" | "intake_worker"'.
+src/features/supervisor/components/TeamManagementWidget.tsx(59,54): error TS2345: Argument of type '"admin" | "supervisor" | "specialist" | "intake_worker"' is not assignable to parameter of type 'Role'.
+  Type '"specialist"' is not assignable to type 'Role'.
+src/repositories/ClientRepository.ts(37,14): error TS2339: Property 'from' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/repositories/ClientRepository.ts(48,14): error TS2339: Property 'from' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/repositories/ClientRepository.ts(93,14): error TS2339: Property 'from' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/repositories/ClientRepository.ts(117,14): error TS2339: Property 'from' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/repositories/ClientRepository.ts(134,14): error TS2339: Property 'from' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/repositories/ClientRepository.ts(144,47): error TS2339: Property 'rpc' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/repositories/ClientRepository.ts(157,14): error TS2339: Property 'from' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/repositories/ClinicalNoteRepository.ts(7,14): error TS2339: Property 'from' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/repositories/ClinicalNoteRepository.ts(21,14): error TS2339: Property 'from' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/repositories/ClinicalNoteRepository.ts(35,14): error TS2339: Property 'from' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/repositories/ClinicalNoteRepository.ts(51,14): error TS2339: Property 'from' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/repositories/ClinicalNoteRepository.ts(70,14): error TS2339: Property 'from' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/repositories/ReportRepository.ts(20,14): error TS2339: Property 'from' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/repositories/ReportRepository.ts(31,25): error TS7006: Parameter 'intake' implicitly has an 'any' type.
+src/repositories/ReportRepository.ts(70,14): error TS2339: Property 'from' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/repositories/ReportRepository.ts(79,22): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/repositories/ReportRepository.ts(94,14): error TS2339: Property 'from' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/repositories/ReportRepository.ts(100,56): error TS2339: Property 'from' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/repositories/ReportRepository.ts(103,33): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/repositories/ReportRepository.ts(110,36): error TS7006: Parameter 'd' implicitly has an 'any' type.
+src/repositories/ReportRepository.ts(111,38): error TS7006: Parameter 'd' implicitly has an 'any' type.
+src/repositories/ReportRepository.ts(118,14): error TS2339: Property 'from' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/repositories/ReportRepository.ts(124,32): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/repositories/ReportRepository.ts(130,35): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/repositories/ReportRepository.ts(130,38): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/repositories/ReportRepository.ts(136,14): error TS2339: Property 'from' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/repositories/ReportRepository.ts(143,22): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/repositories/SimulationRepository.ts(30,35): error TS2339: Property 'policyDefinition' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/CaseService.ts(19,21): error TS2353: Object literal may only specify known properties, and 'assignedToId' does not exist in type 'Without<CaseCreateInput, CaseUncheckedCreateInput> & CaseUncheckedCreateInput'.
+src/services/CaseService.ts(41,17): error TS2353: Object literal may only specify known properties, and 'assignedTo' does not exist in type 'CaseInclude<DefaultArgs>'.
+src/services/CaseService.ts(97,41): error TS2322: Type '{ assignedToId: string; } | {}' is not assignable to type 'CaseWhereInput | undefined'.
+  Object literal may only specify known properties, and 'assignedToId' does not exist in type 'CaseWhereInput'.
+src/services/CaseService.ts(105,17): error TS2353: Object literal may only specify known properties, and 'assignedTo' does not exist in type 'CaseInclude<DefaultArgs>'.
+src/services/CommunicationService.ts(32,35): error TS2339: Property 'communicationLog' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/CommunicationService.ts(66,35): error TS2339: Property 'communicationLog' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/CommunicationService.ts(108,34): error TS2339: Property 'communicationLog' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/services/DashboardService.ts(7,32): error TS2554: Expected 1 arguments, but got 0.
+src/services/DashboardService.ts(19,32): error TS2554: Expected 1 arguments, but got 0.
+src/services/DashboardService.ts(23,50): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/services/DocumentService.ts(23,13): error TS2561: Object literal may only specify known properties, but 'client_id' does not exist in type '{ clientId: string; name: string; url: string; type: string; size?: number | undefined; uploadedById?: string | undefined; }'. Did you mean to write 'clientId'?
+src/services/IntakeService.ts(91,55): error TS2345: Argument of type 'string | number | true | JsonObject | JsonArray' is not assignable to parameter of type 'IntakeFormData'.
+  Type 'string' is not assignable to type 'IntakeFormData'.
+    Type 'string' is not assignable to type 'IdentityBasic'.
+src/services/IntakeService.ts(91,91): error TS2339: Property 'version' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; status: string; data: JsonValue; clientId: string; reportDate: Date; preparedById: string | null; completionDate: Date | null; submittedAt: Date | null; updatedById: string | null; }'.
+src/services/IntakeService.ts(120,40): error TS2339: Property 'version' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; status: string; data: JsonValue; clientId: string; reportDate: Date; preparedById: string | null; completionDate: Date | null; submittedAt: Date | null; updatedById: string | null; }'.
+src/services/IntakeService.ts(189,17): error TS2698: Spread types may only be created from object types.
+src/services/IntakeService.ts(191,34): error TS2339: Property 'version' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; status: string; data: JsonValue; clientId: string; reportDate: Date; preparedById: string | null; completionDate: Date | null; submittedAt: Date | null; updatedById: string | null; }'.
+src/services/IntakeService.ts(192,63): error TS2551: Property 'updated_at' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; status: string; data: JsonValue; clientId: string; reportDate: Date; preparedById: string | null; completionDate: Date | null; submittedAt: Date | null; updatedById: string | null; }'. Did you mean 'updatedAt'?
+src/services/IntakeService.ts(233,35): error TS2339: Property 'version' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; status: string; data: JsonValue; clientId: string; reportDate: Date; preparedById: string | null; completionDate: Date | null; submittedAt: Date | null; updatedById: string | null; }'.

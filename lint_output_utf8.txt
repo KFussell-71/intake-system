@@ -1,0 +1,470 @@
+﻿
+> intake@1.0.0 lint
+> next lint
+
+node.exe : `next lint` is 
+deprecated and will be 
+removed in Next.js 16.
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
+    + CategoryInfo          : 
+    NotSpecified: (`next lin  
+  t` is ... in Next.js 16.:   
+ String) [], RemoteExcepti    
+on
+    + FullyQualifiedErrorId : 
+    NativeCommandError
+ 
+For new projects, use 
+create-next-app to choose 
+your preferred linter.
+For existing projects, 
+migrate to the ESLint CLI:
+npx @next/codemod@canary 
+next-lint-to-eslint-cli .
+
+ ΓÜá Warning: Next.js 
+inferred your workspace root, 
+but it may not be correct.
+ We detected multiple 
+lockfiles and selected the 
+directory of C:\Users\keith\De
+sktop\Intake\intake-system-4.1
+-Edge-RAG-Release\package-lock
+.json as the root directory.
+ To silence this warning, set 
+`outputFileTracingRoot` in 
+your Next.js config, or 
+consider removing one of the 
+lockfiles if it's not needed.
+   See https://nextjs.org/docs
+/app/api-reference/config/next
+-config-js/output#caveats for 
+more information.
+ Detected additional 
+lockfiles: 
+   * C:\Users\keith\Desktop\In
+take\intake-system-4.1-Edge-RA
+G-Release\app\package-lock.jso
+n
+
+
+./src/app/(app)/cases/[id]/pag
+e.tsx
+45:8  Warning: React Hook 
+useEffect has a missing 
+dependency: 'loadData'. 
+Either include it or remove 
+the dependency array.  
+react-hooks/exhaustive-deps
+
+./src/app/(app)/directory/page
+.tsx
+210:55  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+210:68  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+
+./src/app/(app)/documents/page
+.tsx
+48:124  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+48:134  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+
+./src/app/(app)/follow-ups/pag
+e.tsx
+190:150  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+190:163  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+
+./src/app/(app)/supervisor/res
+ources/page.tsx
+93:68  Error: `'` can be 
+escaped with `&apos;`, 
+`&lsquo;`, `&#39;`, 
+`&rsquo;`.  
+react/no-unescaped-entities
+
+./src/app/(auth)/login/page.ts
+x
+120:32  Error: `'` can be 
+escaped with `&apos;`, 
+`&lsquo;`, `&#39;`, 
+`&rsquo;`.  
+react/no-unescaped-entities
+
+./src/components/dashboard/Cli
+entSearchDropdown.tsx
+105:47  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+105:60  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+
+./src/components/documents/Doc
+umentList.tsx
+40:8  Warning: React Hook 
+useEffect has a missing 
+dependency: 'fetchDocs'. 
+Either include it or remove 
+the dependency array.  
+react-hooks/exhaustive-deps
+
+./src/components/documents/Doc
+umentPreviewDialog.tsx
+66:29  Warning: Using `<img>` 
+could result in slower LCP 
+and higher bandwidth. 
+Consider using `<Image />` 
+from `next/image` or a custom 
+image loader to automatically 
+optimize images. This may 
+incur additional usage or 
+cost from your provider. See: 
+https://nextjs.org/docs/messag
+es/no-img-element  
+@next/next/no-img-element
+
+./src/components/documents/Fil
+eUploadZone.tsx
+78:8  Warning: React Hook 
+useCallback has a missing 
+dependency: 'processFile'. 
+Either include it or remove 
+the dependency array.  
+react-hooks/exhaustive-deps
+
+./src/components/resume/Resume
+List.tsx
+23:8  Warning: React Hook 
+useEffect has a missing 
+dependency: 'loadResumes'. 
+Either include it or remove 
+the dependency array.  
+react-hooks/exhaustive-deps
+113:31  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+113:47  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+
+./src/components/ui/AIPredicti
+veOverlay.tsx
+39:29  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+39:42  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+
+./src/components/ui/VoiceInput
+.tsx
+64:8  Warning: React Hook 
+useEffect has missing 
+dependencies: 
+'accumulatedTranscript' and 
+'handleAIClean'. Either 
+include them or remove the 
+dependency array.  
+react-hooks/exhaustive-deps
+
+./src/components/video/VideoRo
+om.tsx
+31:8  Warning: React Hook 
+useEffect has missing 
+dependencies: 'api' and 
+'initJitsi'. Either include 
+them or remove the dependency 
+array.  
+react-hooks/exhaustive-deps
+
+./src/features/case-management
+/components/CarePlanBuilder.ts
+x
+30:8  Warning: React Hook 
+useEffect has a missing 
+dependency: 'loadPlan'. 
+Either include it or remove 
+the dependency array.  
+react-hooks/exhaustive-deps
+
+./src/features/case-management
+/components/CaseTimeline.tsx
+25:8  Warning: React Hook 
+useEffect has a missing 
+dependency: 'loadTimeline'. 
+Either include it or remove 
+the dependency array.  
+react-hooks/exhaustive-deps
+
+./src/features/case-management
+/components/ClinicalNoteForm.t
+sx
+227:25  Warning: Using 
+`<img>` could result in 
+slower LCP and higher 
+bandwidth. Consider using 
+`<Image />` from `next/image` 
+or a custom image loader to 
+automatically optimize 
+images. This may incur 
+additional usage or cost from 
+your provider. See: https://ne
+xtjs.org/docs/messages/no-img-
+element  
+@next/next/no-img-element
+
+./src/features/case-management
+/components/OutcomeChart.tsx
+22:8  Warning: React Hook 
+useEffect has a missing 
+dependency: 
+'selectedMeasureId'. Either 
+include it or remove the 
+dependency array.  
+react-hooks/exhaustive-deps
+
+./src/features/case-management
+/components/ReferralTracker.ts
+x
+23:8  Warning: React Hook 
+useEffect has a missing 
+dependency: 'loadReferrals'. 
+Either include it or remove 
+the dependency array.  
+react-hooks/exhaustive-deps
+
+./src/features/chat/components
+/ChatWindow.tsx
+28:8  Warning: React Hook 
+useEffect has a missing 
+dependency: 'loadMessages'. 
+Either include it or remove 
+the dependency array.  
+react-hooks/exhaustive-deps
+
+./src/features/documents/Docum
+entManager.tsx
+51:8  Warning: React Hook 
+useEffect has a missing 
+dependency: 'loadDocuments'. 
+Either include it or remove 
+the dependency array.  
+react-hooks/exhaustive-deps
+
+./src/features/intake/componen
+ts/AIIntegrityReview.tsx
+36:8  Warning: React Hook 
+useEffect has missing 
+dependencies: 'hasChecked' 
+and 'runCheck'. Either 
+include them or remove the 
+dependency array.  
+react-hooks/exhaustive-deps
+
+./src/features/intake/componen
+ts/ComplianceSidebar.tsx
+152:39  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+152:70  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+
+./src/features/intake/componen
+ts/IntakeTaskSidebar.tsx
+46:8  Warning: React Hook 
+useEffect has a missing 
+dependency: 'fetchTasks'. 
+Either include it or remove 
+the dependency array.  
+react-hooks/exhaustive-deps
+
+./src/features/intake/componen
+ts/ModernizedIntakeStepIdentit
+y.tsx
+34:8  Warning: React Hook 
+useEffect has a missing 
+dependency: 'formData'. 
+Either include it or remove 
+the dependency array.  
+react-hooks/exhaustive-deps
+
+./src/features/intake/componen
+ts/ModernizedObservationsSecti
+on.tsx
+216:29  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+216:45  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+
+./src/features/intake/componen
+ts/ReportPreviewModal.tsx
+51:8  Warning: React Hook 
+useEffect has a missing 
+dependency: 
+'generatePreview'. Either 
+include it or remove the 
+dependency array.  
+react-hooks/exhaustive-deps
+
+./src/features/intake/hooks/us
+eIntakeForm.ts
+273:8  Warning: React Hook 
+useEffect has a missing 
+dependency: 'checkDraft'. 
+Either include it or remove 
+the dependency array.  
+react-hooks/exhaustive-deps
+
+./src/features/onboarding/comp
+onents/AgencyOnboarding.tsx
+76:28  Error: `'` can be 
+escaped with `&apos;`, 
+`&lsquo;`, `&#39;`, 
+`&rsquo;`.  
+react/no-unescaped-entities
+
+./src/features/portal/componen
+ts/BookingWizard.tsx
+29:8  Warning: React Hook 
+useEffect has a missing 
+dependency: 'fetchSlots'. 
+Either include it or remove 
+the dependency array.  
+react-hooks/exhaustive-deps
+
+./src/features/portal/componen
+ts/JourneyMap.tsx
+55:8  Warning: React Hook 
+useEffect has a missing 
+dependency: 
+'sortedMilestones'. Either 
+include it or remove the 
+dependency array.  
+react-hooks/exhaustive-deps
+
+./src/features/resources/Resou
+rceFinder.tsx
+40:59  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+40:76  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+40:79  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+40:97  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+40:100  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+40:113  Error: `"` can be 
+escaped with `&quot;`, 
+`&ldquo;`, `&#34;`, 
+`&rdquo;`.  
+react/no-unescaped-entities
+
+./src/features/scheduling/comp
+onents/AvailabilityManager.tsx
+32:8  Warning: React Hook 
+useEffect has a missing 
+dependency: 'loadBlocks'. 
+Either include it or remove 
+the dependency array.  
+react-hooks/exhaustive-deps
+
+./src/features/supervisor/comp
+onents/ActivityLog.tsx
+48:8  Warning: React Hook 
+useEffect has a missing 
+dependency: 'loadActions'. 
+Either include it or remove 
+the dependency array.  
+react-hooks/exhaustive-deps
+
+./src/features/supervisor/comp
+onents/ExecutiveBrief.tsx
+82:64  Error: `'` can be 
+escaped with `&apos;`, 
+`&lsquo;`, `&#39;`, 
+`&rsquo;`.  
+react/no-unescaped-entities
+
+./src/features/supervisor/comp
+onents/WorkerAssignmentDialog.
+tsx
+40:8  Warning: React Hook 
+useEffect has a missing 
+dependency: 'loadData'. 
+Either include it or remove 
+the dependency array.  
+react-hooks/exhaustive-deps
+
+info  - Need to disable some 
+ESLint rules? Learn more 
+here: https://nextjs.org/docs/
+app/api-reference/config/eslin
+t#disabling-rules

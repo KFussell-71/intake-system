@@ -1,0 +1,304 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: intake-system
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2GB
+    environment:
+      - NEXT_PUBLIC_OLLAMA_MODEL=gemma2:2b
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
+      - NEXT_PUBLIC_SUPABASE_URL=http://kong:8000
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${ANON_KEY}
+    env_file:
+      - path: ../app/.env.local
+        required: false
+    volumes:
+      - fleet_data:/app/data/fleet
+      - app_logs:/app/logs
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3000/api/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      db:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+
+  db:
+    image: pgvector/pgvector:pg15
+    container_name: intake-db
+    restart: always
+    # 🏗️ 16TB Hardware Tuning: Increased memory buffers and optimized I/O for SSD/NVMe
+    command: [ "postgres", "-c", "max_connections=100", "-c", "shared_buffers=4GB", "-c", "work_mem=64MB", "-c", "maintenance_work_mem=512MB", "-c", "random_page_cost=1.1", "-c", "fsync=on", "-c", "full_page_writes=on" ]
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+      - POSTGRES_INITDB_ARGS="--data-checksums"
+    secrets:
+      - db_password
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 6GB
+    volumes:
+      - ./supabase/migrations:/docker-entrypoint-initdb.d
+      - ./data/db:/var/lib/postgresql/data
+      - ./data/backups:/var/lib/postgresql/backups
+
+  discovery:
+    build:
+      context: ./discovery
+    container_name: intake-discovery
+    restart: always
+    network_mode: host # REQUIRED for mDNS/zeroconf broadcasting
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - fleet_data:/app/data/fleet
+
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    container_name: intake-otel
+    restart: always
+    command: [ "--config=/etc/otel-collector-config.yaml" ]
+    volumes:
+      - ./otel/otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
+    ports:
+      - "4317:4317" # OTLP gRPC receiver
+      - "4318:4318" # OTLP HTTP receiver
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: intake-ollama
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "ollama list || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
+        limits:
+          cpus: '2.0'
+          memory: 8GB
+    volumes:
+      - ollama_data:/root/.ollama
+
+  synapse:
+    image: docker.io/matrixdotorg/synapse:latest
+    container_name: intake-synapse
+    restart: always
+    environment:
+      - SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
+    volumes:
+      - ./synapse:/data
+    depends_on:
+      synapse-db:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 4GB
+          cpus: '2.0'
+
+  synapse-db:
+    image: docker.io/postgres:15-alpine
+    container_name: synapse-db
+    restart: always
+    environment:
+      - POSTGRES_USER=synapse_user
+      - POSTGRES_PASSWORD=vanguard_synapse_secure_pass
+      - POSTGRES_DB=synapse
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    volumes:
+      - ./data/synapse-db/schemas:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U synapse_user -d synapse" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 1GB
+          cpus: '1.0'
+
+  proxy:
+    image: nginx:alpine
+    container_name: intake-proxy
+    restart: always
+    ports:
+      - "8090:80"
+      - "9443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - app
+
+  sentry:
+    build:
+      context: ./sentry
+    container_name: intake-phi-sentry
+    restart: always
+    volumes:
+      - app_logs:/app/logs
+
+  # ---------------------------------------------------------------------------
+  # VPN LAYER — Tailscale (standalone Docker daemon; auth via TS_AUTHKEY or
+  # interactive URL shown in container logs on first run)
+  # ---------------------------------------------------------------------------
+  element:
+    image: vectorim/element-web:latest
+    container_name: intake-element
+    restart: unless-stopped
+    ports:
+      - "8091:80"
+    volumes:
+      - ./element-config.json:/app/config.json:ro
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+
+  tailscale:
+    image: tailscale/tailscale:latest
+    container_name: intake-tailscale
+    hostname: blaqdiamonds-intake
+    restart: unless-stopped
+    network_mode: host
+    privileged: true
+    volumes:
+      - tailscale_state:/var/lib/tailscale
+    environment:
+      - TS_AUTHKEY=${TS_AUTHKEY:-}
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_USERSPACE=true
+    healthcheck:
+      test: [ "CMD-SHELL", "tailscale status 2>/dev/null | grep -q '100\\.' || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+
+  # ---------------------------------------------------------------------------
+  # VPN LAYER — WireGuard (wg-easy: self-contained UI + daemon, no kernel mods)
+  # ---------------------------------------------------------------------------
+  wireguard:
+    image: ghcr.io/wg-easy/wg-easy:latest
+    container_name: intake-wireguard
+    restart: unless-stopped
+    privileged: true
+    environment:
+      # WG_HOST: Public IP/hostname peers use to reach this NAS.
+      # Options: WAN IP, Tailscale IP (100.x.x.x), or a DDNS hostname.
+      - WG_HOST=${DDNS_DOMAIN:-blackdiamondsandpearls}.duckdns.org
+      # Web UI password
+      - PASSWORD=${WG_PASSWORD:-vanguard_wg_pass}
+      - PORT=51821
+      # Tunnel settings
+      - WG_PORT=51820
+      - WG_DEFAULT_ADDRESS=10.8.0.x
+      - WG_DEFAULT_DNS=1.1.1.1
+      - WG_ALLOWED_IPS=0.0.0.0/0
+      # Route WireGuard peer traffic to Intake app via NAT
+      - WG_PRE_UP=iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
+      - WG_PRE_DOWN=iptables -t nat -D POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
+    ports:
+      - "51820:51820/udp" # WireGuard peer traffic (open this on your router/firewall)
+      - "51821:51821/tcp" # WireGuard web UI
+    volumes:
+      - wireguard_data:/etc/wireguard
+    healthcheck:
+      test: [ "CMD-SHELL", "wg show wg0 2>/dev/null | grep -q 'interface' || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  # ---------------------------------------------------------------------------
+  # AUTOMATION LAYER — Git-Sync (Silent Background Updater)
+  # ---------------------------------------------------------------------------
+  git-sync:
+    image: docker:latest
+    container_name: intake-git-sync
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - .:/repo
+    working_dir: /repo
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        apk add --no-cache git
+        git config --global --add safe.directory "*"
+        while true; do
+          echo "[$(date)] [Sync] Checking GitHub for updates (V3.2-Hardened-Final)..."
+          git fetch origin V3.2-Hardened-Final && \
+          git reset --hard origin/V3.2-Hardened-Final && \
+          docker compose up -d --build app
+          echo "[$(date)] [Sync] Update check complete. Sleeping 15m..."
+          sleep 900
+        done
+
+  # ---------------------------------------------------------------------------
+  # DYNAMIC DNS — DuckDNS (Keeps WireGuard reachable via permanent hostname)
+  # ---------------------------------------------------------------------------
+  duckdns:
+    image: linuxserver/duckdns:latest
+    container_name: intake-duckdns
+    restart: always
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=America/Los_Angeles
+      - SUBDOMAINS=${DDNS_SUBDOMAINS:-blackdiamondsandpearls}
+      - TOKEN=${DDNS_TOKEN:-79b094c5-71eb-41ac-b6aa-2d4bf27c5901}
+      - LOG_FILE=false # Set to true if diagnosing
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+  gpg_passphrase:
+    file: ./secrets/gpg_passphrase.txt
+
+volumes:
+  ollama_data:
+  fleet_data:
+  app_logs:
+  tailscale_state: # Tailscale identity/state (persists across restarts)
+  wireguard_data: # WireGuard keys + peer configs

@@ -1,0 +1,170 @@
+src/actions/portal/bookingActions.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/actions/portal/getPortalClientData.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/actions/portal/uploadPortalDocument.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/actions/team-actions.ts(4,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/appointmentActions.ts(5,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/appointmentActions.ts(111,38): error TS7006: Parameter 'appt' implicitly has an 'any' type.
+src/app/(app)/actions/appointmentActions.ts(120,58): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/app/(app)/actions/appointmentActions.ts(179,42): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/app/(app)/actions/availabilityActions.ts(4,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/availabilityActions.ts(71,59): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/app/(app)/actions/availabilityActions.ts(133,42): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/app/(app)/actions/caseDetailsActions.ts(3,32): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/caseManagementActions.ts(6,32): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/caseManagementActions.ts(72,55): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/app/(app)/actions/chatActions.ts(4,32): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/chatActions.ts(46,57): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/app/(app)/actions/chatActions.ts(145,74): error TS7006: Parameter 'conv' implicitly has an 'any' type.
+src/app/(app)/actions/chatActions.ts(148,49): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/app/(app)/actions/chatActions.ts(197,42): error TS7006: Parameter 'm' implicitly has an 'any' type.
+src/app/(app)/actions/chatActions.ts(255,59): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/app/(app)/actions/consentActions.ts(3,32): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/consentActions.ts(27,55): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/app/(app)/actions/consentActions.ts(82,42): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/app/(app)/actions/documentActions.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/documentActions.ts(24,64): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/(app)/actions/documents/signDocument.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/employmentActions.ts(3,32): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/followUpActions.ts(5,32): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/generateEmploymentReport.ts(3,32): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/generateExecutiveReport.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/generateExecutiveReport.ts(33,71): error TS7006: Parameter 'curr' implicitly has an 'any' type.
+src/app/(app)/actions/getClientReportDataAction.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/getDashboardStatsAction.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/getPortalActivityAction.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/getPortalActivityAction.ts(36,34): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/app/(app)/actions/hipaaActions.ts(3,32): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/hipaaActions.ts(27,57): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/app/(app)/actions/identityActions.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/intakeActions.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/medicalActions.ts(3,32): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/memoryActions.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/memoryActions.ts(20,42): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/app/(app)/actions/memoryActions.ts(61,25): error TS7006: Parameter 'l' implicitly has an 'any' type.
+src/app/(app)/actions/modernizedIntakeActions.ts(4,52): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/notificationActions.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/observationActions.ts(3,32): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/portal/completeMilestoneAction.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/portal/inviteClientToPortal.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/portal/messageActions.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/portal/notificationActions.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/portal/revokeClientPortalAccess.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/portal/revokeClientPortalAccess.ts(43,57): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/app/(app)/actions/referralActions.ts(4,31): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/reportingActions.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/reportingActions.ts(23,31): error TS7006: Parameter 'd' implicitly has an 'any' type.
+src/app/(app)/actions/reportingActions.ts(66,31): error TS7006: Parameter 'd' implicitly has an 'any' type.
+src/app/(app)/actions/reports/saveDOR.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/reports/saveDOR.ts(16,42): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/app/(app)/actions/resourceActions.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/resourceActions.ts(40,57): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/app/(app)/actions/resourceActions.ts(90,57): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/app/(app)/actions/resourceActions.ts(141,42): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/app/(app)/actions/resources/findResources.ts(29,57): error TS2339: Property 'length' does not exist on type '{ matches: CommunityResource[]; source: "local" | "web"; reasoning: string; }'.
+src/app/(app)/actions/searchActions.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/searchActions.ts(82,41): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/app/(app)/actions/searchActions.ts(101,38): error TS7006: Parameter 'd' implicitly has an 'any' type.
+src/app/(app)/actions/staffingActions.ts(3,31): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/taskActions.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/telemetryActions.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/transparencyActions.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/transparencyActions.ts(45,63): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/app/(app)/actions/transparencyActions.ts(107,43): error TS7006: Parameter 'm' implicitly has an 'any' type.
+src/app/(app)/actions/updateFollowUpStatus.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/actions/uploadClientDocument.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/api/auth/[...nextauth]/route.ts(3,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/api/generate-report/route.ts(9,5): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/api/supervisor/bulk-approve/route.ts(6,5): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/clients/[id]/page.tsx(1,32): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/app/(app)/documents/hipaa-authorization/page.tsx(4,13): error TS2741: Property 'intakeId' is missing in type '{}' but required in type 'Props'.
+src/app/(portal)/portal/messages/page.tsx(4,32): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/domain/services/IntakeWorkflowService.ts(56,36): error TS2339: Property 'logClinicalEvent' does not exist on type 'IntakeRepository'.
+src/features/accreditation/components/AccreditationManager.tsx(96,102): error TS2551: Property 'generated_at' does not exist on type 'EvidencePacket'. Did you mean 'generatedAt'?
+src/features/admin/components/TelemetryDashboard.tsx(47,24): error TS2551: Property 'event_name' does not exist on type 'TelemetryEvent'. Did you mean 'eventName'?
+src/features/admin/components/TelemetryDashboard.tsx(51,30): error TS2551: Property 'created_at' does not exist on type 'TelemetryEvent'. Did you mean 'createdAt'?
+src/features/admin/components/TelemetryDashboard.tsx(53,21): error TS2551: Property 'event_name' does not exist on type 'TelemetryEvent'. Did you mean 'eventName'?
+src/features/admin/components/TelemetryDashboard.tsx(60,57): error TS2551: Property 'event_name' does not exist on type 'TelemetryEvent'. Did you mean 'eventName'?
+src/features/admin/components/TelemetryDashboard.tsx(60,88): error TS2551: Property 'event_type' does not exist on type 'TelemetryEvent'. Did you mean 'eventType'?
+src/features/admin/components/TelemetryDashboard.tsx(61,53): error TS2551: Property 'event_name' does not exist on type 'TelemetryEvent'. Did you mean 'eventName'?
+src/features/admin/components/TelemetryDashboard.tsx(61,86): error TS2551: Property 'event_type' does not exist on type 'TelemetryEvent'. Did you mean 'eventType'?
+src/features/admin/components/TelemetryDashboard.tsx(62,57): error TS2551: Property 'event_name' does not exist on type 'TelemetryEvent'. Did you mean 'eventName'?
+src/features/admin/components/TelemetryDashboard.tsx(62,88): error TS2551: Property 'event_type' does not exist on type 'TelemetryEvent'. Did you mean 'eventType'?
+src/features/admin/components/TelemetryDashboard.tsx(63,54): error TS2551: Property 'event_type' does not exist on type 'TelemetryEvent'. Did you mean 'eventType'?
+src/features/admin/components/TelemetryDashboard.tsx(63,114): error TS2551: Property 'event_name' does not exist on type 'TelemetryEvent'. Did you mean 'eventName'?
+src/features/admin/components/TelemetryDashboard.tsx(67,56): error TS2551: Property 'event_name' does not exist on type 'TelemetryEvent'. Did you mean 'eventName'?
+src/features/admin/components/TelemetryDashboard.tsx(68,57): error TS2551: Property 'event_name' does not exist on type 'TelemetryEvent'. Did you mean 'eventName'?
+src/features/admin/components/TelemetryDashboard.tsx(69,53): error TS2551: Property 'event_name' does not exist on type 'TelemetryEvent'. Did you mean 'eventName'?
+src/features/admin/components/TelemetryDashboard.tsx(70,57): error TS2551: Property 'event_name' does not exist on type 'TelemetryEvent'. Did you mean 'eventName'?
+src/features/admin/components/TelemetryDashboard.tsx(109,49): error TS2551: Property 'event_name' does not exist on type 'TelemetryEvent'. Did you mean 'eventName'?
+src/features/case-management/components/CaseHeader.tsx(25,47): error TS2554: Expected 3 arguments, but got 2.
+src/features/chat/components/ChatWindow.tsx(65,25): error TS2345: Argument of type '(prev: Message[]) => ({ id: any; conversation_id: any; sender_id: any; content: any; created_at: any; } | undefined)[]' is not assignable to parameter of type 'SetStateAction<Message[]>'.
+  Type '(prev: Message[]) => ({ id: any; conversation_id: any; sender_id: any; content: any; created_at: any; } | undefined)[]' is not assignable to type '(prevState: Message[]) => Message[]'.
+    Type '({ id: any; conversation_id: any; sender_id: any; content: any; created_at: any; } | undefined)[]' is not assignable to type 'Message[]'.
+      Type '{ id: any; conversation_id: any; sender_id: any; content: any; created_at: any; } | undefined' is not assignable to type 'Message'.
+        Type 'undefined' is not assignable to type 'Message'.
+src/features/chat/components/ChatWindow.tsx(66,45): error TS18048: 'res.data' is possibly 'undefined'.
+src/features/chat/components/ConversationList.tsx(22,48): error TS2554: Expected 0 arguments, but got 1.
+src/features/chat/components/ConversationList.tsx(50,65): error TS2339: Property 'user_id' does not exist on type '{ id: string; username: string; }'.
+src/features/dashboard/components/NotificationCenter.tsx(18,102): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/features/documents/HIPAAFormPage.tsx(21,39): error TS2304: Cannot find name 'HIPAAAuthorizationData'.
+src/features/documents/HIPAAFormPage.tsx(42,17): error TS2322: Type '{ clientData: { firstName?: string | undefined; lastName?: string | undefined; dateOfBirth?: string | undefined; address?: string | undefined; } | undefined; onSubmit: (data: HIPAAAuthorizationData) => Promise<void>; isSubmitting: boolean; }' is not assignable to type 'IntrinsicAttributes & Props'.
+  Property 'isSubmitting' does not exist on type 'IntrinsicAttributes & Props'.
+src/features/intake/components/ConsentWorkflow.tsx(7,85): error TS2305: Module '"@/app/(app)/actions/consentActions"' has no exported member 'ConsentDocument'.
+src/features/intake/components/ConsentWorkflow.tsx(124,65): error TS7006: Parameter 'sig' implicitly has an 'any' type.
+src/features/reporting/components/OutcomesDashboard.tsx(19,37): error TS2339: Property 'getRiskProfiling' does not exist on type 'DashboardRepository'.
+src/features/supervisor/components/InviteMemberDialog.tsx(34,17): error TS2322: Type '"admin" | "supervisor" | "specialist" | "intake_worker"' is not assignable to type 'Role'.
+  Type '"specialist"' is not assignable to type 'Role'.
+src/features/supervisor/components/PipelineVelocity.tsx(45,33): error TS2322: Type '(value: number | undefined) => [string, string]' is not assignable to type 'Formatter<ValueType, NameType> & ((value: ValueType, name: NameType, item: TooltipPayloadEntry, index: number, payload: TooltipPayload) => ReactNode | [...])'.
+  Type '(value: number | undefined) => [string, string]' is not assignable to type 'Formatter<ValueType, NameType>'.
+    Types of parameters 'value' and 'value' are incompatible.
+      Type 'ValueType | undefined' is not assignable to type 'number | undefined'.
+        Type 'string' is not assignable to type 'number'.
+src/features/supervisor/components/TeamManagementWidget.tsx(59,54): error TS2345: Argument of type '"admin" | "supervisor" | "specialist" | "intake_worker"' is not assignable to parameter of type 'Role'.
+  Type '"specialist"' is not assignable to type 'Role'.
+src/lib/ai/EmbeddingService.ts(1,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/lib/auth/guard.ts(10,10): error TS2459: Module '"./authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/lib/portal-activity.ts(43,14): error TS2339: Property 'from' does not exist on type '{ session: Session | null; user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } | undefined; db: any; storage: StorageClient; auth: { ...; }; } | { ...; }'.
+  Property 'from' does not exist on type '{ session: Session | null; user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } | undefined; db: any; storage: StorageClient; auth: { ...; }; }'.
+src/lib/portal-activity.ts(78,10): error TS2339: Property 'from' does not exist on type '{ session: Session | null; user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } | undefined; db: any; storage: StorageClient; auth: { ...; }; }'.
+src/lib/portal-activity.ts(102,10): error TS2339: Property 'from' does not exist on type '{ session: Session | null; user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } | undefined; db: any; storage: StorageClient; auth: { ...; }; }'.
+src/lib/rateLimit.ts(1,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/lib/supabase/admin.ts(8,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/lib/supabase/server.ts(7,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/repositories/BaseRepository.ts(9,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/repositories/ClientRepository.ts(59,62): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/repositories/ComparabilityRepository.ts(55,47): error TS7006: Parameter 'm' implicitly has an 'any' type.
+src/repositories/DashboardRepository.ts(46,25): error TS7006: Parameter 'log' implicitly has an 'any' type.
+src/repositories/DashboardRepository.ts(84,25): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/repositories/DashboardRepository.ts(108,26): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/repositories/DashboardRepository.ts(123,25): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/repositories/DocumentRepository.ts(1,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/repositories/EvidenceRepository.ts(36,29): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/repositories/EvidenceRepository.ts(58,29): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/repositories/ModernizedIntakeRepository.ts(1,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/repositories/ReportRepository.ts(31,25): error TS7006: Parameter 'intake' implicitly has an 'any' type.
+src/repositories/ReportRepository.ts(79,22): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/repositories/ReportRepository.ts(103,33): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/repositories/ReportRepository.ts(110,36): error TS7006: Parameter 'd' implicitly has an 'any' type.
+src/repositories/ReportRepository.ts(111,38): error TS7006: Parameter 'd' implicitly has an 'any' type.
+src/repositories/ReportRepository.ts(124,32): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/repositories/ReportRepository.ts(130,35): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/repositories/ReportRepository.ts(130,38): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/repositories/ReportRepository.ts(143,22): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/repositories/ResumeRepository.ts(34,50): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/repositories/ResumeRepository.ts(158,36): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/repositories/SimulationRepository.ts(2,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/services/auditService.ts(1,32): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/services/CaseService.ts(1,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/services/CommunicationService.ts(1,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/services/DashboardService.ts(7,32): error TS2554: Expected 1 arguments, but got 0.
+src/services/DashboardService.ts(19,32): error TS2554: Expected 1 arguments, but got 0.
+src/services/DashboardService.ts(23,50): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/services/DocumentService.ts(23,13): error TS2561: Object literal may only specify known properties, but 'client_id' does not exist in type '{ clientId: string; name: string; url: string; type: string; size?: number | undefined; uploadedById?: string | undefined; }'. Did you mean to write 'clientId'?
+src/services/DocumentService.ts(36,64): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/services/NotificationService.ts(1,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/services/ResourceService.ts(23,14): error TS2339: Property 'from' does not exist on type '{ session: Session | null; user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } | undefined; db: any; storage: StorageClient; auth: { ...; }; }'.
+src/services/ResourceService.ts(89,14): error TS2339: Property 'from' does not exist on type '{ session: Session | null; user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } | undefined; db: any; storage: StorageClient; auth: { ...; }; }'.
+src/services/ResourceService.ts(100,48): error TS2339: Property 'from' does not exist on type '{ session: Session | null; user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } | undefined; db: any; storage: StorageClient; auth: { ...; }; }'.
+src/services/ResumeMapperService.ts(1,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.
+src/services/SupervisorService.ts(1,10): error TS2459: Module '"@/lib/auth/authHelpersServer"' declares 'prisma' locally, but it is not exported.

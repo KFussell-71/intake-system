@@ -1,0 +1,1059 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  staff
+  supervisor
+  admin
+  client
+}
+
+enum AppointmentStatus {
+  scheduled
+  rescheduled
+  completed
+  cancelled
+  no_show
+}
+
+enum AppointmentType {
+  intake
+  follow_up
+  crisis
+  service_planning
+  other
+}
+
+model Profile {
+  id        String   @id @default(uuid()) @db.Uuid
+  username  String   @unique
+  role      Role     @default(staff)
+  firstName String?  @map("first_name")
+  lastName  String?  @map("last_name")
+  fullName  String?  @map("full_name")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  clientsCreated     Client[]                  @relation("CreatedClients")
+  clientsAssigned    Client[]                  @relation("AssignedClients")
+  intakesPrepared    Intake[]                  @relation("IntakePreparer")
+  intakesUpdated     Intake[]                  @relation("IntakeUpdater")
+  documentsUploaded  Document[]                @relation("DocumentUploader")
+  appointments       Appointment[]             @relation("StaffAppointments")
+  availability       AvailabilityBlock[]
+  portalInvites      PortalAccess[]            @relation("PortalInviter")
+  auditLogs          AuditLog[]
+  notifications      Notification[]
+  reportReviews      ReportReview[]
+  followUpsCreated   FollowUp[]
+  reportVersions     ReportVersion[]           @relation("ReportAuthor")
+  caseNotes          CaseNote[]
+  chatParticipations ConversationParticipant[]
+  sentMessages       Message[]
+  readMessages       MessageReadStatus[]
+  resumeActions      ResumeGenerationLog[]
+  clinicalNotes      ClinicalNote[]
+  sentCommunications CommunicationLog[]
+  serviceLogs        ServiceLog[]
+  cases              Case[]
+
+  @@map("profiles")
+}
+
+model Client {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  phone       String?
+  email       String?
+  address     String?
+  ssnLastFour String?  @map("ssn_last_four") @db.Char(4)
+  status      String   @default("active") // active, inactive, pending, closed
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  createdById String?  @map("created_by") @db.Uuid
+  createdBy   Profile? @relation("CreatedClients", fields: [createdById], references: [id])
+
+  assignedToId String?  @map("assigned_to") @db.Uuid
+  assignedTo   Profile? @relation("AssignedClients", fields: [assignedToId], references: [id])
+
+  intakes            Intake[]
+  documents          Document[]
+  appointments       Appointment[]
+  trackingMilestones TrackingMilestone[]
+  jobPlacements      JobPlacement[]
+  followUps          FollowUp[]
+  employmentHistory  EmploymentHistory[]
+  ispGoals           IspGoal[]
+  supportiveServices SupportiveService[]
+  ispOutcomes        IspOutcome[]
+  reportReviews      ReportReview[]
+  reportVersions     ReportVersion[]
+  portalAccess       PortalAccess?
+  notifications      Notification[]
+  observations       Observation[]
+  intakeBarriers     IntakeBarrier[]
+  consentDocuments   ConsentDocument[]
+  consentSignatures  ConsentSignature[]
+  tasks              IntakeTask[]
+  documentRequests   DocumentRequest[]
+  resumes            ClientResume[]
+  cases              Case[]
+  caseNotes          CaseNote[]
+  clinicalNotes      ClinicalNote[]
+  communications     CommunicationLog[]
+  portalActivities   PortalActivity[]
+
+  @@map("clients")
+}
+
+model Intake {
+  id             String    @id @default(uuid()) @db.Uuid
+  client         Client    @relation(fields: [clientId], references: [id])
+  clientId       String    @map("client_id") @db.Uuid
+  reportDate     DateTime  @map("report_date")
+  preparedBy     Profile?  @relation("IntakePreparer", fields: [preparedById], references: [id])
+  preparedById   String?   @map("prepared_by") @db.Uuid
+  completionDate DateTime? @map("completion_date")
+  data           Json      @default("{}")
+  status         String    @default("draft") // draft, awaiting_review, approved, locked
+  version        Int       @default(1)
+  submittedAt    DateTime? @map("submitted_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  updatedById    String?   @map("updated_by") @db.Uuid
+  updatedBy      Profile?  @relation("IntakeUpdater", fields: [updatedById], references: [id])
+
+  sections          IntakeSection[]
+  events            IntakeEvent[]
+  observations      Observation[]
+  barriers          IntakeBarrier[]
+  consentDocuments  ConsentDocument[]
+  consentSignatures ConsentSignature[]
+  tasks             IntakeTask[]
+  milestones        TrackingMilestone[]
+  employment        IntakeEmployment?
+  resumes           ClientResume[]
+  identity          IntakeIdentity?
+  statement         ClientStatement?
+  assessment        IntakeAssessment?
+
+  @@map("intakes")
+}
+
+model ClientStatement {
+  id               String   @id @default(uuid()) @db.Uuid
+  intakeId         String   @unique @map("intake_id") @db.Uuid
+  intake           Intake   @relation(fields: [intakeId], references: [id])
+  presentingIssue  String?  @map("presenting_issue")
+  goalsAndObjectives String?  @map("goals_and_objectives")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  @@map("client_statements")
+}
+
+model IntakeAssessment {
+  id                   String   @id @default(uuid()) @db.Uuid
+  intakeId             String   @unique @map("intake_id") @db.Uuid
+  intake               Intake   @relation(fields: [intakeId], references: [id])
+  eligibilityRationale String?  @map("eligibility_rationale")
+  clinicalNarrative    String?  @map("clinical_narrative")
+  createdAt            DateTime @default(now()) @map("created_at")
+
+  @@map("intake_assessments")
+}
+
+
+model IntakeEmployment {
+  id                       String    @id @default(uuid()) @db.Uuid
+  intake                   Intake    @relation(fields: [intakeId], references: [id])
+  intakeId                 String    @unique @map("intake_id") @db.Uuid
+  employmentGoals          String?   @map("employment_goals")
+  educationGoals           String?   @map("education_goals")
+  housingNeeds             String?   @map("housing_needs")
+  educationLevel           String?   @map("education_level")
+  employmentType           String?   @map("employment_type")
+  desiredJobTitles         String?   @map("desired_job_titles")
+  targetPay                String?   @map("target_pay")
+  workExperienceSummary    String?   @map("work_experience_summary")
+  transferableSkills       String[]  @map("transferable_skills")
+  transferableSkillsOther  String?   @map("transferable_skills_other")
+  industryPreferences      String[]  @map("industry_preferences")
+  industryOther            String?   @map("industry_other")
+  resumeComplete           Boolean   @default(false) @map("resume_complete")
+  interviewSkills          Boolean   @default(false) @map("interview_skills")
+  jobSearchAssistance      Boolean   @default(false) @map("job_search_assistance")
+  transportationAssistance Boolean   @default(false) @map("transportation_assistance")
+  childcareAssistance      Boolean   @default(false) @map("childcare_assistance")
+  housingAssistance        Boolean   @default(false) @map("housing_assistance")
+  placementDate            DateTime? @map("placement_date")
+  companyName              String?   @map("company_name")
+  jobTitle                 String?   @map("job_title")
+  wage                     String?
+  hoursPerWeek             String?   @map("hours_per_week")
+  supervisorName           String?   @map("supervisor_name")
+  supervisorPhone          String?   @map("supervisor_phone")
+  probationEnds            DateTime? @map("probation_ends")
+  benefits                 String?
+  transportationType       String?   @map("transportation_type")
+  commuteTime              String?   @map("commute_time")
+  class1Date               DateTime? @map("class1_date")
+  class2Date               DateTime? @map("class2_date")
+  class3Date               DateTime? @map("class3_date")
+  class4Date               DateTime? @map("class4_date")
+  masterAppComplete        Boolean   @default(false) @map("master_app_complete")
+  jobSearchCommitmentCount Int?      @map("job_search_commitment_count")
+  jobSearchCommitments     Json?     @map("job_search_commitments")
+  ispGoals                 Json?     @map("isp_goals")
+  updatedBy                String?   @map("updated_by") @db.Uuid
+  updatedAt                DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  @@map("intake_employment")
+}
+
+model Document {
+  id           String            @id @default(uuid()) @db.Uuid
+  client       Client            @relation(fields: [clientId], references: [id])
+  clientId     String            @map("client_id") @db.Uuid
+  name         String
+  url          String
+  type         String
+  size         Int?
+  uploadedAt   DateTime          @default(now()) @map("uploaded_at")
+  uploadedBy   Profile?          @relation("DocumentUploader", fields: [uploadedById], references: [id])
+  uploadedById String?           @map("uploaded_by") @db.Uuid
+  requests     DocumentRequest[]
+
+  @@map("documents")
+}
+
+model Appointment {
+  id        String            @id @default(uuid()) @db.Uuid
+  client    Client            @relation(fields: [clientId], references: [id])
+  clientId  String            @map("client_id") @db.Uuid
+  staff     Profile           @relation("StaffAppointments", fields: [staffId], references: [id])
+  staffId   String            @map("staff_id") @db.Uuid
+  title     String
+  startTime DateTime          @map("start_time")
+  endTime   DateTime          @map("end_time")
+  type      AppointmentType
+  status    AppointmentStatus @default(scheduled)
+  location  String?
+  notes     String?
+  createdAt DateTime          @default(now()) @map("created_at")
+  updatedAt DateTime          @default(now()) @updatedAt @map("updated_at")
+
+  @@map("appointments")
+}
+
+model AvailabilityBlock {
+  id             String   @id @default(uuid()) @db.Uuid
+  user           Profile  @relation(fields: [userId], references: [id])
+  userId         String   @map("user_id") @db.Uuid
+  startTime      DateTime @map("start_time")
+  endTime        DateTime @map("end_time")
+  title          String   @default("Unavailable")
+  isRecurring    Boolean  @default(false) @map("is_recurring")
+  recurrenceRule String?  @map("recurrence_rule")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@map("availability_blocks")
+}
+
+model PortalAccess {
+  id          String           @id @map("id") @db.Uuid
+  client      Client           @relation(fields: [clientId], references: [id])
+  clientId    String           @unique @map("client_id") @db.Uuid
+  isActive    Boolean          @default(true) @map("is_active")
+  expiresAt   DateTime         @map("expires_at")
+  revokedAt   DateTime?        @map("revoked_at")
+  invitedBy   Profile?         @relation("PortalInviter", fields: [invitedById], references: [id])
+  invitedById String?          @map("invited_by") @db.Uuid
+  activities  PortalActivity[]
+  createdAt   DateTime         @default(now()) @map("created_at")
+
+  @@map("client_users")
+}
+
+model PortalActivity {
+  id             String       @id @default(uuid()) @db.Uuid
+  portalAccess   PortalAccess @relation(fields: [portalAccessId], references: [id])
+  portalAccessId String       @map("client_user_id") @db.Uuid
+  clientId       String?      @map("client_id") @db.Uuid
+  client         Client?      @relation(fields: [clientId], references: [id])
+  userId         String?      @map("user_id") @db.Uuid
+  action         String
+  details        Json?        @map("metadata")
+  ipAddress      String?      @map("ip_address")
+  userAgent      String?      @map("user_agent")
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  @@map("portal_activity")
+}
+
+
+model AuditLog {
+  id           String   @id @default(uuid()) @db.Uuid
+  user         Profile? @relation(fields: [userId], references: [id])
+  userId       String?  @map("user_id") @db.Uuid
+  action       String
+  resourceType String   @map("resource_type")
+  resourceId   String?  @map("resource_id")
+  metadata     Json     @default("{}")
+  ipAddress    String?  @map("ip_address")
+  userAgent    String?  @map("user_agent")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("audit_logs")
+}
+
+model IntakeSection {
+  id            String   @id @default(uuid()) @db.Uuid
+  intake        Intake   @relation(fields: [intakeId], references: [id])
+  intakeId      String   @map("intake_id") @db.Uuid
+  sectionName   String   @map("section_name")
+  status        String   @default("pending") // pending, in_progress, completed
+  lastUpdatedBy String?  @map("last_updated_by") @db.Uuid
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@unique([intakeId, sectionName])
+  @@map("intake_sections")
+}
+
+model IntakeEvent {
+  id        String   @id @default(uuid()) @db.Uuid
+  intake    Intake   @relation(fields: [intakeId], references: [id])
+  intakeId  String   @map("intake_id") @db.Uuid
+  eventType String   @map("event_type")
+  fieldPath String?  @map("field_path")
+  oldValue  String?  @map("old_value")
+  newValue  String?  @map("new_value")
+  changedBy String?  @map("changed_by") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("intake_events")
+}
+
+model TrackingMilestone {
+  id             String    @id @default(uuid()) @db.Uuid
+  client         Client    @relation(fields: [clientId], references: [id])
+  clientId       String    @map("client_id") @db.Uuid
+  intake         Intake?   @relation(fields: [intakeId], references: [id])
+  intakeId       String?   @map("intake_id") @db.Uuid
+  milestoneName  String    @map("milestone_name")
+  description    String?
+  stepOrder      Int       @default(0) @map("step_order")
+  completionDate DateTime? @map("completion_date")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  @@map("tracking_milestones")
+}
+
+model DocumentRequest {
+  id          String    @id @default(uuid()) @db.Uuid
+  client      Client    @relation(fields: [clientId], references: [id])
+  clientId    String    @map("client_id") @db.Uuid
+  name        String
+  description String?
+  status      String    @default("pending")
+  documentId  String?   @map("document_id") @db.Uuid
+  document    Document? @relation(fields: [documentId], references: [id])
+  requestedAt DateTime  @default(now()) @map("requested_at")
+
+  @@map("document_requests")
+}
+
+model PublicMetricDefinition {
+  id          String           @id @default(uuid()) @db.Uuid
+  code        String           @unique
+  name        String
+  description String?
+  displayType String           @map("display_type") // counter, chart, distribution
+  active      Boolean          @default(true)
+  createdAt   DateTime         @default(now()) @map("created_at")
+  snapshots   PublicSnapshot[]
+
+  @@map("public_metric_definitions")
+}
+
+model PublicSnapshot {
+  id          String                 @id @default(uuid()) @db.Uuid
+  metric      PublicMetricDefinition @relation(fields: [metricCode], references: [code])
+  metricCode  String                 @map("metric_code")
+  value       Json
+  periodStart DateTime               @map("period_start")
+  periodEnd   DateTime               @map("period_end")
+  publishedAt DateTime               @default(now()) @map("published_at")
+  publishedBy String?                @map("published_by") @db.Uuid
+
+  @@map("public_snapshots")
+}
+
+model IntakeTask {
+  id          String    @id @default(uuid()) @db.Uuid
+  intake      Intake    @relation(fields: [intakeId], references: [id])
+  intakeId    String    @map("intake_id") @db.Uuid
+  client      Client    @relation(fields: [clientId], references: [id])
+  clientId    String    @map("client_id") @db.Uuid
+  title       String
+  description String?
+  taskType    String    @map("task_type")
+  status      String    @default("pending")
+  priority    String    @default("medium")
+  assignedTo  String?   @map("assigned_to") @db.Uuid
+  dueDate     DateTime? @map("due_date")
+  completedAt DateTime? @map("completed_at")
+  completedBy String?   @map("completed_by") @db.Uuid
+  createdAt   DateTime  @default(now()) @map("created_at")
+  createdById String?   @map("created_by") @db.Uuid
+
+  @@map("intake_tasks")
+}
+
+model AVResource {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  address   String
+  phone     String
+  notes     String
+  triggers  String[]
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("av_resources")
+}
+
+model Observation {
+  id           String   @id @default(uuid()) @db.Uuid
+  intake       Intake   @relation(fields: [intakeId], references: [id])
+  intakeId     String   @map("intake_id") @db.Uuid
+  client       Client   @relation(fields: [clientId], references: [id])
+  clientId     String   @map("client_id") @db.Uuid
+  domain       String
+  value        String
+  source       String // client, counselor, document
+  confidence   String?
+  authorUserId String?  @map("author_user_id") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("observations")
+}
+
+model Barrier {
+  id             Int             @id @default(autoincrement())
+  category       String
+  name           String
+  description    String?
+  active         Boolean         @default(true)
+  intakeBarriers IntakeBarrier[]
+
+  @@map("barriers")
+}
+
+model IntakeBarrier {
+  id        String   @id @default(uuid()) @db.Uuid
+  intake    Intake   @relation(fields: [intakeId], references: [id])
+  intakeId  String   @map("intake_id") @db.Uuid
+  client    Client   @relation(fields: [clientId], references: [id])
+  clientId  String   @map("client_id") @db.Uuid
+  barrier   Barrier  @relation(fields: [barrierId], references: [id])
+  barrierId Int      @map("barrier_id")
+  source    String
+  notes     String?
+  addedAt   DateTime @default(now()) @map("added_at")
+
+  @@map("intake_barriers")
+}
+
+model ConsentDocument {
+  id              String             @id @default(uuid()) @db.Uuid
+  intake          Intake             @relation(fields: [intakeId], references: [id])
+  intakeId        String             @map("intake_id") @db.Uuid
+  client          Client             @relation(fields: [clientId], references: [id])
+  clientId        String             @map("client_id") @db.Uuid
+  type            String
+  templateVersion String?            @map("template_version")
+  scopeText       String?            @map("scope_text")
+  content         String?
+  expiresAt       DateTime?          @map("expires_at")
+  locked          Boolean            @default(false)
+  createdAt       DateTime           @default(now()) @map("created_at")
+  createdBy       String?            @map("created_by") @db.Uuid
+  signatures      ConsentSignature[]
+
+  @@map("consent_documents")
+}
+
+model ConsentSignature {
+  id                String          @id @default(uuid()) @db.Uuid
+  consentDocument   ConsentDocument @relation(fields: [consentDocumentId], references: [id])
+  consentDocumentId String          @map("consent_document_id") @db.Uuid
+  intake            Intake          @relation(fields: [intakeId], references: [id])
+  intakeId          String          @map("intake_id") @db.Uuid
+  client            Client?         @relation(fields: [clientId], references: [id])
+  clientId          String?         @map("client_id") @db.Uuid
+  signerName        String          @map("signer_name")
+  signerRole        String          @map("signer_role")
+  signatureData     String?         @map("signature_data")
+  method            String?         @default("digital_pad")
+  documentHash      String?         @map("document_hash")
+  ipAddress         String?         @map("ip_address")
+  signedAt          DateTime        @default(now()) @map("signed_at")
+
+  @@map("consent_signatures")
+}
+
+model RateLimit {
+  id            String   @id @default(uuid()) @db.Uuid
+  identifier    String
+  resource      String
+  count         Int      @default(1)
+  lastRequestAt DateTime @default(now()) @map("last_request_at")
+  resetAt       DateTime @map("reset_at")
+
+  @@unique([identifier, resource])
+  @@map("rate_limits")
+}
+
+model ClinicalMemory {
+  id        String                      @id @default(uuid()) @db.Uuid
+  content   String
+  metadata  Json                        @default("{}")
+  embedding Unsupported("vector(768)")?
+  createdAt DateTime                    @default(now()) @map("created_at")
+  updatedAt DateTime                    @updatedAt @map("updated_at")
+
+  @@map("clinical_memory")
+}
+
+model JobPlacement {
+  id            String   @id @default(uuid()) @db.Uuid
+  client        Client   @relation(fields: [clientId], references: [id])
+  clientId      String   @map("client_id") @db.Uuid
+  company       String
+  wage          String?
+  title         String?
+  placementDate DateTime @map("placement_date")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("job_placements")
+}
+
+model EmploymentHistory {
+  id          String    @id @default(uuid()) @db.Uuid
+  client      Client    @relation(fields: [clientId], references: [id])
+  clientId    String    @map("client_id") @db.Uuid
+  jobTitle    String    @map("job_title")
+  employer    String
+  startDate   DateTime? @map("start_date")
+  endDate     DateTime? @map("end_date")
+  notes       String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  createdById String?   @map("created_by") @db.Uuid
+
+  @@map("employment_history")
+}
+
+model IspGoal {
+  id          String    @id @default(uuid()) @db.Uuid
+  client      Client    @relation(fields: [clientId], references: [id])
+  clientId    String    @map("client_id") @db.Uuid
+  goalType    String    @map("goal_type")
+  targetDate  DateTime? @map("target_date")
+  status      String    @default("pending")
+  notes       String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  createdById String?   @map("created_by") @db.Uuid
+
+  @@map("isp_goals")
+}
+
+model SupportiveService {
+  id          String   @id @default(uuid()) @db.Uuid
+  client      Client   @relation(fields: [clientId], references: [id])
+  clientId    String   @map("client_id") @db.Uuid
+  serviceType String   @map("service_type")
+  description String?
+  provider    String?
+  status      String   @default("requested")
+  cost        Decimal? @db.Decimal(10, 2)
+  createdAt   DateTime @default(now()) @map("created_at")
+  createdById String?  @map("created_by") @db.Uuid
+
+  @@map("supportive_services")
+}
+
+model IspOutcome {
+  id            String    @id @default(uuid()) @db.Uuid
+  client        Client    @relation(fields: [clientId], references: [id])
+  clientId      String    @map("client_id") @db.Uuid
+  goalType      String?   @map("goal_type")
+  targetDate    DateTime? @map("target_date")
+  completedDate DateTime? @map("completed_date")
+  outcomeStatus String?   @map("outcome_status")
+  notes         String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  @@map("isp_outcomes")
+}
+
+model ReportReview {
+  id          String    @id @default(uuid()) @db.Uuid
+  client      Client    @relation(fields: [clientId], references: [id])
+  clientId    String    @map("client_id") @db.Uuid
+  reviewer    Profile?  @relation(fields: [reviewerId], references: [id])
+  reviewerId  String?   @map("reviewer_id") @db.Uuid
+  status      String    @default("pending")
+  reviewNotes String?   @map("review_notes")
+  reviewedAt  DateTime? @map("reviewed_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("report_reviews")
+}
+
+model ReportVersion {
+  id              String   @id @default(uuid()) @db.Uuid
+  client          Client   @relation(fields: [clientId], references: [id])
+  clientId        String   @map("client_id") @db.Uuid
+  contentMarkdown String   @map("content_markdown")
+  versionNumber   Int      @default(1) @map("version_number")
+  createdAt       DateTime @default(now()) @map("created_at")
+  createdBy       Profile? @relation("ReportAuthor", fields: [createdById], references: [id])
+  createdById     String?  @map("created_by") @db.Uuid
+
+  @@map("report_versions")
+}
+
+model FollowUp {
+  id            String   @id @default(uuid()) @db.Uuid
+  client        Client   @relation(fields: [clientId], references: [id])
+  clientId      String   @map("client_id") @db.Uuid
+  case          Case?    @relation(fields: [caseId], references: [id])
+  caseId        String?  @map("case_id") @db.Uuid
+  scheduledDate DateTime @default(now()) @map("scheduled_date")
+  type          String   @default("follow-up")
+  method        String?  // phone, in-person
+  notes         String?
+  status        String   @default("pending") // pending, completed
+  createdAt     DateTime @default(now()) @map("created_at")
+  createdBy     Profile? @relation(fields: [createdById], references: [id])
+  createdById   String?  @map("created_by") @db.Uuid
+
+  @@map("follow_ups")
+}
+
+
+model Notification {
+  id        String   @id @default(uuid()) @db.Uuid
+  client    Client   @relation(fields: [clientId], references: [id])
+  clientId  String   @map("client_id") @db.Uuid
+  staff     Profile? @relation(fields: [staffId], references: [id])
+  staffId   String?  @map("staff_id") @db.Uuid
+  type      String
+  message   String
+  isRead    Boolean  @default(false) @map("is_read")
+  link      String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("notifications")
+}
+
+model SystemMemory {
+  id          String   @id @default(uuid()) @db.Uuid
+  actionType  String   @map("action_type")
+  description String
+  metadata    Json     @default("{}")
+  createdAt   DateTime @default(now()) @map("created_at")
+  createdById String?  @map("created_by") @db.Uuid
+
+  @@map("system_memory")
+}
+
+model AccreditationStandard {
+  id          String   @id @default(uuid()) @db.Uuid
+  code        String   @unique
+  name        String
+  description String?
+  category    String
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("accreditation_standards")
+}
+
+model EvidencePacket {
+  id          String   @id @default(uuid()) @db.Uuid
+  title       String
+  status      String   @default("generating") // generating, complete, failed
+  generatedAt DateTime @default(now()) @map("generated_at")
+  content     Json?
+
+  @@map("evidence_packets")
+}
+
+model ComplianceScan {
+  id        String   @id @default(uuid()) @db.Uuid
+  type      String
+  status    String   @default("pending") // pending, compliant, non_compliant
+  score     Decimal? @db.Decimal(5, 2)
+  scannedAt DateTime @default(now()) @map("scanned_at")
+  findings  Json?
+
+  @@map("compliance_scans")
+}
+
+model StaffingLoadModel {
+  id                   String   @id @default(uuid()) @db.Uuid
+  unitName             String   @map("unit_name")
+  baseMinutesPerCase   Int      @map("base_minutes_per_case")
+  complexityMultiplier Decimal  @map("complexity_multiplier") @db.Decimal(10, 2)
+  adminOverheadPercent Decimal  @map("admin_overhead_percent") @db.Decimal(5, 2)
+  effectiveDate        DateTime @default(now()) @map("effective_date")
+  active               Boolean  @default(true)
+  createdAt            DateTime @default(now()) @map("created_at")
+
+  @@map("staffing_load_models")
+}
+
+model Case {
+  id           String     @id @default(uuid()) @db.Uuid
+  clientId     String     @map("client_id") @db.Uuid
+  client       Client     @relation(fields: [clientId], references: [id])
+  assignedToId String?    @map("assigned_to") @db.Uuid
+  assignedTo   Profile?   @relation(fields: [assignedToId], references: [id])
+  status       String     @default("active")
+  stage        String?
+  startDate    DateTime?  @map("start_date")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  notes     CaseNote[]
+  communications CommunicationLog[]
+  outcomeRecords OutcomeRecord[]
+  referrals      Referral[]
+  serviceLogs    ServiceLog[]
+  followUps      FollowUp[]
+
+  @@map("cases")
+}
+
+model ServiceLog {
+  id              String   @id @default(uuid()) @db.Uuid
+  caseId          String   @map("case_id") @db.Uuid
+  case            Case     @relation(fields: [caseId], references: [id])
+  serviceType     String   @map("service_type")
+  notes           String?
+  durationMinutes Int?     @map("duration_minutes")
+  performedAt     DateTime @default(now()) @map("performed_at")
+  providerId      String?  @map("provider_id") @db.Uuid
+  provider        Profile? @relation(fields: [providerId], references: [id])
+
+  @@map("service_logs")
+}
+
+
+
+
+model ServiceProvider {
+  id           String     @id @default(uuid()) @db.Uuid
+  name         String
+  category     String
+  description  String
+  contactEmail String?    @map("contact_email")
+  contactPhone String?    @map("contact_phone")
+  address      String?
+  website      String?
+  status       String     @default("active") // active, inactive, full
+  capacity     Int?
+  createdAt    DateTime   @default(now()) @map("created_at")
+  referrals    Referral[]
+
+  @@map("service_providers")
+}
+
+model Referral {
+  id           String          @id @default(uuid()) @db.Uuid
+  caseId       String          @map("case_id") @db.Uuid
+  case         Case            @relation(fields: [caseId], references: [id])
+  providerId   String          @map("provider_id") @db.Uuid
+  provider     ServiceProvider @relation(fields: [providerId], references: [id])
+  status       String          @default("pending") // pending, accepted, rejected, completed, cancelled
+  referralDate DateTime        @default(now()) @map("referral_date")
+  outcomeNotes String?         @map("outcome_notes")
+  createdAt    DateTime        @default(now()) @map("created_at")
+
+  @@map("referrals")
+}
+
+
+model CaseNote {
+  id               String   @id @default(uuid()) @db.Uuid
+  clientId         String   @map("client_id") @db.Uuid
+  client           Client   @relation(fields: [clientId], references: [id])
+  caseId           String?  @map("case_id") @db.Uuid
+  case             Case?    @relation(fields: [caseId], references: [id])
+  authorId         String   @map("author_id") @db.Uuid
+  author           Profile  @relation(fields: [authorId], references: [id])
+  content          String
+  type             String   @default("general")
+  isDraft          Boolean  @default(false) @map("is_draft")
+  sentimentLabel   String?  @map("sentiment_label")
+  sentimentScore   Decimal? @map("sentiment_score") @db.Decimal(5, 2)
+  detectedBarriers String[] @map("detected_barriers")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@map("case_notes")
+}
+
+model Conversation {
+  id            String                    @id @default(uuid()) @db.Uuid
+  lastMessageAt DateTime                  @default(now()) @map("last_message_at")
+  createdAt     DateTime                  @default(now()) @map("created_at")
+  participants  ConversationParticipant[]
+  messages      Message[]
+
+  @@map("conversations")
+}
+
+model ConversationParticipant {
+  id             String       @id @default(uuid()) @db.Uuid
+  conversationId String       @map("conversation_id") @db.Uuid
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  userId         String       @map("user_id") @db.Uuid
+  user           Profile      @relation(fields: [userId], references: [id])
+  joinedAt       DateTime     @default(now()) @map("joined_at")
+
+  @@unique([conversationId, userId])
+  @@map("conversation_participants")
+}
+
+model Message {
+  id             String              @id @default(uuid()) @db.Uuid
+  conversationId String              @map("conversation_id") @db.Uuid
+  conversation   Conversation        @relation(fields: [conversationId], references: [id])
+  senderId       String              @map("sender_id") @db.Uuid
+  sender         Profile             @relation(fields: [senderId], references: [id])
+  content        String
+  createdAt      DateTime            @default(now()) @map("created_at")
+  readStatuses   MessageReadStatus[]
+
+  @@map("messages")
+}
+
+model MessageReadStatus {
+  id        String   @id @default(uuid()) @db.Uuid
+  messageId String   @map("message_id") @db.Uuid
+  message   Message  @relation(fields: [messageId], references: [id])
+  userId    String   @map("user_id") @db.Uuid
+  user      Profile  @relation(fields: [userId], references: [id])
+  readAt    DateTime @default(now()) @map("read_at")
+
+  @@unique([messageId, userId])
+  @@map("message_read_statuses")
+}
+
+model CanonicalMetric {
+  id          String          @id @default(uuid()) @db.Uuid
+  key         String          @unique
+  name        String
+  category    String
+  description String?
+  createdAt   DateTime        @default(now()) @map("created_at")
+  mappings    MetricMapping[]
+
+  @@map("canonical_metrics")
+}
+
+model MetricMapping {
+  id          String          @id @default(uuid()) @db.Uuid
+  canonicalId String          @map("canonical_id") @db.Uuid
+  canonical   CanonicalMetric @relation(fields: [canonicalId], references: [id], onDelete: Cascade)
+  localTerm   String          @map("local_term")
+  agencyId    String?         @map("agency_id") @db.Uuid
+  verified    Boolean         @default(true)
+  createdAt   DateTime        @default(now()) @map("created_at")
+
+  @@unique([canonicalId, localTerm])
+  @@map("metric_mappings")
+}
+model ClientResume {
+  id        String   @id @default(uuid()) @db.Uuid
+  clientId  String   @map("client_id") @db.Uuid
+  client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  intakeId  String   @map("intake_id") @db.Uuid
+  intake    Intake   @relation(fields: [intakeId], references: [id], onDelete: Cascade)
+  resumeId  String   @map("resume_id") @db.VarChar(255)
+  resumeUrl String   @map("resume_url") @db.Text
+  pdfUrl    String?  @map("pdf_url") @db.Text
+  version   Int      @default(1)
+  isActive  Boolean  @default(true) @map("is_active")
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  logs ResumeGenerationLog[]
+
+  @@index([clientId])
+  @@index([intakeId])
+  @@index([isActive])
+  @@index([createdAt])
+  @@map("client_resumes")
+}
+
+model ResumeGenerationLog {
+  id          String       @id @default(uuid()) @db.Uuid
+  resumeId    String       @map("resume_id") @db.Uuid
+  resume      ClientResume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  action      String       @db.VarChar(50)
+  performedBy String?      @map("performed_by") @db.Uuid
+  performer   Profile?     @relation(fields: [performedBy], references: [id])
+  metadata    Json         @default("{}")
+  createdAt   DateTime     @default(now()) @map("created_at")
+
+  @@index([resumeId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("resume_generation_logs")
+}
+
+model TelemetryLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  eventName String   @map("event_name")
+  eventType String   @map("event_type")
+  value     Float
+  attributes Json     @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("telemetry_logs")
+}
+
+model CommunityResource {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  category    String
+  description String
+  address     String
+  phone       String
+  website     String
+  isVerified  Boolean  @default(false) @map("is_verified")
+  source      String
+  tags        String[]
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("community_resources")
+}
+
+model IntakeIdentity {
+  id               String    @id @default(uuid()) @db.Uuid
+  intake           Intake    @relation(fields: [intakeId], references: [id])
+  intakeId         String    @unique @map("intake_id") @db.Uuid
+  clientId         String?   @map("client_id") @db.Uuid
+  firstName        String?   @map("first_name")
+  lastName         String?   @map("last_name")
+  ssnLastFour      String?   @map("ssn_last_four") @db.Char(4)
+  phone            String?
+  email            String?
+  address          String?
+  dateOfBirth      DateTime? @map("date_of_birth")
+  gender           String?
+  race             String?
+  employmentStatus String?   @map("employment_status")
+  referralSource   String?   @map("referral_source")
+  referralContact  String?   @map("referral_contact")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  @@map("intake_identity")
+}
+
+model ClinicalNote {
+  id                  String    @id @default(uuid()) @db.Uuid
+  clientId            String    @map("client_id") @db.Uuid
+  client              Client    @relation(fields: [clientId], references: [id])
+  authorId            String    @map("author_id") @db.Uuid
+  author              Profile   @relation(fields: [authorId], references: [id])
+  purpose             String
+  templateType        String    @map("template_type")
+  isFinalized         Boolean   @default(false) @map("is_finalized")
+  finalizedAt         DateTime? @map("finalized_at")
+  signature           String?
+  parentNoteId        String?   @map("parent_note_id") @db.Uuid
+  
+  subjective          String?
+  objective           String?
+  assessment          String?
+  plan                String?
+  
+  dataNarrative       String?   @map("data_narrative")
+  assessmentNarrative String?   @map("assessment_narrative")
+  planNarrative       String?   @map("plan_narrative")
+  
+  extraData           Json      @default("{}") @map("extra_data")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  @@map("clinical_notes")
+}
+
+model CommunicationLog {
+  id               String    @id @default(uuid()) @db.Uuid
+  caseId           String    @map("case_id") @db.Uuid
+  case             Case      @relation(fields: [caseId], references: [id])
+  clientId         String?   @map("client_id") @db.Uuid
+  client           Client?   @relation(fields: [clientId], references: [id])
+  type             String    // email, sms, internal
+  direction        String    // inbound, outbound
+  content          String
+  subject          String?
+  status           String    @default("sent") // draft, sent, delivered, read, failed
+  sentAt           DateTime  @default(now()) @map("sent_at")
+  readAt           DateTime? @map("read_at")
+  senderId         String?   @map("sender_id") @db.Uuid
+  sender           Profile?  @relation(fields: [senderId], references: [id])
+  recipientContact String?   @map("recipient_contact")
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  @@map("communication_logs")
+}
+
+model OutcomeMeasure {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  category    String?
+  sortOrder   Int      @default(0) @map("sort_order")
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  records     OutcomeRecord[]
+
+  @@map("outcome_measures")
+}
+
+model OutcomeRecord {
+  id               String   @id @default(uuid()) @db.Uuid
+  caseId           String   @map("case_id") @db.Uuid
+  case             Case     @relation(fields: [caseId], references: [id])
+  outcomeMeasureId String   @map("outcome_measure_id") @db.Uuid
+  outcomeMeasure   OutcomeMeasure @relation(fields: [outcomeMeasureId], references: [id])
+  value            Decimal  @db.Decimal(10, 2)
+  notes            String?
+  recordedAt       DateTime @default(now()) @map("recorded_at")
+  recordedBy       String?  @map("recorded_by") @db.Uuid
+
+  @@map("outcome_records")
+}
+
+model PolicyDefinition {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  description String
+  rules       Json     @default("{}")
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("policy_definitions")
+}
+

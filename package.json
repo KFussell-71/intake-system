@@ -1,0 +1,18 @@
+{
+  "scripts": {
+    "dev": "NODE_OPTIONS='--max-old-space-size=2048' next dev --turbo",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit -p app/tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "prisma": "^7.5.0",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@prisma/client": "^7.5.0",
+    "next-auth": "^4.24.13"
+  }
+}

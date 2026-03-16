@@ -1,0 +1,9 @@
+[
+{"created_at":"2026-02-24T13:38:21+00:00","device_id":"a4f6311e-83ec-47e1-8fa1-de130c7e252b","id":"98913698-0c7b-44c1-a7a1-137b53d001c4","status":"draft","updated_at":"2026-02-24T13:38:21+00:00","updated_by":"00000000-0000-0000-0000-000000000000","version":1}
+,
+{"base_version":0,"case_id":"98913698-0c7b-44c1-a7a1-137b53d001c4","created_at":"2026-02-24T13:38:21+00:00","device_id":"a4f6311e-83ec-47e1-8fa1-de130c7e252b","event_type":"CASE_MUTATION","id":"d504db00-e466-4e30-a89e-11296c90766c","new_version":1,"payload":{"clinical":{"primaryDiagnosisCode":"F10.1"},"identity":{"clientName":"Forensic Test Case"}},"user_id":"00000000-0000-0000-0000-000000000000"}
+,
+,
+,
+,
+]

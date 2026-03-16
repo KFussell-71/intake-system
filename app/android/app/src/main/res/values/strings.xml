@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">New Beginning Client Portal</string>
+    <string name="title_activity_main">New Beginning Client Portal</string>
+    <string name="package_name">com.newbeginning.intake</string>
+    <string name="custom_url_scheme">com.newbeginning.intake</string>
+</resources>

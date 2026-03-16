@@ -1,0 +1,5 @@
+*.key
+*.log
+*.pid
+homeserver.db
+media_store/

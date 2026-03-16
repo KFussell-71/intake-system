@@ -1,0 +1,797 @@
+﻿app/src/actions/portal/bookingActions.ts(66,64): error TS7006: Parameter 'a' implicitly has an 'any' type.
+app/src/actions/portal/bookingActions.ts(66,123): error TS7006: Parameter 'b' implicitly has an 'any' type.
+app/src/actions/portal/uploadPortalDocument.ts(4,30): error TS7016: Could not find a declaration file for module 'uuid'. 'C:/Users/keith/Desktop/Intake/intake-system-4.1-Edge-RAG-Release/node_modules/uuid/dist/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/uuid` if it exists or add a new declaration (.d.ts) file containing `declare module 'uuid';`
+app/src/actions/portal/uploadPortalDocument.ts(100,42): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+app/src/actions/team-actions.ts(7,10): error TS2305: Module '"@prisma/client"' has no exported member 'Role'.
+app/src/app/(app)/actions/adminActions.ts(17,37): error TS2339: Property 'role' does not exist on type 'AuthResult'.
+app/src/app/(app)/actions/aiActions.ts(24,13): error TS2353: Object literal may only specify known properties, and 'resourceType' does not exist in type 'AuditLogParams'.
+app/src/app/(app)/actions/aiActions.ts(51,13): error TS2353: Object literal may only specify known properties, and 'resourceType' does not exist in type 'AuditLogParams'.
+app/src/app/(app)/actions/aiEmploymentActions.ts(35,13): error TS2353: Object literal may only specify known properties, and 'resourceType' does not exist in type 'AuditLogParams'.
+app/src/app/(app)/actions/aiEmploymentActions.ts(65,13): error TS2353: Object literal may only specify known properties, and 'resourceType' does not exist in type 'AuditLogParams'.
+app/src/app/(app)/actions/aiEmploymentActions.ts(95,13): error TS2353: Object literal may only specify known properties, and 'resourceType' does not exist in type 'AuditLogParams'.
+app/src/app/(app)/actions/aiEmploymentActions.ts(125,13): error TS2353: Object literal may only specify known properties, and 'resourceType' does not exist in type 'AuditLogParams'.
+app/src/app/(app)/actions/aiEmploymentActions.ts(155,13): error TS2353: Object literal may only specify known properties, and 'resourceType' does not exist in type 'AuditLogParams'.
+app/src/app/(app)/actions/aiEmploymentActions.ts(184,13): error TS2353: Object literal may only specify known properties, and 'resourceType' does not exist in type 'AuditLogParams'.
+app/src/app/(app)/actions/appointmentActions.ts(4,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+app/src/app/(app)/actions/appointmentActions.ts(111,38): error TS7006: Parameter 'appt' implicitly has an 'any' type.
+app/src/app/(app)/actions/appointmentActions.ts(120,58): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+app/src/app/(app)/actions/appointmentActions.ts(179,42): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+app/src/app/(app)/actions/availabilityActions.ts(6,15): error TS2305: Module '"@prisma/client"' has no exported member 'AvailabilityBlock'.
+app/src/app/(app)/actions/availabilityActions.ts(71,59): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+app/src/app/(app)/actions/availabilityActions.ts(133,42): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+app/src/app/(app)/actions/caseManagementActions.ts(72,55): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+app/src/app/(app)/actions/chatActions.ts(5,10): error TS2305: Module '"@prisma/client"' has no exported member 'Prisma'.
+app/src/app/(app)/actions/chatActions.ts(41,42): error TS2339: Property 'role' does not exist on type 'AuthResult'.
+app/src/app/(app)/actions/chatActions.ts(46,57): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+app/src/app/(app)/actions/chatActions.ts(56,40): error TS2339: Property 'role' does not exist on type 'AuthResult'.
+app/src/app/(app)/actions/chatActions.ts(145,74): error TS7006: Parameter 'conv' implicitly has an 'any' type.
+app/src/app/(app)/actions/chatActions.ts(148,49): error TS7006: Parameter 'p' implicitly has an 'any' type.
+app/src/app/(app)/actions/chatActions.ts(185,36): error TS2339: Property 'role' does not exist on type 'AuthResult'.
+app/src/app/(app)/actions/chatActions.ts(197,42): error TS7006: Parameter 'm' implicitly has an 'any' type.
+app/src/app/(app)/actions/chatActions.ts(255,59): error TS7006: Parameter 'p' implicitly has an 'any' type.
+app/src/app/(app)/actions/consentActions.ts(27,55): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+app/src/app/(app)/actions/consentActions.ts(82,42): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+app/src/app/(app)/actions/documentActions.ts(6,30): error TS7016: Could not find a declaration file for module 'uuid'. 'C:/Users/keith/Desktop/Intake/intake-system-4.1-Edge-RAG-Release/node_modules/uuid/dist/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/uuid` if it exists or add a new declaration (.d.ts) file containing `declare module 'uuid';`
+app/src/app/(app)/actions/documentActions.ts(24,64): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+app/src/app/(app)/actions/followUpActions.ts(4,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+app/src/app/(app)/actions/generateEmploymentReport.ts(7,30): error TS7016: Could not find a declaration file for module 'uuid'. 'C:/Users/keith/Desktop/Intake/intake-system-4.1-Edge-RAG-Release/node_modules/uuid/dist/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/uuid` if it exists or add a new declaration (.d.ts) file containing `declare module 'uuid';`
+app/src/app/(app)/actions/generateExecutiveReport.ts(33,71): error TS7006: Parameter 'curr' implicitly has an 'any' type.
+app/src/app/(app)/actions/generateExecutiveReport.ts(75,13): error TS2353: Object literal may only specify known properties, and 'maxTokens' does not exist in type 'AIRequest'.
+app/src/app/(app)/actions/getDashboardStatsAction.ts(25,24): error TS2339: Property 'role' does not exist on type 'AuthResult'.
+app/src/app/(app)/actions/getPortalActivityAction.ts(36,34): error TS7006: Parameter 'a' implicitly has an 'any' type.
+app/src/app/(app)/actions/hipaaActions.ts(27,57): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+app/src/app/(app)/actions/medicalActions.ts(4,10): error TS2305: Module '"@prisma/client"' has no exported member 'Prisma'.
+app/src/app/(app)/actions/memoryActions.ts(20,42): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+app/src/app/(app)/actions/memoryActions.ts(61,25): error TS7006: Parameter 'l' implicitly has an 'any' type.
+app/src/app/(app)/actions/portal/completeMilestoneAction.ts(17,57): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+app/src/app/(app)/actions/portal/inviteClientToPortal.ts(36,35): error TS2339: Property 'role' does not exist on type 'AuthResult'.
+app/src/app/(app)/actions/portal/inviteClientToPortal.ts(36,60): error TS2339: Property 'role' does not exist on type 'AuthResult'.
+app/src/app/(app)/actions/portal/inviteClientToPortal.ts(72,74): error TS2339: Property 'auth' does not exist on type '{ db: any; from: (table: string) => { select: () => Promise<{ data: never[]; }>; }; }'.
+app/src/app/(app)/actions/portal/inviteClientToPortal.ts(88,42): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+app/src/app/(app)/actions/portal/revokeClientPortalAccess.ts(35,35): error TS2339: Property 'role' does not exist on type 'AuthResult'.
+app/src/app/(app)/actions/portal/revokeClientPortalAccess.ts(35,60): error TS2339: Property 'role' does not exist on type 'AuthResult'.
+app/src/app/(app)/actions/portal/revokeClientPortalAccess.ts(43,57): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+app/src/app/(app)/actions/reportingActions.ts(23,31): error TS7006: Parameter 'd' implicitly has an 'any' type.
+app/src/app/(app)/actions/reportingActions.ts(66,31): error TS7006: Parameter 'd' implicitly has an 'any' type.
+app/src/app/(app)/actions/reports/saveDOR.ts(16,42): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+app/src/app/(app)/actions/resourceActions.ts(40,57): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+app/src/app/(app)/actions/resourceActions.ts(90,57): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+app/src/app/(app)/actions/resourceActions.ts(141,42): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+app/src/app/(app)/actions/resources/findResources.ts(29,57): error TS2339: Property 'length' does not exist on type '{ matches: CommunityResource[]; source: "local" | "web"; reasoning: string; }'.
+app/src/app/(app)/actions/searchActions.ts(82,41): error TS7006: Parameter 'i' implicitly has an 'any' type.
+app/src/app/(app)/actions/searchActions.ts(101,38): error TS7006: Parameter 'd' implicitly has an 'any' type.
+app/src/app/(app)/actions/simulationActions.ts(42,38): error TS2339: Property 'score' does not exist on type 'SimulationResult'.
+app/src/app/(app)/actions/taskActions.ts(46,57): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+app/src/app/(app)/actions/taskActions.ts(93,42): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+app/src/app/(app)/actions/transparencyActions.ts(45,63): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+app/src/app/(app)/actions/transparencyActions.ts(107,43): error TS7006: Parameter 'm' implicitly has an 'any' type.
+app/src/app/(app)/actions/uploadClientDocument.ts(4,30): error TS7016: Could not find a declaration file for module 'uuid'. 'C:/Users/keith/Desktop/Intake/intake-system-4.1-Edge-RAG-Release/node_modules/uuid/dist/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/uuid` if it exists or add a new declaration (.d.ts) file containing `declare module 'uuid';`
+app/src/app/(app)/actions/uploadClientDocument.ts(75,29): error TS2339: Property 'role' does not exist on type 'AuthResult'.
+app/src/app/(app)/actions/uploadClientDocument.ts(75,54): error TS2339: Property 'role' does not exist on type 'AuthResult'.
+app/src/app/(app)/admin/telemetry/page.tsx(5,40): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/app/(app)/api/supervisor/bulk-approve/route.ts(7,5): error TS2305: Module '"@/lib/auth/authHelpersServer"' has no exported member 'createSupabaseServerClient'.
+app/src/app/(app)/auditor/reports/page.tsx(15,8): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/app/(app)/auditor/reports/page.tsx(16,24): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/app/(app)/cases/[id]/page.tsx(26,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/app/(app)/cases/[id]/page.tsx(27,150): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/app/(app)/cases/page.tsx(2,22): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/app/(app)/clients/[id]/page.tsx(19,10): error TS2339: Property 'from' does not exist on type '{ session: Session | null; user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } | undefined; db: any; storage: any; auth: { ...; }; }'.
+app/src/app/(app)/clients/[id]/page.tsx(45,10): error TS2339: Property 'from' does not exist on type '{ session: Session | null; user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } | undefined; db: any; storage: any; auth: { ...; }; }'.
+app/src/app/(app)/clients/[id]/page.tsx(58,10): error TS2339: Property 'from' does not exist on type '{ session: Session | null; user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } | undefined; db: any; storage: any; auth: { ...; }; }'.
+app/src/app/(app)/clients/[id]/page.tsx(94,111): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+app/src/app/(app)/clients/new/page.tsx(6,27): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/app/(app)/clients/new/page.tsx(23,21): error TS2322: Type '{ children: (string | Element)[]; variant: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/app/(app)/dashboard/DashboardClient.tsx(18,8): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/app/(app)/dashboard/DashboardClient.tsx(23,24): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/app/(app)/dashboard/messages/page.tsx(18,41): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+app/src/app/(app)/dashboard/schedule/page.tsx(22,47): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+app/src/app/(app)/directory/page.tsx(6,64): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/app/(app)/directory/page.tsx(49,44): error TS7006: Parameter 'c' implicitly has an 'any' type.
+app/src/app/(app)/documents/hipaa-authorization/page.tsx(4,13): error TS2741: Property 'intakeId' is missing in type '{}' but required in type 'Props'.
+app/src/app/(app)/documents/page.tsx(7,27): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/app/(app)/documents/page.tsx(9,24): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/app/(app)/follow-ups/page.tsx(6,72): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/app/(app)/follow-ups/page.tsx(15,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/app/(app)/follow-ups/page.tsx(259,51): error TS2322: Type '{ children: string; type: "button"; variant: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/app/(app)/intake/new/IntakeStepRenderer.tsx(4,29): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/app/(app)/intake/new/page.tsx(8,22): error TS2307: Cannot find module '@supabase/supabase-js' or its corresponding type declarations.
+app/src/app/(app)/intake/new/page.tsx(9,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+app/src/app/(app)/intake/new/page.tsx(24,8): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/app/(app)/intake/new/page.tsx(25,41): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/app/(app)/intake/new/page.tsx(180,17): error TS18046: 'err' is of type 'unknown'.
+app/src/app/(app)/intake/new/page.tsx(180,36): error TS7006: Parameter 'issue' implicitly has an 'any' type.
+app/src/app/(app)/layout.tsx(43,25): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/app/(app)/meet/[roomId]/page.tsx(6,27): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/app/(app)/meet/[roomId]/page.tsx(21,21): error TS2322: Type '{ children: (string | Element)[]; variant: string; className: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/app/(app)/reports/page.tsx(6,59): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/app/(app)/resources/page.tsx(5,22): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/app/(app)/settings/page.tsx(7,62): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/app/(app)/settings/page.tsx(10,26): error TS2307: Cannot find module 'next-themes' or its corresponding type declarations.
+app/src/app/(app)/supervisor/activity/page.tsx(5,39): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/app/(app)/supervisor/memory/page.tsx(6,77): error TS2307: Cannot find module 'react-icons/fi' or its corresponding type declarations.
+app/src/app/(app)/supervisor/memory/page.tsx(7,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/app/(app)/supervisor/page.tsx(18,10): error TS2339: Property 'from' does not exist on type '{ session: Session | null; user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } | undefined; db: any; storage: any; auth: { ...; }; }'.
+app/src/app/(app)/supervisor/page.tsx(20,24): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+app/src/app/(app)/supervisor/resources/page.tsx(4,25): error TS2307: Cannot find module 'react-hook-form' or its corresponding type declarations.
+app/src/app/(app)/supervisor/resources/page.tsx(7,56): error TS2307: Cannot find module 'react-icons/fi' or its corresponding type declarations.
+app/src/app/(app)/supervisor/resources/page.tsx(8,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/app/(app)/supervisor/review-queue/page.tsx(17,8): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/app/(app)/supervisor/review-queue/page.tsx(18,41): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/app/(app)/supervisor/review-queue/page.tsx(24,26): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/app/(app)/supervisor/seed/page.tsx(6,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/app/(auth)/layout.tsx(5,25): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/app/(auth)/login/page.tsx(5,35): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/app/(auth)/login/page.tsx(9,24): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/app/(auth)/page.tsx(7,24): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/app/(auth)/page.tsx(8,48): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/app/(auth)/signup/page.tsx(7,50): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/app/(auth)/signup/page.tsx(11,24): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/app/(portal)/layout.tsx(4,25): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/app/(portal)/portal/dashboard/PortalDashboardClient.tsx(17,8): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/app/(portal)/portal/dashboard/PortalDashboardClient.tsx(18,24): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/app/(portal)/portal/messages/page.tsx(16,10): error TS2339: Property 'from' does not exist on type '{ session: Session | null; user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } | undefined; db: any; storage: any; auth: { ...; }; }'.
+app/src/app/(portal)/portal/messages/page.tsx(33,50): error TS2339: Property 'from' does not exist on type '{ session: Session | null; user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } | undefined; db: any; storage: any; auth: { ...; }; }'.
+app/src/app/(portal)/portal/messages/page.tsx(49,53): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+app/src/app/(portal)/portal/messages/page.tsx(49,57): error TS2554: Expected 1 arguments, but got 2.
+app/src/app/(portal)/portal/messages/page.tsx(65,41): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+app/src/components/dashboard/ActivityFeed.tsx(3,65): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/dashboard/AnalyticsCharts.tsx(13,8): error TS2307: Cannot find module 'recharts' or its corresponding type declarations.
+app/src/components/dashboard/AnalyticsCharts.tsx(15,28): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/dashboard/AnalyticsCharts.tsx(40,41): error TS7006: Parameter 'value' implicitly has an 'any' type.
+app/src/components/dashboard/ClientSearchDropdown.tsx(5,45): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/dashboard/ClinicalFleetVisualizer.tsx(4,41): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/components/dashboard/ClinicalFleetVisualizer.tsx(13,8): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/dashboard/ManualSyncExport.tsx(4,54): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/dashboard/ManualSyncExport.tsx(8,41): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/components/dashboard/VanguardAnalytics.tsx(4,24): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/components/dashboard/VanguardAnalytics.tsx(12,8): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/documents/DocumentList.tsx(4,58): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/documents/DocumentList.tsx(5,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/components/documents/DocumentList.tsx(126,45): error TS2322: Type '{ children: Element; variant: string; size: string; className: string; onClick: () => Promise<void>; title: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/components/documents/DocumentList.tsx(135,45): error TS2322: Type '{ children: Element; variant: string; size: string; className: string; onClick: () => Window | null; title: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/components/documents/DocumentList.tsx(144,45): error TS2322: Type '{ children: Element; variant: string; size: string; className: string; onClick: () => Promise<void>; title: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/components/documents/DocumentPreviewDialog.tsx(4,53): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/documents/DocumentPreviewDialog.tsx(37,29): error TS2322: Type '{ children: (string | Element)[]; variant: string; size: string; className: string; onClick: () => Window | null; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/components/documents/DocumentPreviewDialog.tsx(46,29): error TS2322: Type '{ children: Element; variant: string; size: string; className: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/components/documents/FileUploadZone.tsx(4,59): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/documents/FileUploadZone.tsx(6,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/components/NotificationBell.tsx(10,22): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/NotificationBell.tsx(100,198): error TS2339: Property 'read' does not exist on type 'Notification'.
+app/src/components/NotificationBell.tsx(105,60): error TS2339: Property 'read' does not exist on type 'Notification'.
+app/src/components/NotificationBell.tsx(112,67): error TS2339: Property 'title' does not exist on type 'Notification'.
+app/src/components/NotificationBell.tsx(118,78): error TS2551: Property 'created_at' does not exist on type 'Notification'. Did you mean 'createdAt'?
+app/src/components/providers/ErrorBoundary.tsx(4,53): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/providers/ThemeProvider.tsx(4,53): error TS2307: Cannot find module 'next-themes' or its corresponding type declarations.
+app/src/components/RedlineViewer.tsx(2,35): error TS7016: Could not find a declaration file for module 'diff'. 'C:/Users/keith/Desktop/Intake/intake-system-4.1-Edge-RAG-Release/node_modules/diff/lib/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/diff` if it exists or add a new declaration (.d.ts) file containing `declare module 'diff';`
+app/src/components/RedlineViewer.tsx(19,24): error TS7006: Parameter 'part' implicitly has an 'any' type.
+app/src/components/RedlineViewer.tsx(19,30): error TS7006: Parameter 'i' implicitly has an 'any' type.
+app/src/components/resume/AIOptimizationPanel.tsx(4,68): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/resume/AIOptimizationPanel.tsx(9,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/components/resume/CoverLetterGenerator.tsx(4,58): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/resume/CoverLetterGenerator.tsx(8,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/components/resume/GenerateResumeButton.tsx(4,72): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/resume/GenerateResumeButton.tsx(9,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/components/resume/ResumeList.tsx(6,79): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/resume/ResumeList.tsx(8,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/components/search/GlobalSearchDialog.tsx(5,63): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/ui/AccessibilityToggle.tsx(4,26): error TS2307: Cannot find module 'next-themes' or its corresponding type declarations.
+app/src/components/ui/AccessibilityToggle.tsx(5,27): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/ui/AIPredictiveOverlay.tsx(2,36): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/ui/AIPredictiveOverlay.tsx(3,41): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/components/ui/alert.tsx(2,40): error TS2307: Cannot find module 'class-variance-authority' or its corresponding type declarations.
+app/src/components/ui/avatar.tsx(2,34): error TS2307: Cannot find module '@radix-ui/react-avatar' or its corresponding type declarations.
+app/src/components/ui/badge.tsx(2,40): error TS2307: Cannot find module 'class-variance-authority' or its corresponding type declarations.
+app/src/components/ui/badge.tsx(29,29): error TS2339: Property 'variant' does not exist on type 'BadgeProps'.
+app/src/components/ui/button.tsx(2,22): error TS2307: Cannot find module '@radix-ui/react-slot' or its corresponding type declarations.
+app/src/components/ui/button.tsx(3,40): error TS2307: Cannot find module 'class-variance-authority' or its corresponding type declarations.
+app/src/components/ui/button.tsx(43,19): error TS2339: Property 'variant' does not exist on type 'ButtonProps'.
+app/src/components/ui/button.tsx(43,28): error TS2339: Property 'size' does not exist on type 'ButtonProps'.
+app/src/components/ui/calendar.tsx(4,43): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/ui/calendar.tsx(5,27): error TS2307: Cannot find module 'react-day-picker' or its corresponding type declarations.
+app/src/components/ui/checkbox.tsx(4,36): error TS2307: Cannot find module '@radix-ui/react-checkbox' or its corresponding type declarations.
+app/src/components/ui/checkbox.tsx(5,23): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/ui/dialog.tsx(4,34): error TS2307: Cannot find module '@radix-ui/react-dialog' or its corresponding type declarations.
+app/src/components/ui/dialog.tsx(5,19): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/ui/dropdown-menu.tsx(2,40): error TS2307: Cannot find module '@radix-ui/react-dropdown-menu' or its corresponding type declarations.
+app/src/components/ui/dropdown-menu.tsx(3,45): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/ui/label.tsx(2,33): error TS2307: Cannot find module '@radix-ui/react-label' or its corresponding type declarations.
+app/src/components/ui/label.tsx(3,40): error TS2307: Cannot find module 'class-variance-authority' or its corresponding type declarations.
+app/src/components/ui/NetworkStatus.tsx(4,42): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/ui/radio-group.tsx(4,38): error TS2307: Cannot find module '@radix-ui/react-radio-group' or its corresponding type declarations.
+app/src/components/ui/radio-group.tsx(5,24): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/ui/scroll-area.tsx(4,51): error TS2307: Cannot find module 'radix-ui' or its corresponding type declarations.
+app/src/components/ui/select.tsx(2,34): error TS2307: Cannot find module '@radix-ui/react-select' or its corresponding type declarations.
+app/src/components/ui/select.tsx(3,47): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/ui/SignaturePad.tsx(4,29): error TS2307: Cannot find module 'react-signature-canvas' or its corresponding type declarations.
+app/src/components/ui/SignaturePad.tsx(6,24): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/ui/SignaturePad.tsx(70,21): error TS2322: Type '{ children: (string | Element)[]; type: "button"; variant: string; size: string; onClick: () => void; disabled: boolean; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/components/ui/switch.tsx(5,35): error TS2307: Cannot find module '@radix-ui/react-switch' or its corresponding type declarations.
+app/src/components/ui/VoiceInput.tsx(4,45): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/components/video/VideoRoom.tsx(4,25): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/config/training_content.ts(1,71): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/config/unifiedConfig.ts(1,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+app/src/domain/services/IntakeWorkflowService.ts(56,36): error TS2339: Property 'logClinicalEvent' does not exist on type 'IntakeRepository'.
+app/src/features/accreditation/components/AccreditationManager.tsx(6,57): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/accreditation/components/AccreditationManager.tsx(96,102): error TS2551: Property 'generated_at' does not exist on type 'EvidencePacket'. Did you mean 'generatedAt'?
+app/src/features/admin/components/DemoControls.tsx(5,48): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/admin/components/DemoControls.tsx(7,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/admin/components/DemoControls.tsx(54,29): error TS2322: Type '{ children: (string | Element)[]; variant: string; className: string; onClick: () => Promise<void>; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/admin/components/DemoControls.tsx(62,29): error TS2322: Type '{ children: (string | Element)[]; variant: string; className: string; onClick: () => Promise<void>; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/admin/components/TelemetryDashboard.tsx(13,8): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/admin/components/TelemetryDashboard.tsx(29,8): error TS2307: Cannot find module 'recharts' or its corresponding type declarations.
+app/src/features/admin/components/TelemetryDashboard.tsx(47,24): error TS2551: Property 'event_name' does not exist on type 'TelemetryEvent'. Did you mean 'eventName'?
+app/src/features/admin/components/TelemetryDashboard.tsx(51,30): error TS2551: Property 'created_at' does not exist on type 'TelemetryEvent'. Did you mean 'createdAt'?
+app/src/features/admin/components/TelemetryDashboard.tsx(53,21): error TS2551: Property 'event_name' does not exist on type 'TelemetryEvent'. Did you mean 'eventName'?
+app/src/features/admin/components/TelemetryDashboard.tsx(60,57): error TS2551: Property 'event_name' does not exist on type 'TelemetryEvent'. Did you mean 'eventName'?
+app/src/features/admin/components/TelemetryDashboard.tsx(60,88): error TS2551: Property 'event_type' does not exist on type 'TelemetryEvent'. Did you mean 'eventType'?
+app/src/features/admin/components/TelemetryDashboard.tsx(61,53): error TS2551: Property 'event_name' does not exist on type 'TelemetryEvent'. Did you mean 'eventName'?
+app/src/features/admin/components/TelemetryDashboard.tsx(61,86): error TS2551: Property 'event_type' does not exist on type 'TelemetryEvent'. Did you mean 'eventType'?
+app/src/features/admin/components/TelemetryDashboard.tsx(62,57): error TS2551: Property 'event_name' does not exist on type 'TelemetryEvent'. Did you mean 'eventName'?
+app/src/features/admin/components/TelemetryDashboard.tsx(62,88): error TS2551: Property 'event_type' does not exist on type 'TelemetryEvent'. Did you mean 'eventType'?
+app/src/features/admin/components/TelemetryDashboard.tsx(63,54): error TS2551: Property 'event_type' does not exist on type 'TelemetryEvent'. Did you mean 'eventType'?
+app/src/features/admin/components/TelemetryDashboard.tsx(63,114): error TS2551: Property 'event_name' does not exist on type 'TelemetryEvent'. Did you mean 'eventName'?
+app/src/features/admin/components/TelemetryDashboard.tsx(67,56): error TS2551: Property 'event_name' does not exist on type 'TelemetryEvent'. Did you mean 'eventName'?
+app/src/features/admin/components/TelemetryDashboard.tsx(68,57): error TS2551: Property 'event_name' does not exist on type 'TelemetryEvent'. Did you mean 'eventName'?
+app/src/features/admin/components/TelemetryDashboard.tsx(69,53): error TS2551: Property 'event_name' does not exist on type 'TelemetryEvent'. Did you mean 'eventName'?
+app/src/features/admin/components/TelemetryDashboard.tsx(70,57): error TS2551: Property 'event_name' does not exist on type 'TelemetryEvent'. Did you mean 'eventName'?
+app/src/features/admin/components/TelemetryDashboard.tsx(109,49): error TS2551: Property 'event_name' does not exist on type 'TelemetryEvent'. Did you mean 'eventName'?
+app/src/features/case-management/components/CarePlanBuilder.tsx(5,22): error TS2307: Cannot find module 'canvas-confetti' or its corresponding type declarations.
+app/src/features/case-management/components/CarePlanBuilder.tsx(9,85): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/case-management/components/CarePlanBuilder.tsx(10,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/case-management/components/CarePlanBuilder.tsx(11,24): error TS2307: Cannot find module 'date-fns' or its corresponding type declarations.
+app/src/features/case-management/components/CaseHeader.tsx(5,64): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/case-management/components/CaseHeader.tsx(6,24): error TS2307: Cannot find module 'date-fns' or its corresponding type declarations.
+app/src/features/case-management/components/CaseHeader.tsx(9,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/case-management/components/CaseHeader.tsx(25,47): error TS2554: Expected 3 arguments, but got 2.
+app/src/features/case-management/components/CaseList.tsx(16,8): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/case-management/components/CaseList.tsx(17,24): error TS2307: Cannot find module 'date-fns' or its corresponding type declarations.
+app/src/features/case-management/components/CaseList.tsx(18,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/case-management/components/CaseTimeline.tsx(12,8): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/case-management/components/CaseTimeline.tsx(13,24): error TS2307: Cannot find module 'date-fns' or its corresponding type declarations.
+app/src/features/case-management/components/ClinicalNoteForm.tsx(11,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/case-management/components/ClinicalNoteForm.tsx(12,71): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/case-management/components/ClinicalNoteForm.tsx(204,29): error TS2322: Type '{ children: (string | Element)[]; variant: string; onClick: () => Promise<void>; disabled: boolean; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/case-management/components/ClinicalNoteList.tsx(6,55): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/case-management/components/ClinicalNoteList.tsx(39,40): error TS2322: Type '{ children: ClinicalTemplateType; variant: string; }' is not assignable to type 'IntrinsicAttributes & BadgeProps'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & BadgeProps'.
+app/src/features/case-management/components/FollowUpScheduler.tsx(5,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/case-management/components/FollowUpScheduler.tsx(11,52): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/case-management/components/MessageCenter.tsx(7,75): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/case-management/components/MessageCenter.tsx(8,24): error TS2307: Cannot find module 'date-fns' or its corresponding type declarations.
+app/src/features/case-management/components/MessageCenter.tsx(9,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/case-management/components/MessageCenter.tsx(173,29): error TS2322: Type '{ children: Element; size: string; variant: string; className: string; title: string; onClick: () => Promise<void>; disabled: boolean; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'size' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/case-management/components/MessageCenter.tsx(183,29): error TS2322: Type '{ children: Element; size: string; className: string; onClick: () => Promise<void>; disabled: boolean; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'size' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/case-management/components/OutcomeChart.tsx(4,92): error TS2307: Cannot find module 'recharts' or its corresponding type declarations.
+app/src/features/case-management/components/OutcomeChart.tsx(5,24): error TS2307: Cannot find module 'date-fns' or its corresponding type declarations.
+app/src/features/case-management/components/OutcomeLog.tsx(5,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/case-management/components/OutcomeLog.tsx(11,38): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/case-management/components/ProviderDirectory.tsx(9,69): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/case-management/components/ProviderDirectory.tsx(10,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/case-management/components/ProviderDirectory.tsx(80,29): error TS2322: Type '{ children: string; key: string; variant: string; size: string; onClick: () => void; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/case-management/components/ProviderDirectory.tsx(98,36): error TS2322: Type '{ children: string; variant: string; className: string; }' is not assignable to type 'IntrinsicAttributes & BadgeProps'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & BadgeProps'.
+app/src/features/case-management/components/ReferralTracker.tsx(9,79): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/case-management/components/ReferralTracker.tsx(10,24): error TS2307: Cannot find module 'date-fns' or its corresponding type declarations.
+app/src/features/case-management/components/ReferralTracker.tsx(11,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/case-management/components/ReferralTracker.tsx(86,32): error TS2322: Type '{ children: string; variant: string; className: string; }' is not assignable to type 'IntrinsicAttributes & BadgeProps'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & BadgeProps'.
+app/src/features/case-management/components/ReferralTracker.tsx(98,45): error TS7006: Parameter 'val' implicitly has an 'any' type.
+app/src/features/case-management/components/ServiceLogger.tsx(5,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/case-management/components/ServiceLogger.tsx(11,62): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/chat/components/ChatWindow.tsx(4,66): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/chat/components/ChatWindow.tsx(8,24): error TS2307: Cannot find module 'date-fns' or its corresponding type declarations.
+app/src/features/chat/components/ChatWindow.tsx(65,25): error TS2345: Argument of type '(prev: Message[]) => ({ id: any; conversation_id: any; sender_id: any; content: any; created_at: any; } | undefined)[]' is not assignable to parameter of type 'SetStateAction<Message[]>'.
+  Type '(prev: Message[]) => ({ id: any; conversation_id: any; sender_id: any; content: any; created_at: any; } | undefined)[]' is not assignable to type '(prevState: Message[]) => Message[]'.
+    Type '({ id: any; conversation_id: any; sender_id: any; content: any; created_at: any; } | undefined)[]' is not assignable to type 'Message[]'.
+      Type '{ id: any; conversation_id: any; sender_id: any; content: any; created_at: any; } | undefined' is not assignable to type 'Message'.
+        Type 'undefined' is not assignable to type 'Message'.
+app/src/features/chat/components/ChatWindow.tsx(66,45): error TS18048: 'res.data' is possibly 'undefined'.
+app/src/features/chat/components/ConversationList.tsx(5,37): error TS2307: Cannot find module 'date-fns' or its corresponding type declarations.
+app/src/features/chat/components/ConversationList.tsx(7,46): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/chat/components/ConversationList.tsx(22,48): error TS2554: Expected 0 arguments, but got 1.
+app/src/features/chat/components/ConversationList.tsx(50,65): error TS2339: Property 'user_id' does not exist on type '{ id: string; username: string; }'.
+app/src/features/clients/components/CaseNotesFeed.tsx(9,54): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/clients/components/CaseNotesFeed.tsx(10,24): error TS2307: Cannot find module 'date-fns' or its corresponding type declarations.
+app/src/features/clients/components/CaseNotesFeed.tsx(93,53): error TS7006: Parameter 't' implicitly has an 'any' type.
+app/src/features/clients/components/CaseNotesFeed.tsx(135,29): error TS2322: Type '{ children: (string | Element)[]; type: "button"; variant: string; size: string; onClick: () => Promise<void>; disabled: boolean; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/clients/components/CaseNotesFeed.tsx(145,47): error TS2322: Type '{ children: (string | Element)[]; type: "submit"; size: string; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'size' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/clients/components/CaseNotesFeed.tsx(158,40): error TS2322: Type '{ children: string; variant: string; }' is not assignable to type 'IntrinsicAttributes & BadgeProps'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & BadgeProps'.
+app/src/features/clients/components/CaseNotesFeed.tsx(184,44): error TS2322: Type '{ children: (string | false)[]; variant: string; className: string; }' is not assignable to type 'IntrinsicAttributes & BadgeProps'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & BadgeProps'.
+app/src/features/clients/components/CaseNotesFeed.tsx(197,52): error TS2322: Type '{ children: string[]; key: number; variant: string; className: string; }' is not assignable to type 'IntrinsicAttributes & BadgeProps'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & BadgeProps'.
+app/src/features/clients/components/ClientProfileLayout.tsx(9,83): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/clients/components/ClientProfileLayout.tsx(10,24): error TS2307: Cannot find module 'date-fns' or its corresponding type declarations.
+app/src/features/clients/components/ClientProfileLayout.tsx(46,40): error TS2322: Type '{ children: string; variant: string; className: string; }' is not assignable to type 'IntrinsicAttributes & BadgeProps'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & BadgeProps'.
+app/src/features/clients/components/ClientProfileLayout.tsx(57,33): error TS2322: Type '{ children: (string | Element)[]; variant: string; size: string; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/clients/components/ClientProfileLayout.tsx(60,33): error TS2322: Type '{ children: (string | Element)[]; variant: string; size: string; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/clients/components/ClientProfileLayout.tsx(63,33): error TS2322: Type '{ children: Element; variant: string; size: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/clients/components/ClientTimeline.tsx(5,89): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/clients/components/ClientTimeline.tsx(6,24): error TS2307: Cannot find module 'date-fns' or its corresponding type declarations.
+app/src/features/comparability/components/ComparabilityWidget.tsx(5,43): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/compliance/components/ComplianceDashboard.tsx(5,50): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/consent/components/ConsentModule.tsx(5,56): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/dashboard/components/DashboardCharts.tsx(8,8): error TS2307: Cannot find module 'recharts' or its corresponding type declarations.
+app/src/features/dashboard/components/DashboardCharts.tsx(9,61): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/dashboard/components/DashboardCharts.tsx(112,45): error TS7006: Parameter 'date' implicitly has an 'any' type.
+app/src/features/dashboard/components/DashboardCharts.tsx(116,46): error TS7006: Parameter 'date' implicitly has an 'any' type.
+app/src/features/dashboard/components/Greeting.tsx(4,41): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/dashboard/components/Greeting.tsx(5,60): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/dashboard/components/Greeting.tsx(6,22): error TS2307: Cannot find module '@supabase/supabase-js' or its corresponding type declarations.
+app/src/features/dashboard/components/NotificationCenter.tsx(4,59): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/dashboard/components/NotificationCenter.tsx(5,41): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/dashboard/components/NotificationCenter.tsx(18,102): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+app/src/features/dashboard/components/StaffingForecastWidget.tsx(10,8): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/documents/DocumentList.tsx(1,48): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/documents/DocumentManager.tsx(4,55): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/documents/forms/HIPAAAuthorizationForm.tsx(4,96): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/documents/forms/HIPAAAuthorizationForm.tsx(10,30): error TS7016: Could not find a declaration file for module 'uuid'. 'C:/Users/keith/Desktop/Intake/intake-system-4.1-Edge-RAG-Release/node_modules/uuid/dist/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/uuid` if it exists or add a new declaration (.d.ts) file containing `declare module 'uuid';`
+app/src/features/documents/FormSignerModal.tsx(8,34): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/documents/HIPAAFormPage.tsx(6,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/documents/HIPAAFormPage.tsx(21,39): error TS2304: Cannot find name 'HIPAAAuthorizationData'.
+app/src/features/documents/HIPAAFormPage.tsx(42,17): error TS2322: Type '{ clientData: { firstName?: string | undefined; lastName?: string | undefined; dateOfBirth?: string | undefined; address?: string | undefined; } | undefined; onSubmit: (data: HIPAAAuthorizationData) => Promise<void>; isSubmitting: boolean; }' is not assignable to type 'IntrinsicAttributes & Props'.
+  Property 'isSubmitting' does not exist on type 'IntrinsicAttributes & Props'.
+app/src/features/employment/components/EmploymentModule.tsx(4,36): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/forms/components/AssessmentManager.tsx(10,46): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/forms/components/AssessmentManager.tsx(11,24): error TS2307: Cannot find module 'date-fns' or its corresponding type declarations.
+app/src/features/forms/components/AssessmentManager.tsx(69,37): error TS2322: Type '{ children: string; variant: string; size: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/forms/components/AssessmentManager.tsx(84,41): error TS2322: Type '{ children: Element[]; key: string; variant: string; className: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/forms/components/SchemaForm.tsx(11,25): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/forms/components/SchemaForm.tsx(85,49): error TS7006: Parameter 'v' implicitly has an 'any' type.
+app/src/features/forms/components/SchemaForm.tsx(103,49): error TS7006: Parameter 'v' implicitly has an 'any' type.
+app/src/features/forms/components/SchemaForm.tsx(125,47): error TS2322: Type '{ children: string; type: "button"; variant: string; onClick: () => void; disabled: boolean; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/identity/components/IdentityModule.tsx(7,59): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/AIIntegrityReview.tsx(3,82): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/AIIntegrityReview.tsx(6,41): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/intake/components/AINarrativeComposer.tsx(4,42): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/AINarrativeComposer.tsx(8,41): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/intake/components/AINarrativeComposer.tsx(42,17): error TS2322: Type '{ children: (false | Element)[]; type: "button"; variant: string; size: string; onClick: () => Promise<void>; disabled: boolean; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/intake/components/AISuccessSuggestions.tsx(4,85): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/AISuccessSuggestions.tsx(5,41): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/intake/components/AuditHistoryModal.tsx(13,50): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/AuditHistoryModal.tsx(14,24): error TS2307: Cannot find module 'date-fns' or its corresponding type declarations.
+app/src/features/intake/components/ComplianceSidebar.tsx(4,85): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/ComplianceSidebar.tsx(9,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/intake/components/ConflictResolutionModal.tsx(3,60): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/ConflictResolutionModal.tsx(4,41): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/intake/components/ConsentWorkflow.tsx(6,56): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/ConsentWorkflow.tsx(7,85): error TS2305: Module '"@/app/(app)/actions/consentActions"' has no exported member 'ConsentDocument'.
+app/src/features/intake/components/ConsentWorkflow.tsx(9,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/intake/components/ConsentWorkflow.tsx(69,25): error TS2322: Type '{ children: (string | Element)[]; size: string; onClick: () => void; disabled: boolean; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'size' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/intake/components/ConsentWorkflow.tsx(86,37): error TS2322: Type '{ children: string; variant: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/intake/components/ConsentWorkflow.tsx(124,65): error TS7006: Parameter 'sig' implicitly has an 'any' type.
+app/src/features/intake/components/ConsentWorkflow.tsx(144,57): error TS2322: Type '{ children: string; size: string; className: string; onClick: () => Promise<any>; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'size' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/intake/components/ConsentWorkflow.tsx(147,53): error TS2322: Type '{ children: string; size: string; variant: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'size' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/intake/components/CounselorAssessmentPanel.tsx(4,78): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/CounselorRationaleField.tsx(2,29): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/DocumentVerificationSection.tsx(2,59): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/EligibilityDecisionModal.tsx(6,41): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/EligibilityDecisionModal.tsx(7,41): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/intake/components/FormCheckbox.tsx(2,24): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/intake/components/FormCheckbox.tsx(3,29): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/IntakeDashboard.tsx(7,72): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/IntakeDashboard.tsx(155,29): error TS2322: Type '{ children: string; variant: string; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/intake/components/IntakeHub.tsx(13,50): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/IntakeHub.tsx(14,41): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/intake/components/IntakeHub.tsx(51,29): error TS2322: Type '{ children: (string | Element)[]; variant: string; onClick: () => void; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/intake/components/IntakePageHeader.tsx(5,40): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/IntakeSidebar.tsx(5,8): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/IntakeSidebar.tsx(6,24): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/intake/components/IntakeStepEvaluation.tsx(2,29): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/IntakeStepGoals.tsx(2,24): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/IntakeStepIdentity.tsx(2,34): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/IntakeStepNavigation.tsx(4,56): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/IntakeStepPlacement.tsx(2,27): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/IntakeStepPrep.tsx(2,31): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/IntakeStepReview.tsx(2,63): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/IntakeTaskSidebar.tsx(4,64): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/IntakeTaskSidebar.tsx(9,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/intake/components/IntakeTaskSidebar.tsx(44,22): error TS7006: Parameter 'payload' implicitly has an 'any' type.
+app/src/features/intake/components/IntakeTaskSidebar.tsx(49,29): error TS7006: Parameter 'status' implicitly has an 'any' type.
+app/src/features/intake/components/IntakeTaskSidebar.tsx(155,29): error TS2322: Type '{ children: Element; size: string; onClick: () => Promise<void>; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'size' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/intake/components/LogicValidationSummary.tsx(4,69): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/LogicValidationSummary.tsx(5,24): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/intake/components/MobileIntakeNav.tsx(2,103): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/MobileIntakeNav.tsx(3,41): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/intake/components/ModernizedBarriersSection.tsx(2,45): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/ModernizedBarriersSection.tsx(79,60): error TS2339: Property 'display' does not exist on type 'Barrier'.
+app/src/features/intake/components/ModernizedConsentSection.tsx(4,29): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/ModernizedConsentSection.tsx(36,21): error TS2322: Type '{ children: string; variant: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/intake/components/ModernizedEmploymentSection.tsx(2,70): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/ModernizedIntakeStepIdentity.tsx(2,43): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/ModernizedIntakeStepIdentity.tsx(194,21): error TS2322: Type '{ children: string; variant: string; onClick: () => Promise<{ success: boolean; error?: undefined; } | { success: boolean; error: any; }>; disabled: boolean; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/intake/components/ModernizedIntakeWizard.tsx(6,63): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/ModernizedIntakeWizard.tsx(139,29): error TS2322: Type '{ children: (string | Element)[]; variant: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/intake/components/ModernizedIntakeWizard.tsx(143,25): error TS2322: Type '{ children: (string | Element)[]; variant: string; size: string; onClick: () => void; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/intake/components/ModernizedIntakeWizard.tsx(151,25): error TS2322: Type '{ children: (string | Element)[]; variant: string; size: string; onClick: () => void; className: string; title: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/intake/components/ModernizedIntakeWizard.tsx(199,25): error TS2322: Type '{ children: (string | Element)[]; variant: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/intake/components/ModernizedMedicalSection.tsx(2,25): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/ModernizedObservationsSection.tsx(2,65): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/ModernizedObservationsSection.tsx(17,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/intake/components/ModernizedObservationsSection.tsx(162,56): error TS2322: Type '{ children: (string | Element)[]; variant: string; className: string; }' is not assignable to type 'IntrinsicAttributes & BadgeProps'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & BadgeProps'.
+app/src/features/intake/components/ModernizedObservationsSection.tsx(166,56): error TS2322: Type '{ children: (string | Element)[]; variant: string; className: string; }' is not assignable to type 'IntrinsicAttributes & BadgeProps'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & BadgeProps'.
+app/src/features/intake/components/ModernizedObservationsSection.tsx(232,37): error TS2322: Type '{ children: string; variant: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/intake/components/ObservationFeed.tsx(5,63): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/PreparationReadinessSection.tsx(2,50): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/ReferralPlanWidget.tsx(2,83): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/ReportPreviewModal.tsx(4,115): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/ReportPreviewModal.tsx(7,24): error TS2307: Cannot find module 'marked' or its corresponding type declarations.
+app/src/features/intake/components/ReportPreviewModal.tsx(8,23): error TS2307: Cannot find module 'isomorphic-dompurify' or its corresponding type declarations.
+app/src/features/intake/components/ReportPreviewModal.tsx(235,29): error TS2322: Type '{ children: (string | Element)[]; variant: string; size: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/intake/components/ReportPreviewModal.tsx(242,33): error TS2322: Type '{ children: (string | Element)[]; variant: string; size: string; onClick: () => void; disabled: boolean; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/intake/components/ReportPreviewModal.tsx(246,33): error TS2322: Type '{ children: (string | Element)[]; variant: string; size: string; onClick: () => Promise<void>; disabled: boolean; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/intake/components/ReportPreviewModal.tsx(251,29): error TS2322: Type '{ children: Element; variant: string; size: string; onClick: () => void; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/intake/components/ReportPreviewModal.tsx(306,67): error TS2322: Type '{ children: string; onClick: () => Promise<void>; variant: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/intake/components/ReportPreviewModal.tsx(333,29): error TS2322: Type '{ children: (string | Element)[]; variant: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/intake/components/ReportPreviewModal.tsx(350,29): error TS2322: Type '{ children: (string | Element)[]; variant: string; size: string; onClick: () => void; disabled: boolean; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/intake/components/ReportPreviewModal.tsx(353,29): error TS2322: Type '{ children: (string | Element)[]; variant: string; size: string; onClick: () => Promise<void>; disabled: boolean; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/intake/components/ReviewModeBanner.tsx(2,34): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/sections/CurrentIssueSection.tsx(4,57): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/sections/DemographicsSection.tsx(4,51): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/sections/EmergencyContactSection.tsx(4,33): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/sections/employment/GoalsPanel.tsx(2,24): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/sections/employment/PlacementPanel.tsx(2,27): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/sections/employment/PrepPanel.tsx(2,31): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/sections/employment/VocationalHistoryPanel.tsx(2,50): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/sections/evaluation/AppearanceSection.tsx(4,28): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/sections/evaluation/AssessmentSummarySection.tsx(4,47): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/sections/evaluation/AssessmentSummarySection.tsx(9,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/intake/components/sections/evaluation/FamilySocialHistorySection.tsx(4,47): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/sections/evaluation/MedicalHistorySection.tsx(4,39): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/sections/evaluation/MentalHealthHistorySection.tsx(4,29): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/sections/evaluation/PresentationSection.tsx(4,47): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/sections/evaluation/SubstanceUseSection.tsx(4,48): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/sections/evaluation/SubstanceUseSection.tsx(7,24): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/intake/components/sections/FinancialInfoSection.tsx(4,41): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/sections/FinancialInfoSection.tsx(6,41): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/intake/components/SelectionHighlighter.tsx(2,28): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/StructuredObservation.tsx(2,70): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/ValidationChecklistSidebar.tsx(2,75): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/components/WeeklyCheckInSection.tsx(2,38): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/constants/steps.tsx(11,8): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/intake/hooks/useIntakeConflicts.ts(18,47): error TS7006: Parameter 'c' implicitly has an 'any' type.
+app/src/features/intake/hooks/useIntakeForm.ts(5,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/medical/components/MedicalModule.tsx(4,35): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/onboarding/components/AgencyOnboarding.tsx(9,25): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/onboarding/components/AgencyOnboarding.tsx(10,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/onboarding/components/AgencyOnboarding.tsx(72,77): error TS7006: Parameter 'e' implicitly has an 'any' type.
+app/src/features/onboarding/components/GettingStartedWidget.tsx(6,92): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/onboarding/components/GettingStartedWidget.tsx(114,25): error TS2322: Type '{ children: Element; variant: string; size: string; className: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/outcomes/components/OutcomeDashboard.tsx(6,29): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/outcomes/components/PlacementPower.tsx(1,39): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/outcomes/components/RetentionRing.tsx(3,72): error TS2307: Cannot find module 'recharts' or its corresponding type declarations.
+app/src/features/outcomes/components/WageGrowthChart.tsx(3,90): error TS2307: Cannot find module 'recharts' or its corresponding type declarations.
+app/src/features/portal/components/BookingWizard.tsx(5,24): error TS2307: Cannot find module 'date-fns' or its corresponding type declarations.
+app/src/features/portal/components/BookingWizard.tsx(6,73): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/portal/components/BookingWizard.tsx(11,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/portal/components/BookingWizard.tsx(185,37): error TS2322: Type '{ children: string; variant: string; onClick: () => void; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/portal/components/BookingWizard.tsx(214,37): error TS2322: Type '{ children: string; variant: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/portal/components/ClientTimeline.tsx(4,24): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/portal/components/ClientTimeline.tsx(5,58): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/portal/components/DocumentRequestCard.tsx(4,60): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/portal/components/JourneyMap.tsx(4,68): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/portal/components/JourneyMap.tsx(5,41): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/portal/components/JourneyMap.tsx(6,22): error TS2307: Cannot find module 'canvas-confetti' or its corresponding type declarations.
+app/src/features/portal/components/MessageCenter.tsx(4,41): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/portal/components/MessageCenter.tsx(5,53): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/portal/components/NotificationToast.tsx(4,41): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/portal/components/NotificationToast.tsx(5,32): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/portal/components/PortalConcierge.tsx(4,41): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/portal/components/PortalConcierge.tsx(5,55): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/portal/components/PortalMobileNav.tsx(5,57): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/portal/context/NotificationProvider.tsx(4,33): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/reporting/components/DataExportCard.tsx(6,50): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/reporting/components/DataExportCard.tsx(47,21): error TS2322: Type '{ children: Element[]; variant: string; className: string; onClick: () => Promise<void>; disabled: boolean; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/reporting/components/DataExportCard.tsx(62,21): error TS2322: Type '{ children: Element[]; variant: string; className: string; onClick: () => Promise<void>; disabled: boolean; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/reporting/components/OutcomesDashboard.tsx(6,111): error TS2307: Cannot find module 'recharts' or its corresponding type declarations.
+app/src/features/reporting/components/OutcomesDashboard.tsx(7,58): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/reporting/components/OutcomesDashboard.tsx(19,37): error TS2339: Property 'getRiskProfiling' does not exist on type 'DashboardRepository'.
+app/src/features/reports/components/BarriersRemovalChart.tsx(4,90): error TS2307: Cannot find module 'recharts' or its corresponding type declarations.
+app/src/features/reports/components/DemographicsChart.tsx(4,75): error TS2307: Cannot find module 'recharts' or its corresponding type declarations.
+app/src/features/reports/components/DemographicsChart.tsx(6,37): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/reports/components/DemographicsChart.tsx(57,41): error TS7006: Parameter 'value' implicitly has an 'any' type.
+app/src/features/reports/components/IntakeReportEditor.tsx(7,73): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/reports/components/IntakeReportEditor.tsx(8,41): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/reports/components/IntakeReportEditor.tsx(9,23): error TS2307: Cannot find module 'isomorphic-dompurify' or its corresponding type declarations.
+app/src/features/reports/components/IntakeReportEditor.tsx(136,41): error TS2322: Type '{ children: (string | Element)[]; variant: string; onClick: () => Promise<void>; disabled: boolean; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/reports/components/MonthlyVolumeChart.tsx(4,96): error TS2307: Cannot find module 'recharts' or its corresponding type declarations.
+app/src/features/reports/components/MonthlyVolumeChart.tsx(6,27): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/reports/components/PlacementOutcomeChart.tsx(4,96): error TS2307: Cannot find module 'recharts' or its corresponding type declarations.
+app/src/features/reports/components/PlacementOutcomeChart.tsx(7,28): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/reports/components/ReadinessTrendChart.tsx(4,92): error TS2307: Cannot find module 'recharts' or its corresponding type declarations.
+app/src/features/reports/components/ReportView.tsx(8,48): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/reports/DORReportButton.tsx(7,80): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/reports/DORReportButton.tsx(9,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/reports/DORReportButton.tsx(13,19): error TS2307: Cannot find module 'jspdf' or its corresponding type declarations.
+app/src/features/reports/DORReportButton.tsx(118,46): error TS2322: Type '{ children: (string | Element)[]; onClick: () => Promise<void>; variant: string; disabled: boolean; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/reports/DORReportButton.tsx(129,41): error TS2322: Type '{ children: (string | Element)[]; size: string; variant: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'size' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/reports/DORReportButton.tsx(133,41): error TS2322: Type '{ children: string; size: string; variant: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'size' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/reports/DORReportButton.tsx(137,37): error TS2322: Type '{ children: (string | Element)[]; size: string; variant: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'size' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/reports/DORReportButton.tsx(218,29): error TS2322: Type '{ children: (string | Element)[]; variant: string; onClick: () => Promise<void>; disabled: boolean; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/resources/ResourceFinder.tsx(6,56): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/resources/ResourceFinder.tsx(8,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/scheduling/components/AppointmentCalendar.tsx(8,46): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/scheduling/components/AppointmentCalendar.tsx(9,45): error TS2307: Cannot find module 'date-fns' or its corresponding type declarations.
+app/src/features/scheduling/components/AppointmentCalendar.tsx(88,48): error TS2322: Type '{ children: string; variant: string; }' is not assignable to type 'IntrinsicAttributes & BadgeProps'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & BadgeProps'.
+app/src/features/scheduling/components/AppointmentCalendar.tsx(109,49): error TS2322: Type '{ children: string; variant: string; size: string; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/scheduling/components/AvailabilityManager.tsx(4,87): error TS2307: Cannot find module 'date-fns' or its corresponding type declarations.
+app/src/features/scheduling/components/AvailabilityManager.tsx(5,66): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/scheduling/components/AvailabilityManager.tsx(11,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/scheduling/components/AvailabilityManager.tsx(64,13): error TS2561: Object literal may only specify known properties, but 'user_id' does not exist in type '{ userId: string; startTime: string; endTime: string; title?: string | undefined; isRecurring?: boolean | undefined; }'. Did you mean to write 'userId'?
+app/src/features/scheduling/components/AvailabilityManager.tsx(98,29): error TS2322: Type '{ children: Element; variant: string; size: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/scheduling/components/AvailabilityManager.tsx(104,29): error TS2322: Type '{ children: Element; variant: string; size: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/scheduling/components/AvailabilityManager.tsx(156,31): error TS7006: Parameter 'day' implicitly has an 'any' type.
+app/src/features/scheduling/components/AvailabilityManager.tsx(177,39): error TS7006: Parameter 'day' implicitly has an 'any' type.
+app/src/features/scheduling/components/ScheduleAppointmentDialog.tsx(10,51): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/scheduling/components/ScheduleAppointmentDialog.tsx(11,24): error TS2307: Cannot find module 'date-fns' or its corresponding type declarations.
+app/src/features/scheduling/components/ScheduleAppointmentDialog.tsx(88,45): error TS7006: Parameter 'val' implicitly has an 'any' type.
+app/src/features/scheduling/components/ScheduleAppointmentDialog.tsx(131,47): error TS2322: Type '{ children: string; type: "button"; variant: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/simulation/components/PolicySimulator.tsx(6,66): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/supervisor/components/ActivityLog.tsx(6,86): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/supervisor/components/ActivityLog.tsx(7,24): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/supervisor/components/BulkActionsToolbar.tsx(5,48): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/supervisor/components/DashboardCalendar.tsx(4,72): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/supervisor/components/DashboardCalendar.tsx(84,29): error TS2322: Type '{ children: Element; variant: string; size: string; className: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/supervisor/components/DashboardCalendar.tsx(90,29): error TS2322: Type '{ children: Element; variant: string; size: string; className: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/supervisor/components/DashboardCalendar.tsx(110,33): error TS2322: Type '{ children: string; variant: string; size: string; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/supervisor/components/DashboardCalendar.tsx(124,37): error TS2322: Type '{ children: Element; variant: string; size: string; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/supervisor/components/DashboardCalendar.tsx(129,29): error TS2322: Type '{ children: (string | Element)[]; variant: string; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/supervisor/components/ExecutiveBrief.tsx(6,58): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/supervisor/components/ExecutiveBrief.tsx(7,10): error TS2724: '"@/app/(app)/actions/generateExecutiveReport"' has no exported member named 'generateExecutiveReport'. Did you mean 'generateExecutiveReportAction'?
+app/src/features/supervisor/components/ExecutiveBrief.tsx(8,27): error TS2307: Cannot find module 'react-markdown' or its corresponding type declarations.
+app/src/features/supervisor/components/ExecutiveBrief.tsx(9,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/supervisor/components/ExecutiveBrief.tsx(69,37): error TS2322: Type '{ children: (string | Element)[]; variant: string; size: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/supervisor/components/ExecutiveBrief.tsx(72,37): error TS2322: Type '{ children: string; variant: string; size: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/supervisor/components/GoalDrift.tsx(3,37): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/supervisor/components/InviteMemberDialog.tsx(10,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/supervisor/components/InviteMemberDialog.tsx(11,31): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/supervisor/components/PipelineVelocity.tsx(5,75): error TS2307: Cannot find module 'recharts' or its corresponding type declarations.
+app/src/features/supervisor/components/PipelineVelocity.tsx(6,23): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/supervisor/components/PipelineVelocity.tsx(38,49): error TS7006: Parameter 'val' implicitly has an 'any' type.
+app/src/features/supervisor/components/PredictiveRiskRadar.tsx(4,109): error TS2307: Cannot find module 'recharts' or its corresponding type declarations.
+app/src/features/supervisor/components/PredictiveRiskRadar.tsx(6,54): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/supervisor/components/ReturnForRevisionDialog.tsx(7,62): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/supervisor/components/ReturnForRevisionDialog.tsx(198,29): error TS2322: Type '{ children: string; variant: string; onClick: () => void; disabled: boolean; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/supervisor/components/ReviewQueueTable.tsx(5,57): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/supervisor/components/ReviewQueueTable.tsx(116,53): error TS2322: Type '{ children: string; size: string; variant: string; className: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'size' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/supervisor/components/ReviewQueueTable.tsx(123,57): error TS2322: Type '{ children: (string | Element)[]; size: string; variant: string; className: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'size' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/supervisor/components/ReviewQueueTable.tsx(129,45): error TS2322: Type '{ children: string; size: string; variant: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'size' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/supervisor/components/ReviewQueueTable.tsx(136,45): error TS2322: Type '{ children: Element; size: string; variant: string; className: string; title: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'size' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/supervisor/components/RiskRadar.tsx(7,38): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/supervisor/components/RiskRadar.tsx(55,53): error TS2322: Type '{ children: Element; asChild: true; size: string; variant: string; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'size' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/supervisor/components/SupervisorDashboard.tsx(18,117): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/supervisor/components/SupervisorPulse.tsx(3,48): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/supervisor/components/SupervisorPulse.tsx(34,32): error TS2322: Type '{ children: string; variant: string; className: string; }' is not assignable to type 'IntrinsicAttributes & BadgeProps'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & BadgeProps'.
+app/src/features/supervisor/components/SystemDeadlinesWidget.tsx(6,63): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/supervisor/components/SystemDeadlinesWidget.tsx(58,37): error TS2322: Type '{ children: Element; size: string; variant: string; className: string; onClick: () => void; title: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'size' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/supervisor/components/SystemDeadlinesWidget.tsx(83,25): error TS2322: Type '{ children: (string | Element)[]; variant: string; size: string; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/supervisor/components/TeamChatWidget.tsx(6,110): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/supervisor/components/TeamChatWidget.tsx(8,41): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/supervisor/components/TeamChatWidget.tsx(106,41): error TS2322: Type '{ children: Element; variant: string; size: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/supervisor/components/TeamChatWidget.tsx(178,41): error TS2322: Type '{ children: Element; type: "submit"; size: string; disabled: boolean; className: any; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'size' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/supervisor/components/TeamChatWidget.tsx(193,17): error TS2322: Type '{ children: Element; onClick: () => void; size: string; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'size' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/supervisor/components/TeamManagementWidget.tsx(13,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/features/supervisor/components/TeamManagementWidget.tsx(14,82): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/supervisor/components/TeamManagementWidget.tsx(133,48): error TS2322: Type '{ children: string; variant: string; }' is not assignable to type 'IntrinsicAttributes & BadgeProps'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & BadgeProps'.
+app/src/features/supervisor/components/TeamManagementWidget.tsx(156,57): error TS2322: Type '{ children: Element; variant: string; size: string; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/supervisor/components/UpcomingExits.tsx(3,39): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/supervisor/components/WorkerAssignmentDialog.tsx(7,48): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/supervisor/components/WorkerAssignmentDialog.tsx(234,29): error TS2322: Type '{ children: string; variant: string; onClick: () => void; disabled: boolean; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/training/components/TrainingCenterDialog.tsx(5,79): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/training/components/TrainingCenterDialog.tsx(12,25): error TS2322: Type '{ children: (string | Element)[]; variant: string; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/training/components/TrainingCenterDialog.tsx(58,53): error TS2322: Type '{ children: string; variant: string; size: string; className: string; onClick: (e: MouseEvent<HTMLButtonElement, MouseEvent>) => void; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+app/src/features/training/components/TrainingModeToggle.tsx(7,31): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/training/components/TrainingOverlay.tsx(5,41): error TS2307: Cannot find module 'framer-motion' or its corresponding type declarations.
+app/src/features/training/components/TrainingOverlay.tsx(6,54): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/training/components/TrainingOverlay.tsx(48,39): error TS7006: Parameter 'e' implicitly has an 'any' type.
+app/src/features/transparency/components/TransparencyDashboard.tsx(6,38): error TS2307: Cannot find module 'lucide-react' or its corresponding type declarations.
+app/src/features/transparency/components/TransparencyDashboard.tsx(8,81): error TS2307: Cannot find module 'recharts' or its corresponding type declarations.
+app/src/hooks/useOfflineDraft.ts(3,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/hooks/useRealtimeNotifications.ts(12,23): error TS2307: Cannot find module 'sonner' or its corresponding type declarations.
+app/src/lib/agents/dorAgent.ts(1,30): error TS2307: Cannot find module '@supabase/supabase-js' or its corresponding type declarations.
+app/src/lib/agents/selfHealingAgent.ts(1,36): error TS2307: Cannot find module '@google/generative-ai' or its corresponding type declarations.
+app/src/lib/ai/providers/GeminiProvider.ts(1,36): error TS2307: Cannot find module '@google/generative-ai' or its corresponding type declarations.
+app/src/lib/ai/UnifiedAIService.test.ts(2,54): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
+app/src/lib/analytics/analyticsService.ts(47,47): error TS7006: Parameter 'a' implicitly has an 'any' type.
+app/src/lib/analytics/analyticsService.ts(48,47): error TS7006: Parameter 'a' implicitly has an 'any' type.
+app/src/lib/analytics/analyticsService.ts(60,50): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+app/src/lib/analytics/analyticsService.ts(60,55): error TS7006: Parameter 'intake' implicitly has an 'any' type.
+app/src/lib/analytics/analyticsService.ts(121,47): error TS7006: Parameter 'i' implicitly has an 'any' type.
+app/src/lib/analytics/analyticsService.ts(122,47): error TS7006: Parameter 'i' implicitly has an 'any' type.
+app/src/lib/analytics/analyticsService.ts(126,50): error TS7006: Parameter 'i' implicitly has an 'any' type.
+app/src/lib/analytics/analyticsService.ts(127,62): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+app/src/lib/analytics/analyticsService.ts(127,67): error TS7006: Parameter 'intake' implicitly has an 'any' type.
+app/src/lib/analytics/analyticsService.ts(169,52): error TS7006: Parameter 'c' implicitly has an 'any' type.
+app/src/lib/auth/authHelpersServer.ts(9,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+app/src/lib/email/emailService.ts(7,24): error TS2307: Cannot find module 'resend' or its corresponding type declarations.
+app/src/lib/instrumentation.ts(1,30): error TS2307: Cannot find module '@vercel/otel' or its corresponding type declarations.
+app/src/lib/logic/caseload.ts(35,81): error TS7006: Parameter 's' implicitly has an 'any' type.
+app/src/lib/logic/scheduling.ts(1,142): error TS2307: Cannot find module 'date-fns' or its corresponding type declarations.
+app/src/lib/monitoring/sentry.ts(8,25): error TS2307: Cannot find module '@sentry/nextjs' or its corresponding type declarations.
+app/src/lib/observability/metrics.ts(1,69): error TS2307: Cannot find module 'prom-client' or its corresponding type declarations.
+app/src/lib/offline/db.ts(1,48): error TS2307: Cannot find module 'idb' or its corresponding type declarations.
+app/src/lib/offline/db.ts(54,21): error TS7006: Parameter 'db' implicitly has an 'any' type.
+app/src/lib/offline/db.ts(54,25): error TS7006: Parameter 'oldVersion' implicitly has an 'any' type.
+app/src/lib/offline/db.ts(54,37): error TS7006: Parameter 'newVersion' implicitly has an 'any' type.
+app/src/lib/offline/db.ts(54,49): error TS7006: Parameter 'transaction' implicitly has an 'any' type.
+app/src/lib/pdf/generatePDF.ts(2,23): error TS2307: Cannot find module 'jspdf' or its corresponding type declarations.
+app/src/lib/pdf/generatePDF.ts(3,25): error TS2307: Cannot find module 'html2canvas' or its corresponding type declarations.
+app/src/lib/pdf/generatePDF.ts(16,23): error TS2307: Cannot find module 'isomorphic-dompurify' or its corresponding type declarations.
+app/src/lib/pdf/markdownToPdf.ts(1,22): error TS2307: Cannot find module '@sparticuz/chromium' or its corresponding type declarations.
+app/src/lib/pdf/markdownToPdf.ts(2,23): error TS2307: Cannot find module 'puppeteer-core' or its corresponding type declarations.
+app/src/lib/pdf/markdownToPdf.ts(3,24): error TS2307: Cannot find module 'marked' or its corresponding type declarations.
+app/src/lib/pdf/markdownToPdf.ts(4,23): error TS2307: Cannot find module 'isomorphic-dompurify' or its corresponding type declarations.
+app/src/lib/pdf/ReportGenerator.ts(2,23): error TS2307: Cannot find module 'jspdf' or its corresponding type declarations.
+app/src/lib/pdf/ReportGenerator.ts(3,29): error TS2307: Cannot find module 'jspdf-autotable' or its corresponding type declarations.
+app/src/lib/pdf/signer.ts(2,29): error TS2307: Cannot find module 'pdf-lib' or its corresponding type declarations.
+app/src/lib/portal-activity.ts(43,14): error TS2339: Property 'from' does not exist on type '{ session: Session | null; user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } | undefined; db: any; storage: any; auth: { ...; }; } | { ...; }'.
+  Property 'from' does not exist on type '{ session: Session | null; user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } | undefined; db: any; storage: any; auth: { ...; }; }'.
+app/src/lib/portal-activity.ts(78,10): error TS2339: Property 'from' does not exist on type '{ session: Session | null; user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } | undefined; db: any; storage: any; auth: { ...; }; }'.
+app/src/lib/portal-activity.ts(102,10): error TS2339: Property 'from' does not exist on type '{ session: Session | null; user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } | undefined; db: any; storage: any; auth: { ...; }; }'.
+app/src/lib/rateLimit.ts(28,14): error TS2339: Property 'from' does not exist on type '{ session: Session | null; user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } | undefined; db: any; storage: any; auth: { ...; }; }'.
+app/src/lib/rateLimit.ts(41,18): error TS2339: Property 'from' does not exist on type '{ session: Session | null; user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } | undefined; db: any; storage: any; auth: { ...; }; }'.
+app/src/lib/rateLimit.ts(72,14): error TS2339: Property 'from' does not exist on type '{ session: Session | null; user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } | undefined; db: any; storage: any; auth: { ...; }; }'.
+app/src/lib/supabase-admin.ts(1,51): error TS2307: Cannot find module '@supabase/supabase-js' or its corresponding type declarations.
+app/src/lib/supabase.ts(1,70): error TS2307: Cannot find module '@supabase/supabase-js' or its corresponding type declarations.
+app/src/lib/supabase/browser.ts(3,37): error TS2307: Cannot find module '@supabase/ssr' or its corresponding type declarations.
+app/src/lib/supabase/mock.ts(2,32): error TS2307: Cannot find module '@supabase/supabase-js' or its corresponding type declarations.
+app/src/lib/supabase/server.ts(8,54): error TS2307: Cannot find module '@supabase/supabase-js' or its corresponding type declarations.
+app/src/lib/supervisor/supervisorReports.ts(191,47): error TS7006: Parameter 'intake' implicitly has an 'any' type.
+app/src/lib/utils.ts(1,39): error TS2307: Cannot find module 'clsx' or its corresponding type declarations.
+app/src/lib/utils.ts(2,25): error TS2307: Cannot find module 'tailwind-merge' or its corresponding type declarations.
+app/src/lib/validation/intakeValidation.ts(1,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+app/src/lib/validation/intakeValidation.ts(85,32): error TS7006: Parameter 'val' implicitly has an 'any' type.
+app/src/lib/validation/intakeValidation.ts(149,17): error TS7006: Parameter 'data' implicitly has an 'any' type.
+app/src/lib/validation/intakeValidation.ts(149,23): error TS7006: Parameter 'ctx' implicitly has an 'any' type.
+app/src/lib/validation/intakeValidation.ts(198,50): error TS7006: Parameter 'i' implicitly has an 'any' type.
+app/src/lib/validations/domains/clinical.ts(1,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+app/src/lib/validations/domains/identity.ts(1,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+app/src/lib/validations/domains/medical.ts(1,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+app/src/lib/validations/domains/medical.ts(66,42): error TS7006: Parameter 'val' implicitly has an 'any' type.
+app/src/lib/validations/domains/vocational.ts(1,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+app/src/lib/validations/intake.ts(1,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+app/src/repositories/ClientRepository.ts(59,62): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+app/src/repositories/ComparabilityRepository.ts(55,47): error TS7006: Parameter 'm' implicitly has an 'any' type.
+app/src/repositories/DashboardRepository.ts(34,13): error TS2353: Object literal may only specify known properties, and 'upcoming_appointments' does not exist in type 'MyWorkload'.
+app/src/repositories/DashboardRepository.ts(46,25): error TS7006: Parameter 'log' implicitly has an 'any' type.
+app/src/repositories/DashboardRepository.ts(84,25): error TS7006: Parameter 'i' implicitly has an 'any' type.
+app/src/repositories/DashboardRepository.ts(108,26): error TS7006: Parameter 's' implicitly has an 'any' type.
+app/src/repositories/DashboardRepository.ts(123,25): error TS7006: Parameter 'i' implicitly has an 'any' type.
+app/src/repositories/EvidenceRepository.ts(36,29): error TS7006: Parameter 's' implicitly has an 'any' type.
+app/src/repositories/EvidenceRepository.ts(58,29): error TS7006: Parameter 'p' implicitly has an 'any' type.
+app/src/repositories/ModernizedIntakeRepository.ts(2,10): error TS2305: Module '"@prisma/client"' has no exported member 'Prisma'.
+app/src/repositories/ReportRepository.ts(31,25): error TS7006: Parameter 'intake' implicitly has an 'any' type.
+app/src/repositories/ReportRepository.ts(79,22): error TS7006: Parameter 'item' implicitly has an 'any' type.
+app/src/repositories/ReportRepository.ts(103,33): error TS7006: Parameter 'item' implicitly has an 'any' type.
+app/src/repositories/ReportRepository.ts(110,36): error TS7006: Parameter 'd' implicitly has an 'any' type.
+app/src/repositories/ReportRepository.ts(111,38): error TS7006: Parameter 'd' implicitly has an 'any' type.
+app/src/repositories/ReportRepository.ts(124,32): error TS7006: Parameter 'i' implicitly has an 'any' type.
+app/src/repositories/ReportRepository.ts(130,35): error TS7006: Parameter 'a' implicitly has an 'any' type.
+app/src/repositories/ReportRepository.ts(130,38): error TS7006: Parameter 'b' implicitly has an 'any' type.
+app/src/repositories/ReportRepository.ts(143,22): error TS7006: Parameter 'item' implicitly has an 'any' type.
+app/src/repositories/ResumeRepository.ts(208,39): error TS7006: Parameter 'r' implicitly has an 'any' type.
+app/src/repositories/ResumeRepository.ts(210,29): error TS7006: Parameter 'a' implicitly has an 'any' type.
+app/src/repositories/ResumeRepository.ts(210,32): error TS7006: Parameter 'b' implicitly has an 'any' type.
+app/src/services/CarePlanService.ts(67,35): error TS7006: Parameter 'g' implicitly has an 'any' type.
+app/src/services/CarePlanService.ts(77,26): error TS7006: Parameter 'goal' implicitly has an 'any' type.
+app/src/services/CarePlanService.ts(79,38): error TS7006: Parameter 'a' implicitly has an 'any' type.
+app/src/services/CaseService.ts(128,44): error TS2551: Property 'clientId' does not exist on type 'Case'. Did you mean 'client_id'?
+app/src/services/CommunicationService.ts(45,25): error TS7006: Parameter 'log' implicitly has an 'any' type.
+app/src/services/CommunicationService.ts(79,25): error TS7006: Parameter 'log' implicitly has an 'any' type.
+app/src/services/DashboardService.ts(7,32): error TS2554: Expected 1 arguments, but got 0.
+app/src/services/DashboardService.ts(19,32): error TS2554: Expected 1 arguments, but got 0.
+app/src/services/DashboardService.ts(23,50): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+app/src/services/DocumentService.ts(3,30): error TS7016: Could not find a declaration file for module 'uuid'. 'C:/Users/keith/Desktop/Intake/intake-system-4.1-Edge-RAG-Release/node_modules/uuid/dist/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/uuid` if it exists or add a new declaration (.d.ts) file containing `declare module 'uuid';`
+app/src/services/DocumentService.ts(23,13): error TS2561: Object literal may only specify known properties, but 'client_id' does not exist in type '{ clientId: string; name: string; url: string; type: string; size?: number | undefined; uploadedById?: string | undefined; }'. Did you mean to write 'clientId'?
+app/src/services/DocumentService.ts(36,64): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+app/src/services/MatrixBridgeService.ts(1,19): error TS2307: Cannot find module 'axios' or its corresponding type declarations.
+app/src/services/NotificationService.ts(35,52): error TS2345: Argument of type '{ case_id: string; client_id: string; type: "sms"; content: string; }' is not assignable to parameter of type '{ case_id: string; client_id?: string | undefined; type: "email" | "sms" | "internal"; direction?: "inbound" | "outbound" | undefined; content: string; sender_id: string; recipient_contact?: string | undefined; }'.
+  Property 'sender_id' is missing in type '{ case_id: string; client_id: string; type: "sms"; content: string; }' but required in type '{ case_id: string; client_id?: string | undefined; type: "email" | "sms" | "internal"; direction?: "inbound" | "outbound" | undefined; content: string; sender_id: string; recipient_contact?: string | undefined; }'.
+app/src/services/NotificationService.ts(49,17): error TS2353: Object literal may only specify known properties, and 'subject' does not exist in type '{ case_id: string; client_id?: string | undefined; type: "email" | "sms" | "internal"; direction?: "inbound" | "outbound" | undefined; content: string; sender_id: string; recipient_contact?: string | undefined; }'.
+app/src/services/observabilityService.ts(106,28): error TS7031: Binding element 'error' implicitly has an 'any' type.
+app/src/services/ResourceService.ts(3,32): error TS2307: Cannot find module '@supabase/supabase-js' or its corresponding type declarations.
+app/src/services/ResourceService.ts(23,14): error TS2339: Property 'from' does not exist on type '{ session: Session | null; user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } | undefined; db: any; storage: any; auth: { ...; }; }'.
+app/src/services/ResourceService.ts(89,14): error TS2339: Property 'from' does not exist on type '{ session: Session | null; user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } | undefined; db: any; storage: any; auth: { ...; }; }'.
+app/src/services/ResourceService.ts(100,48): error TS2339: Property 'from' does not exist on type '{ session: Session | null; user: { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; } | undefined; db: any; storage: any; auth: { ...; }; }'.
+app/src/services/SupervisorService.ts(100,47): error TS7006: Parameter 'c' implicitly has an 'any' type.
+app/src/services/SupervisorService.ts(108,42): error TS7006: Parameter 'g' implicitly has an 'any' type.
+app/src/services/SupervisorService.ts(114,47): error TS7006: Parameter 'c' implicitly has an 'any' type.
+app/src/services/SupervisorService.ts(123,39): error TS7006: Parameter 's' implicitly has an 'any' type.
